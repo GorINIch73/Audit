@@ -6,16 +6,192 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1245</width>
+    <height>621</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
-  <widget class="QMenuBar" name="menubar"/>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTabWidget" name="tabWidgetMain">
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="currentIndex">
+       <number>-1</number>
+      </property>
+      <property name="documentMode">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1245</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="actionOpenBase"/>
+    <addaction name="actionSaveAs"/>
+    <addaction name="actionCloseBase"/>
+    <addaction name="actionNewBase"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>База</string>
+    </property>
+    <addaction name="actionBank"/>
+    <addaction name="actionContracts"/>
+    <addaction name="actionCounterparties"/>
+    <addaction name="actionArticles"/>
+   </widget>
+   <widget class="QMenu" name="menu_3">
+    <property name="title">
+     <string>Разное</string>
+    </property>
+    <addaction name="actionOptions"/>
+    <addaction name="actionImportPP"/>
+   </widget>
+   <widget class="QMenu" name="menu_4">
+    <property name="title">
+     <string>Отчеты</string>
+    </property>
+    <addaction name="actionRep_bank"/>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="menu_2"/>
+   <addaction name="menu_4"/>
+   <addaction name="menu_3"/>
+  </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionBank"/>
+   <addaction name="actionArticles"/>
+   <addaction name="actionCounterparties"/>
+   <addaction name="actionContracts"/>
+   <addaction name="actionImportPP"/>
+   <addaction name="actionRep_bank"/>
+   <addaction name="actionOptions"/>
+  </widget>
+  <action name="actionBank">
+   <property name="text">
+    <string>Банк</string>
+   </property>
+   <property name="toolTip">
+    <string>Банк</string>
+   </property>
+  </action>
+  <action name="actionArticles">
+   <property name="text">
+    <string>Статьи</string>
+   </property>
+   <property name="toolTip">
+    <string>Статьи</string>
+   </property>
+  </action>
+  <action name="actionCounterparties">
+   <property name="text">
+    <string>Контрагенты</string>
+   </property>
+   <property name="toolTip">
+    <string>Контрагенты</string>
+   </property>
+  </action>
+  <action name="actionContracts">
+   <property name="text">
+    <string>Контракты</string>
+   </property>
+   <property name="toolTip">
+    <string>Контракты</string>
+   </property>
+  </action>
+  <action name="actionOptions">
+   <property name="text">
+    <string>Настройки</string>
+   </property>
+   <property name="toolTip">
+    <string>Настройки</string>
+   </property>
+  </action>
+  <action name="actionImportPP">
+   <property name="text">
+    <string>Импорт ПП</string>
+   </property>
+   <property name="toolTip">
+    <string>Импорт ПП</string>
+   </property>
+  </action>
+  <action name="actionRep_bank">
+   <property name="text">
+    <string>Отчет по банку</string>
+   </property>
+   <property name="toolTip">
+    <string>Отчет по банку</string>
+   </property>
+  </action>
+  <action name="actionOpenBase">
+   <property name="text">
+    <string>Открыть базу</string>
+   </property>
+   <property name="toolTip">
+    <string>Открыть базу</string>
+   </property>
+  </action>
+  <action name="actionCloseBase">
+   <property name="text">
+    <string>Закрыть базу</string>
+   </property>
+   <property name="toolTip">
+    <string>Закрыть базу</string>
+   </property>
+  </action>
+  <action name="actionSaveAs">
+   <property name="text">
+    <string>Сохранить базу как</string>
+   </property>
+   <property name="toolTip">
+    <string>Сохранить как</string>
+   </property>
+  </action>
+  <action name="actionNewBase">
+   <property name="text">
+    <string>Создать новую базу</string>
+   </property>
+   <property name="toolTip">
+    <string>Новая база</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Выход</string>
+   </property>
+   <property name="toolTip">
+    <string>Выход</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

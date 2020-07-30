@@ -1,0 +1,23 @@
+<RCC>
+    <qresource prefix="/">
+        <file>pix/add.png</file>
+        <file>pix/b.png</file>
+        <file>pix/bb.png</file>
+        <file>pix/clear.png</file>
+        <file>pix/del.png</file>
+        <file>pix/exit.png</file>
+        <file>pix/f.png</file>
+        <file>pix/ff.png</file>
+        <file>pix/forma.png</file>
+        <file>pix/reload.png</file>
+        <file>pix/tools.png</file>
+        <file>pix/dec.png</file>
+        <file>pix/art_a.png</file>
+        <file>pix/dec_a.png</file>
+        <file>pix/dec_del.png</file>
+        <file>pix/dog_0.png</file>
+        <file>pix/dog_a.png</file>
+        <file>pix/dog_d.png</file>
+        <file>pix/Иконки.svg</file>
+    </qresource>
+</RCC>
