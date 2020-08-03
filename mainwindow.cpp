@@ -132,3 +132,10 @@ void MainWindow::on_actionImportPP_triggered()
     ui->tabWidgetMain->insertTab(0,import,tr("Импорт"));
     ui->tabWidgetMain->setCurrentIndex(0);
 }
+
+void MainWindow::on_actionOptions_triggered()
+{
+    FormOptions *options = new FormOptions(database,this);
+    ui->tabWidgetMain->insertTab(0,options,tr("Настройки"));
+    ui->tabWidgetMain->setCurrentIndex(0);
+}

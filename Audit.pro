@@ -25,6 +25,7 @@ SOURCES += \
     formoptions.cpp \
     main.cpp \
     mainwindow.cpp \
+    mousewheelwidgetadjustmentguard.cpp \
     qsqlrelationaldelegateflt.cpp
 
 HEADERS += \
@@ -36,6 +37,7 @@ HEADERS += \
     formimport.h \
     formoptions.h \
     mainwindow.h \
+    mousewheelwidgetadjustmentguard.h \
     qsqlrelationaldelegateflt.h
 
 FORMS += \

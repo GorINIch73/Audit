@@ -89,11 +89,11 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionBank"/>
-   <addaction name="actionArticles"/>
-   <addaction name="actionCounterparties"/>
    <addaction name="actionContracts"/>
-   <addaction name="actionImportPP"/>
+   <addaction name="actionCounterparties"/>
+   <addaction name="actionArticles"/>
    <addaction name="actionRep_bank"/>
+   <addaction name="actionImportPP"/>
    <addaction name="actionOptions"/>
   </widget>
   <action name="actionBank">

@@ -6,6 +6,7 @@
 #include <QSqlTableModel>
 #include <QSqlQuery>
 
+//extern void aRunImport(QSqlDatabase db,);
 
 namespace Ui {
 class FormImport;
@@ -28,11 +29,15 @@ private slots:
 
     void on_pushButton_ImportZ_clicked();
 
+
+    void on_checkBox_recovery_stateChanged(int arg1);
+
 private:
     Ui::FormImport *ui;
 
     QSqlDatabase base;
     QString importName;
+
 
 };
 

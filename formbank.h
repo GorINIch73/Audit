@@ -46,16 +46,43 @@ private slots:
 
     void on_pushButton_del_clicked();
 
+    void on_lineEdit_flt_all_textChanged(const QString &arg1);
+
+    void on_pushButton_flt_clr_clicked();
+
+    void on_pushButton_add_dec_clicked();
+
+    void on_lineEdit_flt_art_textChanged(const QString &arg1);
+
+    void on_pushButton_article_add_dec_clicked();
+
+    void on_pushButton_clear_dec_clicked();
+
+    void on_lineEdit_flt_num_textChanged(const QString &arg1);
+
+
+    void on_pushButton_next_con_clicked();
+
+    void on_pushButton_prev_con_clicked();
+
+    void on_comboBox_flt_counterparties_currentIndexChanged(int index);
+
 private:
     Ui::FormBank *ui;
 
     QSqlDatabase base;
     QSqlRelationalTableModel *modelBank;
     QSqlRelationalTableModel *modelBank_decryption;
+    QSqlTableModel *modelArticles;
+    QSqlTableModel *modelCounterparties;
+    QSqlTableModel *modelContracts;
     QDataWidgetMapper *mapper;
     QSqlRelationalDelegate *delegate;
     QSqlRelationalDelegateFlt *a_delegate;
     QCompleter *completer;
+    QCompleter *completer_articles;
+    QCompleter *completer_counterparties;
+    QCompleter *completer_contracts;
 
     void SetupTable();
     void TunBank_decryption();

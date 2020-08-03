@@ -30,9 +30,17 @@ FormImport::~FormImport()
 
 void FormImport::on_pushButton_getFile_clicked()
 {
+    // импорт данных из CSV с разделителям табуляцией
+
+    // сброс состояний
+    ui->tableWidget->clear();
+    ui->plainTextEdit_rep->clear();
+    ui->checkBox_receipt->setChecked(false);
+    ui->checkBox_recovery->setChecked(false);
+    ui->lineEdit_note->setText("");
+
     // откты файл импорта
     // выбор файла
-    ui->tableWidget->clear();
     importName = QFileDialog::getOpenFileName(this,QString("Открыть файл"),QDir::currentPath(),tr("Типы файлов (*.csv;*.txt;);;Все файлы (*.*)"));
     //importName=QString("d:/Qt/Project/base_a/import.txt"); // временно пропускаем выбор
     ui->lineEdit_file->setText(importName);
@@ -52,6 +60,9 @@ void FormImport::on_pushButton_getFile_clicked()
 
            ui->tableWidget->setColumnCount(line.count());
            ui->tableWidget->insertRow(0);
+
+
+           //добавляем управление
            for (int i = 0; i < line.size(); ++i) {
               // добавляем шапку из названий полей импорта
                ui->tableWidget->setHorizontalHeaderItem(i,new QTableWidgetItem(line.at(i)));
@@ -69,10 +80,21 @@ void FormImport::on_pushButton_getFile_clicked()
                combo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
                ui->tableWidget->setCellWidget(0, i, combo);
 
-
 //           ui->tableWidget->setItem(0,i,new QTableWidgetItem(line.at(i)));
             }
-        }
+
+           ui->tableWidget->insertRow(1); //вставляем пустышку
+           //добавляем пару строк примера
+           for(int c=2; c<4; ++c) {
+               // читаем строку с данными
+               line = ts.readLine().split(sep);
+               ui->tableWidget->insertRow(c);
+               for (int i = 0; i < line.size(); ++i)
+                   ui->tableWidget->setItem(c, i, new QTableWidgetItem(line.at(i)));
+           }
+
+       }
+
         file.close ();
 
     }
@@ -90,6 +112,10 @@ void FormImport::on_pushButton_ImportZ_clicked()
     //импорт кучей
 
     // подтверждение импорта
+    if(QMessageBox::Yes != QMessageBox::question(this, tr("Внимание!"),
+                                                 tr("Уверены в импорте данных?")))  return;
+
+
     if(!base.isOpen()){
       qDebug() << "база не открыта!";
       QMessageBox::critical(this,"Error","База не открыта!");
@@ -121,24 +147,43 @@ void FormImport::on_pushButton_ImportZ_clicked()
            // для всех значений из таблицы настроек
            QComboBox *box;
            //заголовок
+           int count_t=0;
            for (int i=0;i < ui->tableWidget->columnCount(); ++i) {
                box = qobject_cast<QComboBox*>(ui->tableWidget->cellWidget(0,i));
                //qDebug() << "значение ключа:" << box->currentText() << "ключ:" << box->currentIndex();
                if (!box->currentText().isEmpty()) { // если не пустое
                    req.append(box->currentText());
                    req.append(",");
+                   count_t++;
                }
             }
+
+           //если не сопоставлено ни одно поле
+           if (count_t==0) {
+               qDebug() << "не сопоставлено ни одно поле!";
+               QMessageBox::critical(this,"Error","Не сопоставлено ни одно поле!");
+               ui->plainTextEdit_rep->appendPlainText(QString("Ошибка! Не сопоставлено ни одно поле!"));
+               file.close();
+               return;
+           }
            req.chop(1);
+
+           // если не пустое поле с примечанием добавляем его
+           if (!ui->lineEdit_note->text().isEmpty())
+                req.append(",note");
+           // если кстановлен признак поступления добавляем его
+           if (ui->checkBox_receipt->isChecked())
+                req.append(",this_receipt");
+
+
            req.append(") VALUES ");
-
-
             // данные
 
            int count=0; // счетчик
 
            // Цикл до конца файла
            while(!ts.atEnd()){
+               // для каждой строки
                // читаем стоку
                //ui->plainTextEdit_rep->appendPlainText(QString("добавляем запись: %1").arg(count));
                ui->lineEdit_count->setText(QString("%1").arg(count));
@@ -150,9 +195,16 @@ void FormImport::on_pushButton_ImportZ_clicked()
 //               line.replaceInStrings("\n"," ");
 
 //               qDebug() << line;
-               req.append("(");
+
+               bool zero=false; //тригер на нулевую сумму платежа
+               // формируем строку отдельно, для возможности дропнуть!
+               QString val_line = "";
+               // начало формирования строки
+               val_line.append("(");
                QComboBox *box;
+               // для каждого значения (колонки)
                for (int i=0;i < ui->tableWidget->columnCount(); ++i) {
+                   // считана строка с меньшим значением элементов
                    if (line.count()< i) {
                        ui->plainTextEdit_rep->appendPlainText(QString("Некорректное чтение строки. Очистите файл от лишних возвратов строки."));
                        ui->plainTextEdit_rep->appendPlainText(line.at(0));
@@ -163,7 +215,7 @@ void FormImport::on_pushButton_ImportZ_clicked()
                    //qDebug() << i;
                    box = qobject_cast<QComboBox*>(ui->tableWidget->cellWidget(0,i));
                    if (!box->currentText().isEmpty()) { // если не пустое
-                       req.append("'");
+                       val_line.append("'");
                        QString tt=line.at(i);
                        // если это контрагент надо проверить на его присуьствие в справочнике и найти id или добавить нового контрагента
                        if (box->currentText() == "counterparty_id") {
@@ -174,10 +226,10 @@ void FormImport::on_pushButton_ImportZ_clicked()
                             // если уже есть
                            if(query.next()) {
 //                               qDebug() << tr("Уже есть подставляем: ") << query.value(0).toString();
-                               req.append(query.value(0).toString());
+                               val_line.append(query.value(0).toString());
                            }
                            else {
-                               // иначе добавляем
+                               // иначе добавляем новоко контрагента
                                qDebug() << QString("добавляем контрагента: %1").arg(tt);
                                ui->plainTextEdit_rep->appendPlainText(QString("добавляем контрагента: %1").arg(tt));
                                QString ss = QString("INSERT INTO counterparties (counterparty) VALUES ('%1')").arg(tt);
@@ -190,33 +242,75 @@ void FormImport::on_pushButton_ImportZ_clicked()
                                     qDebug() << "ERROR new serch: " << query.lastError().text();
                                if(query.next()) {
 //                                   qDebug() << tr("Добавлено и найдено - подставляем: ") << query.value(0).toString();
-                                   req.append(query.value(0).toString());
+                                   val_line.append(query.value(0).toString());
                                }
                                 else {
-                                   req.append(""); // если вставить не выщло - крайний случай
-                                   qDebug() << tr("Что то пошло не так.");
+                                   val_line.append(""); // если вставить не выщло - крайний случай
+                                   qDebug() << tr("Что то пошло не так - контрагент не добавлен и не найден.");
                                }
                            }
 
                        }
                        else {
-                           //если это не контрагнеты то вставляем просто значение
-                            req.append(tt);
+                           // если поле это мумма платежа
+                           if (box->currentText() == "amount_of_payment") {
+                                   tt.replace(" ",""); //удаляем лишние пробелы
+                                   tt.replace(",","."); //меняем запятые на точки
+                                   // если ноль устанавливаем признак сброса
+                                   if (tt.toDouble() ==0)
+                                       zero=true;
+//                                       qDebug() << "пустая пропущено> " << tt << " " << tt.toDouble();
+                                   //если это восстановление
+                                   if (ui->checkBox_recovery->isChecked())
+                                       tt="-"+tt; //добавить знак минус
+
+
+                           }
+                           // если поле это дата преобразовать в варимый формат
+                           if (box->currentText() == "payment_date") {
+                                   QDate date = QDate::fromString(tt,"dd.MM.yyyy");
+                                   tt=date.toString("yyyy-MM-dd");
+                                   //qDebug << date;
+                           }
+
+                            //если это не контрагнеты то вставляем просто значение
+                            val_line.append(tt);
                        }
-                       req.append("',");
+                       val_line.append("',");
                    }
                 }
+               // собрали строку
+               val_line.chop(1);
 
-               req.chop(1);
-               req.append("),");
+               // если не пустое поле с примечанием добавляем его
+               if (!ui->lineEdit_note->text().isEmpty()) {
+                    val_line.append(",'");
+                    val_line.append(ui->lineEdit_note->text());
+                    val_line.append("'");
+               }
+               // если установлен признак поступления добавляем его
+               if (ui->checkBox_receipt->isChecked()) {
+                    val_line.append(",'true'");
+               }
+
+
+               val_line.append("),");
+               //если сумма пп не ноль то добавляем строку к запросу
+               if (!zero)
+                   req.append(val_line);
 
 //               qDebug()<<req;
                count++;
+               // дергаем интерфейс, что бы не зависал
+               QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+               // следующая строка
            }
+
+           // файл кончился - запрос сформирован
            req.chop(1);
            req.append(";");
 
-            qDebug()<<req;
+//            qDebug()<<req;
 
            if(!query.exec(req))
            {
@@ -230,5 +324,20 @@ void FormImport::on_pushButton_ImportZ_clicked()
            ui->plainTextEdit_rep->appendPlainText(QString("Импорт завершон! Обработано %1 записей").arg(count-1));
 
         }
+        else {
+           qDebug() << "файл не открыт!";
+           QMessageBox::critical(this,"Error","Файл не выбран или недоступен!");
+           return;
+       }
+
         file.close ();
+}
+
+void FormImport::on_checkBox_recovery_stateChanged(int arg1)
+{
+    if(ui->checkBox_recovery->isChecked())
+        ui->lineEdit_note->setText("ВОССТАНОВЛЕНИЕ");
+    else
+        ui->lineEdit_note->setText("");
+
 }

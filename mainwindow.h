@@ -25,6 +25,8 @@ private slots:
 
     void on_actionImportPP_triggered();
 
+    void on_actionOptions_triggered();
+
 private:
     Ui::MainWindow *ui;
 
