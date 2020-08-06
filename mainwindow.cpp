@@ -139,3 +139,34 @@ void MainWindow::on_actionOptions_triggered()
     ui->tabWidgetMain->insertTab(0,options,tr("Настройки"));
     ui->tabWidgetMain->setCurrentIndex(0);
 }
+
+void MainWindow::on_actionContracts_triggered()
+{
+    // вызов редактора контрагентов
+
+    FormContract *contract = new FormContract(database,this);
+    ui->tabWidgetMain->insertTab(0,contract,tr("Контракты"));
+    ui->tabWidgetMain->setCurrentIndex(0);
+
+
+}
+
+void MainWindow::on_actionArticles_triggered()
+{
+    // вызов редактора статей
+
+    FormArticles *articles = new FormArticles(database,this);
+    ui->tabWidgetMain->insertTab(0,articles,tr("Статьи"));
+    ui->tabWidgetMain->setCurrentIndex(0);
+
+}
+
+void MainWindow::on_actionCounterparties_triggered()
+{
+    // вызов редактора контрагентов
+
+    FormCounterparties *counterparties = new FormCounterparties(database,this);
+    ui->tabWidgetMain->insertTab(0,counterparties,tr("Контрагенты"));
+    ui->tabWidgetMain->setCurrentIndex(0);
+
+}

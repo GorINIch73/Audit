@@ -6,6 +6,7 @@
 #include <QWidget>
 #include <QSqlDatabase>
 #include <QSqlTableModel>
+#include <QSqlQueryModel>
 #include <QSqlRelationalTableModel>
 #include <QSqlRelationalDelegate>
 #include <QDataWidgetMapper>
@@ -67,6 +68,18 @@ private slots:
 
     void on_comboBox_flt_counterparties_currentIndexChanged(int index);
 
+    void on_pushButton_contracts_add_new_clicked();
+
+    void on_pushButton_contracts_add_dec_clicked();
+
+    void on_pushButton_contracts_clear_dec_clicked();
+
+    void on_pushButton_del_dec_clicked();
+
+//    void on_comboBox_counterparty_editTextChanged(const QString &arg1);
+
+    void on_pushButton_article_repl_dec_clicked();
+
 private:
     Ui::FormBank *ui;
 
@@ -75,7 +88,8 @@ private:
     QSqlRelationalTableModel *modelBank_decryption;
     QSqlTableModel *modelArticles;
     QSqlTableModel *modelCounterparties;
-    QSqlTableModel *modelContracts;
+//    QSqlTableModel *modelContracts;
+    QSqlQueryModel *modelContracts; // попробуем по другому
     QDataWidgetMapper *mapper;
     QSqlRelationalDelegate *delegate;
     QSqlRelationalDelegateFlt *a_delegate;

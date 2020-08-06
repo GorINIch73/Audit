@@ -9,6 +9,8 @@
 
 #include <QSqlError>
 
+#include "dialognewcontract.h"
+
 
 FormBank::FormBank(QSqlDatabase db, QWidget *parent) :
     QWidget(parent),
@@ -22,7 +24,9 @@ FormBank::FormBank(QSqlDatabase db, QWidget *parent) :
     modelBank = new QSqlRelationalTableModel(this,base);
     modelBank_decryption = new QSqlRelationalTableModel(this,base);
     modelArticles = new QSqlTableModel(this,base);
-    modelContracts = new QSqlTableModel(this,base);
+//    modelContracts = new QSqlTableModel(this,base);
+    modelContracts = new QSqlQueryModel(this);
+
     modelCounterparties = new QSqlTableModel(this,base);
     delegate = new QSqlRelationalDelegate(this);
     a_delegate = new QSqlRelationalDelegateFlt(this);
@@ -41,6 +45,7 @@ FormBank::FormBank(QSqlDatabase db, QWidget *parent) :
     modelBank_decryption->select();
     modelArticles->select();
     modelCounterparties->select();
+//    modelContracts->select();
 
 
     // сигнал изменения строки выделения в tableVewBank
@@ -64,13 +69,8 @@ void FormBank::on_pushButton_close_clicked()
 void FormBank::slotSelectionChange(const QItemSelection &current, const QItemSelection &previous)
 {
     // настраиваем фильтр расшифровки в зависимости от выбранного платежа
-    QString ff = QString(" bank_id = \%1 ").arg(modelBank->data(modelBank->index(ui->tableView_bank->currentIndex().row(), 0)).toString());
+    TunBank_decryption();
 
-    modelBank_decryption->setFilter(ff);
-    modelBank_decryption->select();
-
-    // при изменение строки в таблвьюве устанавливаем маппер на соответствующую запись
-    mapper->setCurrentIndex(ui->tableView_bank->currentIndex().row());
 }
 
 void FormBank::SetupTable()
@@ -84,7 +84,16 @@ void FormBank::SetupTable()
 
 
     // названия колонок
-//    modelBank->setHeaderData(1,Qt::Horizontal,"Вопрос");
+    modelBank->setHeaderData(modelBank->fieldIndex("payment_number"),Qt::Horizontal,"Номер ПП");
+    modelBank->setHeaderData(modelBank->fieldIndex("payment_date"),Qt::Horizontal,"Дата ПП");
+    modelBank->setHeaderData(modelBank->fieldIndex("counterparty_id"),Qt::Horizontal,"Контрагент");
+    modelBank->setHeaderData(modelBank->fieldIndex("decryption_of_payment"),Qt::Horizontal,"Назначение платежа");
+    modelBank->setHeaderData(modelBank->fieldIndex("amount_of_payment"),Qt::Horizontal,"Сумма платежа");
+    modelBank->setHeaderData(modelBank->fieldIndex("this_receipt"),Qt::Horizontal,"Поступление");
+    modelBank->setHeaderData(modelBank->fieldIndex("article"),Qt::Horizontal,"статья");
+    modelBank->setHeaderData(modelBank->fieldIndex("note"),Qt::Horizontal,"примечание");
+
+
     ui->tableView_bank->setModel(modelBank);
     ui->tableView_bank->setColumnHidden(0, true);    // Скрываем колонку с id записей
     ui->tableView_bank->setEditTriggers(QAbstractItemView::NoEditTriggers);  //запрет редактирования
@@ -120,21 +129,17 @@ void FormBank::SetupTable()
     ui->comboBox_counterparty->setEditable(true);
     ui->comboBox_counterparty->setFocusPolicy(Qt::StrongFocus);
     ui->comboBox_counterparty->installEventFilter(new MouseWheelWidgetAdjustmentGuard(ui->comboBox_counterparty)); //блокируем прокрутку
+    ui->comboBox_counterparty->insertItem(0,QString::fromUtf8(NULL)); // добавляем пустой элемент
     // настраиваем комплитер
     // надо переделать на фильтрацию по тексту
     completer->setCaseSensitivity(Qt::CaseInsensitive);
     completer->setFilterMode(Qt::MatchContains);
-    completer->setCompletionMode(QCompleter::InlineCompletion);
+//    completer->setCompletionMode(QCompleter::InlineCompletion);
+//    completer->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
     completer->setModel(modelBank->relationModel(modelBank->fieldIndex("counterparty_id")));
     completer->setCompletionColumn(modelBank->relationModel(modelBank->fieldIndex("counterparty_id"))->fieldIndex("counterparty")); // номер колонки с данными подстановки
     ui->comboBox_counterparty->setCompleter(completer);
     //надо настроить прижим текста влево хз как
-//    ui->comboBox_counterparty->lineEdit()->setAlignment(Qt::AlignHCenter); // выраснивание лево не работает
-//    ui->comboBox_counterparty->view()->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
-//    ui->comboBox_counterparty->view()->setAutoScroll(true);
-//    ui->comboBox_counterparty->view()->setTextElideMode(Qt::ElideLeft);
-//    ui->comboBox_counterparty->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
-//    ui->comboBox_counterparty->view()->autoScrollMargin();
 
 //    qDebug() << modelBank->fieldIndex("counterparty_id");
 
@@ -148,25 +153,28 @@ void FormBank::SetupTable()
     modelBank_decryption->setJoinMode(QSqlRelationalTableModel::LeftJoin); // что бы были видны пустые
     modelBank_decryption->setRelation(modelBank_decryption->fieldIndex("article_id"), QSqlRelation("articles", "id", "article"));
     modelBank_decryption->setRelation(modelBank_decryption->fieldIndex("contract_id"), QSqlRelation("contracts", "id", "contract_number")); // сделать смешанное поле номер+дата
+    modelBank_decryption->setEditStrategy(QSqlTableModel::OnFieldChange); // субмитить сразу
+//    modelBank_decryption->setEditStrategy(QSqlTableModel::OnRowChange);QSqlTableModel::OnFieldChange
 
 //    modelQuestionnaire->setRelation(modelQuestionnaire->fieldIndex("place_id"), QSqlRelation("place", "id", "name, place_id")); // дополнительное поле индекса
 
     // названия колонок
-//    modelBank_decryption->setHeaderData(1,Qt::Horizontal,"Вопрос");
-//    modelBank_decryption->setHeaderData(2,Qt::Horizontal,"Ответ");
+    modelBank_decryption->setHeaderData(modelBank_decryption->fieldIndex("sum"),Qt::Horizontal,"Сумма");
+    modelBank_decryption->setHeaderData(modelBank_decryption->fieldIndex("article_id"),Qt::Horizontal,"Статья");
+    modelBank_decryption->setHeaderData(modelBank_decryption->fieldIndex("contract_id"),Qt::Horizontal,"Контракт");
+    modelBank_decryption->setHeaderData(modelBank_decryption->fieldIndex("expense_confirmation"),Qt::Horizontal,"Исполнен");
 
     ui->tableView_decryption->setModel(modelBank_decryption);
     ui->tableView_decryption->setItemDelegate(a_delegate);
 
-//    ui->tableView_decryption->setColumnHidden(0, true);    // Скрываем колонку с id записей
-//    ui->tableView_decryption->setColumnHidden(1, true);
+
+    ui->tableView_decryption->setColumnHidden(0, true);    // Скрываем колонку с id записей
+    ui->tableView_decryption->setColumnHidden(1, true);
     //ui->tableView_decryption->setEditTriggers(QAbstractItemView::NoEditTriggers);  //запрет редактирования
     ui->tableView_decryption->setSelectionBehavior(QAbstractItemView::SelectRows); // Разрешаем выделение строк
     ui->tableView_decryption->setSelectionMode(QAbstractItemView::SingleSelection); // Устанавливаем режим выделения лишь одно строки в таблице
     ui->tableView_decryption->horizontalHeader()->setStretchLastSection(true);
     ui->tableView_decryption->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents); // по содержимому
-
-
 
     //комбобокс для статей
     modelArticles->setTable("articles");
@@ -177,6 +185,8 @@ void FormBank::SetupTable()
     completer_articles->setCaseSensitivity(Qt::CaseInsensitive);
     completer_articles->setFilterMode(Qt::MatchContains);
     completer_articles->setCompletionMode(QCompleter::InlineCompletion);
+//    completer_articles->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
+
     completer_articles->setModel(modelArticles);
     completer_articles->setCompletionColumn(modelArticles->fieldIndex("article")); // номер колонки с данными подстановки
     ui->comboBox_articles->setCompleter(completer_articles);
@@ -192,16 +202,56 @@ void FormBank::SetupTable()
     // настраиваем комплитер
     completer_counterparties->setCaseSensitivity(Qt::CaseInsensitive);
     completer_counterparties->setFilterMode(Qt::MatchContains);
-    //completer_counterparties->setCompletionMode(QCompleter::InlineCompletion);
+//    completer_counterparties->setCompletionMode(QCompleter::InlineCompletion);
+//    completer_counterparties->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
+
     completer_counterparties->setModel(modelCounterparties);
     completer_counterparties->setCompletionColumn(modelCounterparties->fieldIndex("counterparty")); // номер колонки с данными подстановки
     ui->comboBox_flt_counterparties->setCompleter(completer_counterparties);
+
+    //комбобокс для контрактов
+    modelContracts->setQuery("SELECT id, contracts.contract_number || '  ' || contracts.contract_date AS name FROM contracts",base);
+//    modelContracts->setSort(modelContracts->fieldIndex("contract_number"),Qt::AscendingOrder);
+
+    ui->comboBox_contracts->setModel(modelContracts);
+    ui->comboBox_contracts->setModelColumn(1);
+    ui->comboBox_contracts->setEditable(true);
+    // настраиваем комплитер
+    completer_contracts->setCaseSensitivity(Qt::CaseInsensitive);
+    completer_contracts->setFilterMode(Qt::MatchContains);
+//    completer_counterparties->setCompletionMode(QCompleter::InlineCompletion);
+//    completer_contracts->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
+
+    completer_contracts->setModel(modelContracts);
+    completer_contracts->setCompletionColumn(1); // номер колонки с данными подстановки
+    ui->comboBox_contracts->setCompleter(completer_contracts);
+    ui->comboBox_contracts->setCurrentText("");
+
 
 }
 
 void FormBank::TunBank_decryption()
 {
+    // настраиваем фильтр расшифровки в зависимости от выбранного платежа
+    QString ff = QString(" bank_id = \%1 ").arg(modelBank->data(modelBank->index(ui->tableView_bank->currentIndex().row(), 0)).toString());
 
+    modelBank_decryption->setFilter(ff);
+    modelBank_decryption->select();
+
+    // при изменение строки в таблвьюве устанавливаем маппер на соответствующую запись
+    mapper->setCurrentIndex(ui->tableView_bank->currentIndex().row());
+
+    // посчтитать итого
+
+    QSqlQuery query(base);
+
+    QString ss= QString("SELECT round(SUM(sum),2) FROM bank_decryption WHERE bank_id = \%1 ").arg(modelBank->data(modelBank->index(ui->tableView_bank->currentIndex().row(), 0)).toString());
+    if(!query.exec(ss)) {
+       qDebug() << "ERROR SELECT bank_decryption: " << query.lastError().text();
+       return;
+    }
+    query.first();
+    ui->lineEdit_d_sum->setText(query.value(0).toString());
 }
 
 void FormBank::on_comboBox_counterparty_currentIndexChanged(int index)
@@ -209,6 +259,8 @@ void FormBank::on_comboBox_counterparty_currentIndexChanged(int index)
     //иначе не сохраняет
     mapper->submit();
     modelBank->submit();
+    //qDebug() << "индекс изменен";
+
 }
 
 
@@ -239,21 +291,64 @@ void FormBank::on_pushButton_last_clicked()
 
 void FormBank::on_pushButton_refr_clicked()
 {
-    // добавить восстановление курсора
-    //обновить
-    //QCoreApplication::postEvent(this, new QStatusTipEvent("Обновление"));
+    //восстановление курсора
+    int row = ui->tableView_bank->currentIndex().row();
+    //QString flt = modelBank->filter();
+
+    //обновить по простому
     modelBank->select();
     modelBank_decryption->select();
     modelArticles->select();
+    modelCounterparties->select();
+    modelContracts->setQuery(modelContracts->query().lastQuery(),base); // хз работает только так
+
+    // восстанавливаем строку
+    ui->tableView_bank->selectRow(row);
+
 }
 
 void FormBank::on_pushButton_add_clicked()
 {
 
+    // добавление ПП
+//    int row=modelBank->rowCount(); // определяем количество записей
+//    int row= 1; // вславляет всегда вротую строку - удобнее всего!
+    int row= ui->tableView_bank->currentIndex().row()+1; // вславляем следующую
+
+    // вставляем
+    modelBank->insertRow(row);
+    modelBank->setData(modelBank->index(row,modelBank->fieldIndex("payment_number")),""); // добавляем пустой номер для возможности сабмита
+    modelBank->submit(); // субмитим
+
+    // устанавливаем курсор на строку редактирования
+    ui->tableView_bank->selectRow(row);
+    // устанавливаем курсор на редактирование номерв
+    ui->lineEdit_number->setFocus();
+
 }
 
 void FormBank::on_pushButton_del_clicked()
 {
+    // удаление ПП
+    // вероятно надо добавить групповое удаление ХЗ
+
+    // подтверждение
+    if(QMessageBox::Yes != QMessageBox::question(this, tr("Внимание!"),
+                                                 tr("Уверены в удалении платежа?")))  return;
+
+    // удаляем расшифровки
+    QSqlQuery query(base);
+
+    QString ff= QString("DELETE FROM bank_decryption WHERE bank_id IN (SELECT id FROM bank WHERE bank_id='%1')").arg(modelBank->data(modelBank->index(ui->tableView_bank->currentIndex().row(),modelBank->fieldIndex("id"))).toString() );
+    if(!query.exec(ff)) {
+       qDebug() << "ERROR DELEDE bank_decryption: " << query.lastError().text();
+    }
+    //обновить окно расшифровок
+    modelBank_decryption->select();
+
+    modelBank->removeRow(ui->tableView_bank->currentIndex().row());
+    // прыгаем на предыдущую запись
+    ui->tableView_bank->selectRow(ui->tableView_bank->currentIndex().row()-1);
 
 }
 
@@ -266,6 +361,7 @@ void FormBank::on_lineEdit_flt_all_textChanged(const QString &arg1)
         modelBank->setFilter(ff);
         modelBank->select();
         ui->tableView_bank->selectRow(0);
+        TunBank_decryption(); // на случай если результат пустой
 
     }
     else {
@@ -302,8 +398,8 @@ void FormBank::on_pushButton_add_dec_clicked()
     }
     if(query_s.next())
         summ =summ - query_s.value(0).toDouble();
-    // если есть что вставлять
-    if (summ >0) {
+    // если есть что вставлять - если ноль все равно надо вставить!
+//    if (summ >0) {
         // определяем количество записей
         int row=modelBank_decryption->rowCount();
         // вставляем следующую
@@ -315,7 +411,7 @@ void FormBank::on_pushButton_add_dec_clicked()
         modelBank_decryption->setData(modelBank_decryption->index(row,modelBank_decryption->fieldIndex("sum")),summ);
         // устанавливаем курсор на строку редактирования
         ui->tableView_decryption->selectRow(0);
-    }
+//    }
 
 }
 
@@ -328,6 +424,7 @@ void FormBank::on_lineEdit_flt_art_textChanged(const QString &arg1)
         modelBank->setFilter(ff);
         modelBank->select();
         ui->tableView_bank->selectRow(0);
+        TunBank_decryption(); // на случай если результат пустой
 
     }
     else {
@@ -351,6 +448,12 @@ void FormBank::on_pushButton_article_add_dec_clicked()
     if (modelArticles->data(modelArticles->index(ui->comboBox_articles->currentIndex(),modelArticles->fieldIndex("id"))).toString().isEmpty()) {
         qDebug() << "Не выбрана статья!";
         QMessageBox::critical(this,"Error",QString("Не выбрана статья!"));
+        return;
+    }
+    // только если задан фильтр -  защита от дурака!
+    if(modelBank->filter().isEmpty()) {
+        qDebug() << "Не задан фильтр!";
+        QMessageBox::critical(this,"Error","Не задан фильтр!");
         return;
     }
 
@@ -436,27 +539,21 @@ void FormBank::on_pushButton_clear_dec_clicked()
 {
     //очистка расшифровок для фильтованой таблицы банка
 
-    //для всех записей банка согласно фильтра добавить расшифровки со статьей из комбабокса статей и суммой из платежа
+    //для всех записей банка согласно фильтра
 
-    // подтверждение заполнения
+    // подтверждение
     if(QMessageBox::Yes != QMessageBox::question(this, tr("Внимание!"),
                                                  tr("Уверены в очистке расшифровок?")))  return;
 
+    // только если задан фильтр -  защита от дурака!
+    if(modelBank->filter().isEmpty()) {
+        qDebug() << "Не задан фильтр!";
+        QMessageBox::critical(this,"Error","Не задан фильтр!");
+        return;
+    }
 
     QSqlQuery query(base);
-//    QSqlQuery query_bank(base);
-    QCoreApplication::postEvent(this, new QStatusTipEvent("Очистка расшифровок!"));
-
-//    // формируем список для банка
-//    //query_bank.prepare("SELECT id, amount_of_payment FROM bank WHERE :d");
-//    qDebug() << "FLT: " << modelBank->filter();
-//    QString ff= QString("SELECT id, amount_of_payment FROM bank WHERE %1").arg(modelBank->filter());
-//    if(!query_bank.exec(ff)) {
-//       qDebug() << "ERROR SELECT bank: " << query_bank.lastError().text();
-//       return;
-//    }
-
-
+    QCoreApplication::postEvent(this, new QStatusTipEvent("Очистка расшифровок..."));
 
     QString ff= QString("DELETE FROM bank_decryption WHERE bank_id IN (SELECT id FROM bank WHERE %1)").arg(modelBank->filter());
     if(!query.exec(ff)) {
@@ -464,63 +561,6 @@ void FormBank::on_pushButton_clear_dec_clicked()
        return;
     }
 
-
-
-//    int count=0; // счетчик
-//    int count_res=0; // счетчик сбросов
-
-//    // Cтрока в которую будем формировать запросы
-//    QString req = "";
-
-//    //невозможно запихнуть более 1000 OR в запрос придется разбирать
-
-//    while(query_bank.next()) {
-
-//           req.append(" bank_id = ");
-//           req.append(query_bank.value(0).toString());
-//           req.append(" OR");
-
-//           count++;
-//           if (count==500) {
-//               // промежуточное удаление
-//               req.chop(1);
-//               req.chop(1);
-//               req = QString("DELETE FROM bank_decryption WHERE %1").arg(req);
-//               qDebug() << req;
-
-//               if(!query.exec(req))
-//               {
-//                   qDebug() << req;
-//                   qDebug() << "ERROR Delete: " << query.lastError().text();
-//               }
-
-//               count=0;
-//               count_res++;
-//               req = "";
-//               qDebug() << "del: " << count_res;
-
-//           }
-//           // дергаем интерфейс, что бы не зависал
-//            QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-//            // следующая строка
-//    }
-// //       qDebug()<<req;
-//    if (!req.isEmpty()) {
-//     // кончился - запрос сформирован - удаляем остаток
-//       req.chop(1);
-//       req.chop(1);
-//       req = QString("DELETE FROM bank_decryption WHERE %1").arg(req);
-
-//       //qDebug()<<req;
-
-//       if(!query.exec(req))
-//       {
-//           qDebug() << req;
-//           qDebug() << "ERROR Delete: " << query.lastError().text();
-//       }
-//    }
-
-//       QCoreApplication::postEvent(this, new QStatusTipEvent(QString("Удалено %1 расшифровок.").arg(count_res*500+count)));
        QCoreApplication::postEvent(this, new QStatusTipEvent(QString("Удаление расшифровок завершено.")));
 
        // обновить окно расшифровок
@@ -536,6 +576,7 @@ void FormBank::on_lineEdit_flt_num_textChanged(const QString &arg1)
         modelBank->setFilter(ff);
         modelBank->select();
         ui->tableView_bank->selectRow(0);
+        TunBank_decryption(); // на случай если результат пустой
 
     }
     else {
@@ -548,7 +589,7 @@ void FormBank::on_lineEdit_flt_num_textChanged(const QString &arg1)
 
 void FormBank::on_pushButton_next_con_clicked()
 {
-    // прыгаем на предыдущую запись
+    // прыгаем на следующую запись
     ui->comboBox_flt_counterparties->setCurrentIndex(ui->comboBox_flt_counterparties->currentIndex()+1);
 }
 
@@ -567,6 +608,7 @@ void FormBank::on_comboBox_flt_counterparties_currentIndexChanged(int index)
         modelBank->setFilter(ff);
         modelBank->select();
         ui->tableView_bank->selectRow(0);
+        TunBank_decryption(); // на случай если результат пустой
         QCoreApplication::postEvent(this, new QStatusTipEvent(QString("В фильтре установлен контрагент номер: %1.").arg(modelCounterparties->data(modelCounterparties->index(index,modelCounterparties->fieldIndex("id"))).toString())));
     }
     else {
@@ -576,5 +618,173 @@ void FormBank::on_comboBox_flt_counterparties_currentIndexChanged(int index)
         QCoreApplication::postEvent(this, new QStatusTipEvent(QString("")));
 
     }
+
+}
+
+void FormBank::on_pushButton_contracts_add_new_clicked()
+{
+    // окно создания контракта (запрос номера и даты)
+
+    DialogNewContract *dialog = new DialogNewContract(base, ui->plainTextEdit_decryption->toPlainText(),this);
+    if(dialog->exec() == QDialog::Accepted) {
+        qDebug() << "-----------------------------------------------------------";
+        qDebug() << dialog->getDate();
+        qDebug() << dialog->getNumber();
+        qDebug() << dialog->getState();
+    // добавляем контракт
+
+        QSqlQuery query(base);
+
+        QString ss= QString("INSERT INTO contracts (contract_number, contract_date,counterparty_id, state_contract) VALUES (");
+        ss.append("'");
+        ss.append(dialog->getNumber());
+        ss.append("','");
+        ss.append(dialog->getDate());
+        ss.append("','");
+        ss.append(modelBank->data(modelBank->index(ui->tableView_bank->currentIndex().row(), 0)).toString());
+        ss.append("','");
+        ss.append(dialog->getState()?"true":"false");
+        ss.append("')");
+
+        qDebug() << ss;
+    //    qDebug() << ff;
+        if(!query.exec(ss)) {
+           qDebug() << "ERROR INSERT kontract: " << query.lastError().text();
+           return;
+        }
+
+        modelContracts->setQuery(modelContracts->query().lastQuery(),base);
+
+    }
+
+}
+
+void FormBank::on_pushButton_contracts_add_dec_clicked()
+{
+    // простановка в уже существующие расшифровки номера контракта
+
+    //для всех записей банка согласно фильтра добавить в расшифровки договор из комбобокса
+
+    // подтверждение заполнения
+    if(QMessageBox::Yes != QMessageBox::question(this, tr("Внимание!"),
+                                                 tr("Уверены в простановке контракта?")))  return;
+
+    //проверка на выбранный контракт
+    if (modelContracts->data(modelContracts->index(ui->comboBox_contracts->currentIndex(),0)).toString().isEmpty()) {
+        qDebug() << "Контракт не выбран!";
+        QMessageBox::critical(this,"Error",QString("Контракт не выбран!"));
+        return;
+    }
+
+
+    // только если задан фильтр -  защита от дурака!
+    if(modelBank->filter().isEmpty()) {
+        qDebug() << "Не задан фильтр!";
+        QMessageBox::critical(this,"Error","Не задан фильтр!");
+        return;
+    }
+
+    QSqlQuery query(base);
+    QCoreApplication::postEvent(this, new QStatusTipEvent("Простановка контрактов..."));
+
+    QString ff= QString("UPDATE bank_decryption SET contract_id = '%1' WHERE bank_id IN (SELECT id FROM bank WHERE %2)").arg(modelContracts->data(modelContracts->index(ui->comboBox_contracts->currentIndex(),0)).toString()).arg(modelBank->filter());
+    if(!query.exec(ff)) {
+       qDebug() << "ERROR SELECT bank: " << query.lastError().text();
+       return;
+    }
+
+       QCoreApplication::postEvent(this, new QStatusTipEvent(QString("Простановка контрактов завершено.")));
+
+       // обновить окно расшифровок
+       modelBank_decryption->select();
+
+}
+
+void FormBank::on_pushButton_contracts_clear_dec_clicked()
+{
+    // очистка контрактов
+    //для всех записей банка согласно фильтра
+
+    // подтверждение
+    if(QMessageBox::Yes != QMessageBox::question(this, tr("Внимание!"),
+                                                 tr("Уверены в очистке контрактов?")))  return;
+
+    // только если задан фильтр -  защита от дурака!
+    if(modelBank->filter().isEmpty()) {
+        qDebug() << "Не задан фильтр!";
+        QMessageBox::critical(this,"Error","Не задан фильтр!");
+        return;
+    }
+
+    QSqlQuery query(base);
+    QCoreApplication::postEvent(this, new QStatusTipEvent("Очистка контрактов..."));
+
+    QString ff= QString("UPDATE bank_decryption SET contract_id = '' WHERE bank_id IN (SELECT id FROM bank WHERE %1)").arg(modelBank->filter());
+    if(!query.exec(ff)) {
+       qDebug() << "ERROR SELECT bank: " << query.lastError().text();
+       return;
+    }
+
+       QCoreApplication::postEvent(this, new QStatusTipEvent(QString("Очистка данных о контрактах из расшифровок завершено.")));
+
+       // обновить окно расшифровок
+       modelBank_decryption->select();
+
+}
+
+void FormBank::on_pushButton_del_dec_clicked()
+{
+    //удаление расшифровки
+
+    // подтверждение
+    if(QMessageBox::Yes != QMessageBox::question(this, tr("Внимание!"),
+                                                 tr("Уверены в удалении расшифровки?")))  return;
+
+    modelBank_decryption->removeRow(ui->tableView_decryption->currentIndex().row());
+    // прыгаем на предыдущую запись
+    ui->tableView_decryption->selectRow(ui->tableView_decryption->currentIndex().row()-1);
+
+
+}
+
+
+
+void FormBank::on_pushButton_article_repl_dec_clicked()
+{
+    //групповая замена статьи
+
+    //для всех записей банка согласно фильтра добавить в расшифровки статью из комбобокса
+
+    // подтверждение заполнения
+    if(QMessageBox::Yes != QMessageBox::question(this, tr("Внимание!"),
+                                                 tr("Уверены в простановке статьи?")))  return;
+
+    //проверка на выбранный контракт
+    if (modelArticles->data(modelArticles->index(ui->comboBox_articles->currentIndex(),0)).toString().isEmpty()) {
+        qDebug() << "Статья не выбрана!";
+        QMessageBox::critical(this,"Error",QString("Статья не выбрана!"));
+        return;
+    }
+
+
+    // только если задан фильтр -  защита от дурака!
+    if(modelBank->filter().isEmpty()) {
+        qDebug() << "Не задан фильтр!";
+        QMessageBox::critical(this,"Error","Не задан фильтр!");
+        return;
+    }
+
+    QSqlQuery query(base);
+
+    QString ff= QString("UPDATE bank_decryption SET article_id = '%1' WHERE bank_id IN (SELECT id FROM bank WHERE %2)").arg(modelArticles->data(modelArticles->index(ui->comboBox_articles->currentIndex(),0)).toString()).arg(modelBank->filter());
+    if(!query.exec(ff)) {
+       qDebug() << "ERROR SELECT bank: " << query.lastError().text();
+       return;
+    }
+
+
+   // обновить окно расшифровок
+   modelBank_decryption->select();
+
 
 }

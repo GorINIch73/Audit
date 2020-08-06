@@ -27,6 +27,12 @@ private slots:
 
     void on_actionOptions_triggered();
 
+    void on_actionContracts_triggered();
+
+    void on_actionArticles_triggered();
+
+    void on_actionCounterparties_triggered();
+
 private:
     Ui::MainWindow *ui;
 

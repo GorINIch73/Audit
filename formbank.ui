@@ -468,6 +468,9 @@
            <property name="text">
             <string>Поступление</string>
            </property>
+           <property name="tristate">
+            <bool>false</bool>
+           </property>
           </widget>
          </item>
         </layout>
@@ -495,6 +498,12 @@
           <widget class="QDateEdit" name="dateEdit_Date">
            <property name="focusPolicy">
             <enum>Qt::StrongFocus</enum>
+           </property>
+           <property name="showGroupSeparator" stdset="0">
+            <bool>false</bool>
+           </property>
+           <property name="calendarPopup">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -547,6 +556,9 @@
            <property name="minimumContentsLength">
             <number>0</number>
            </property>
+           <property name="duplicatesEnabled">
+            <bool>false</bool>
+           </property>
           </widget>
          </item>
         </layout>
@@ -573,6 +585,9 @@
            </property>
            <property name="focusPolicy">
             <enum>Qt::StrongFocus</enum>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
            <property name="buttonSymbols">
             <enum>QAbstractSpinBox::PlusMinus</enum>
@@ -671,9 +686,12 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit_4">
+          <widget class="QLineEdit" name="lineEdit_d_sum">
            <property name="enabled">
             <bool>false</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>

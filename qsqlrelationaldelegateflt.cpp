@@ -37,9 +37,13 @@ QWidget *QSqlRelationalDelegateFlt::createEditor(QWidget *parent, const QStyleOp
     //combo->installEventFilter(const_cast<QSqlFLTRelationalDelegate *>(this)); // хз что это ))
     combo->setEditable(true);
     // настраиваем комплитер
+    combo->insertItem(0,QString::fromUtf8(NULL)); // добавляем пустой элемент
+
     QCompleter *mycompletear = new QCompleter(parent);
     mycompletear->setCaseSensitivity(Qt::CaseInsensitive);
     mycompletear->setFilterMode(Qt::MatchContains);
+//    mycompletear->setCompletionMode(QCompleter::InlineCompletion);
+
     mycompletear->setModel(childModel);
     mycompletear->setCompletionColumn(1);
     combo->setCompleter(mycompletear);
