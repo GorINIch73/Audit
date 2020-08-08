@@ -28,6 +28,7 @@ FormBank::FormBank(QSqlDatabase db, QWidget *parent) :
     modelContracts = new QSqlQueryModel(this);
 
     modelCounterparties = new QSqlTableModel(this,base);
+//    delegate = new QSqlRelationalDelegateFlt(this);
     delegate = new QSqlRelationalDelegate(this);
     a_delegate = new QSqlRelationalDelegateFlt(this);
     mapper = new QDataWidgetMapper(this);
@@ -63,6 +64,11 @@ FormBank::~FormBank()
 
 void FormBank::on_pushButton_close_clicked()
 {
+    // на всякий случай
+    mapper->submit();
+    modelBank->submit();
+
+
     close();
 }
 
@@ -120,28 +126,30 @@ void FormBank::SetupTable()
 
 
     ui->doubleSpinBox_summa->installEventFilter(new MouseWheelWidgetAdjustmentGuard(ui->doubleSpinBox_summa)); //блокируем прокрутку
+    ui->doubleSpinBox_summa->setGroupSeparatorShown(true); //разделитель групп
+
     ui->dateEdit_Date->installEventFilter(new MouseWheelWidgetAdjustmentGuard(ui->dateEdit_Date)); //блокируем прокрутку
 
 
-    //комбобокс для контрагентов
+    //комбобокс для контрагентов   сбрасывает на первый элемент при клике - хз что ч этим делать - типа не успевает найти индекс и тупит
     ui->comboBox_counterparty->setModel(modelBank->relationModel(modelBank->fieldIndex("counterparty_id")));
     ui->comboBox_counterparty->setModelColumn(modelBank->relationModel(modelBank->fieldIndex("counterparty_id"))->fieldIndex("counterparty"));
     ui->comboBox_counterparty->setEditable(true);
     ui->comboBox_counterparty->setFocusPolicy(Qt::StrongFocus);
     ui->comboBox_counterparty->installEventFilter(new MouseWheelWidgetAdjustmentGuard(ui->comboBox_counterparty)); //блокируем прокрутку
     ui->comboBox_counterparty->insertItem(0,QString::fromUtf8(NULL)); // добавляем пустой элемент
-    // настраиваем комплитер
-    // надо переделать на фильтрацию по тексту
+
+    //     настраиваем комплитер
     completer->setCaseSensitivity(Qt::CaseInsensitive);
     completer->setFilterMode(Qt::MatchContains);
-//    completer->setCompletionMode(QCompleter::InlineCompletion);
-//    completer->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
+ //    completer->setCompletionMode(QCompleter::InlineCompletion);
+ //    completer->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
     completer->setModel(modelBank->relationModel(modelBank->fieldIndex("counterparty_id")));
     completer->setCompletionColumn(modelBank->relationModel(modelBank->fieldIndex("counterparty_id"))->fieldIndex("counterparty")); // номер колонки с данными подстановки
     ui->comboBox_counterparty->setCompleter(completer);
     //надо настроить прижим текста влево хз как
 
-//    qDebug() << modelBank->fieldIndex("counterparty_id");
+    qDebug() << modelBank->fieldIndex("counterparty_id");
 
 
     mapper->setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
@@ -240,6 +248,14 @@ void FormBank::TunBank_decryption()
 
     // при изменение строки в таблвьюве устанавливаем маппер на соответствующую запись
     mapper->setCurrentIndex(ui->tableView_bank->currentIndex().row());
+    // руками настраиваем индекс тулбокса
+//    qDebug() << ui->comboBox_counterparty->currentText();
+//    qDebug() << ui->comboBox_counterparty->findText(ui->comboBox_counterparty->currentText());
+//    qDebug() << ui->comboBox_counterparty->findData(ui->comboBox_counterparty->currentText());
+
+    ui->comboBox_counterparty->setCurrentIndex(ui->comboBox_counterparty->findText(ui->comboBox_counterparty->currentText())); // хз только рак корректно работает - принудительно ищем индекс
+//    ui->comboBox_counterparty->setCurrentIndex(ui->comboBox_counterparty->findData(ui->comboBox_counterparty->currentText()));
+
 
     // посчтитать итого
 
@@ -251,15 +267,17 @@ void FormBank::TunBank_decryption()
        return;
     }
     query.first();
-    ui->lineEdit_d_sum->setText(query.value(0).toString());
+//    ui->lineEdit_d_sum->setText(query.value(0).toString());
+    ui->lineEdit_d_sum->setText(QString("%L1").arg(query.value(0).toDouble(),-0,'f',2));
+
 }
 
 void FormBank::on_comboBox_counterparty_currentIndexChanged(int index)
 {
-    //иначе не сохраняет
-    mapper->submit();
-    modelBank->submit();
-    //qDebug() << "индекс изменен";
+    //иначе не сохраняет удрал из за скорости
+//    mapper->submit();
+//    modelBank->submit();
+    qDebug() << "индекс изменен";
 
 }
 
@@ -309,6 +327,7 @@ void FormBank::on_pushButton_refr_clicked()
 
 void FormBank::on_pushButton_add_clicked()
 {
+    modelBank->submit(); // субмитим
 
     // добавление ПП
 //    int row=modelBank->rowCount(); // определяем количество записей
@@ -377,6 +396,7 @@ void FormBank::on_pushButton_flt_clr_clicked()
     ui->lineEdit_flt_num->setText("");
     ui->lineEdit_flt_all->setText("");
     ui->lineEdit_flt_art->setText("");
+    ui->checkBox_flt_nodec->setChecked(false);
 
     modelBank->setFilter("");
     modelBank->select();
@@ -500,7 +520,7 @@ void FormBank::on_pushButton_article_add_dec_clicked()
 
            qDebug() << summ;
            // если есть что вставлять
-           if (summ >0) {
+           if (summ !=0) {
                req.append("('");
                req.append(query_bank.value(0).toString());
                req.append("','");
@@ -620,6 +640,30 @@ void FormBank::on_comboBox_flt_counterparties_currentIndexChanged(int index)
     }
 
 }
+
+void FormBank::on_checkBox_flt_nodec_stateChanged(int arg1)
+{
+    // фильтр на нерасшифрованых
+    // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    if (ui->checkBox_flt_nodec->isChecked()) {
+        qDebug() << "нераспределенные";
+        QString ff = QString(" bank.id NOT IN (SELECT bank_id FROM bank_decryption) ");
+        modelBank->setFilter(ff);
+        modelBank->select();
+        ui->tableView_bank->selectRow(0);
+        TunBank_decryption(); // на случай если результат пустой
+    }
+    else {
+        modelBank->setFilter("");
+        modelBank->select();
+        ui->tableView_bank->selectRow(0);
+        QCoreApplication::postEvent(this, new QStatusTipEvent(QString("")));
+
+    }
+
+}
+
 
 void FormBank::on_pushButton_contracts_add_new_clicked()
 {
@@ -787,4 +831,10 @@ void FormBank::on_pushButton_article_repl_dec_clicked()
    modelBank_decryption->select();
 
 
+}
+
+
+void FormBank::on_comboBox_counterparty_activated(const QString &arg1)
+{
+    qDebug() << "Активировано";
 }

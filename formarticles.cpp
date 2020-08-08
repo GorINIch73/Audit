@@ -47,6 +47,10 @@ void FormArticles::slotSelectionChange(const QItemSelection &current, const QIte
 
 void FormArticles::on_pushButton_close_clicked()
 {
+    // на всякий случай
+    mapper->submit();
+    modelArticles->submit();
+
     close();
 }
 
@@ -139,7 +143,9 @@ void FormArticles::Tune()
         }
         query.first();
     //    ui->lineEdit_b_sum->setText(QString::number(query.value(0).toDouble(),'g',20));
-        ui->lineEdit__sum_dec->setText(query.value(0).toString());
+//        ui->lineEdit__sum_dec->setText(query.value(0).toString());
+        ui->lineEdit__sum_dec->setText(QString("%L1").arg(query.value(0).toDouble(),-0,'f',2));
+
 
 }
 
@@ -225,12 +231,14 @@ void FormArticles::on_pushButton_refr_clicked()
 
 void FormArticles::on_pushButton_add_clicked()
 {
+    modelArticles->submit(); // субмитим
+
     // добавление
     int row= ui->tableView_articles->currentIndex().row()+1; // выбираем следующую
 
     // вставляем
     modelArticles->insertRow(row);
-    modelArticles->setData(modelArticles->index(row,modelArticles->fieldIndex("articler")),""); // добавляем пустой для возможности сабмита
+    modelArticles->setData(modelArticles->index(row,modelArticles->fieldIndex("article")),""); // добавляем пустой для возможности сабмита
 
     modelArticles->submit(); // субмитим
     // устанавливаем курсор на строку редактирования

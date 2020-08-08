@@ -80,6 +80,10 @@ private slots:
 
     void on_pushButton_article_repl_dec_clicked();
 
+    void on_checkBox_flt_nodec_stateChanged(int arg1);
+
+    void on_comboBox_counterparty_activated(const QString &arg1);
+
 private:
     Ui::FormBank *ui;
 
@@ -91,6 +95,7 @@ private:
 //    QSqlTableModel *modelContracts;
     QSqlQueryModel *modelContracts; // попробуем по другому
     QDataWidgetMapper *mapper;
+//    QSqlRelationalDelegateFlt *delegate;
     QSqlRelationalDelegate *delegate;
     QSqlRelationalDelegateFlt *a_delegate;
     QCompleter *completer;

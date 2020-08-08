@@ -64,13 +64,19 @@
      <string>Разное</string>
     </property>
     <addaction name="actionOptions"/>
+    <addaction name="separator"/>
     <addaction name="actionImportPP"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menu_4">
     <property name="title">
      <string>Отчеты</string>
     </property>
     <addaction name="actionRep_bank"/>
+    <addaction name="actionRepContracts"/>
+    <addaction name="actionRepContracsShort"/>
+    <addaction name="actionRepContractsIsNote"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -95,6 +101,7 @@
    <addaction name="actionRep_bank"/>
    <addaction name="actionImportPP"/>
    <addaction name="actionOptions"/>
+   <addaction name="actionQuery"/>
   </widget>
   <action name="actionBank">
    <property name="text">
@@ -146,7 +153,7 @@
   </action>
   <action name="actionRep_bank">
    <property name="text">
-    <string>Отчет по банку</string>
+    <string>Отчет по банку основной</string>
    </property>
    <property name="toolTip">
     <string>Отчет по банку</string>
@@ -190,6 +197,46 @@
    </property>
    <property name="toolTip">
     <string>Выход</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>Об авторах</string>
+   </property>
+   <property name="toolTip">
+    <string>Об авторах</string>
+   </property>
+  </action>
+  <action name="actionRepContracts">
+   <property name="text">
+    <string>Отчет по контрактам подробный</string>
+   </property>
+   <property name="toolTip">
+    <string>Отчет по контрактам</string>
+   </property>
+  </action>
+  <action name="actionRepContracsShort">
+   <property name="text">
+    <string>Отчет по контрактам короткий</string>
+   </property>
+   <property name="toolTip">
+    <string>Отчет по контрактам короткий</string>
+   </property>
+  </action>
+  <action name="actionRepContractsIsNote">
+   <property name="text">
+    <string>Контракты с примечанием</string>
+   </property>
+   <property name="toolTip">
+    <string>Контракты с примечанием</string>
+   </property>
+  </action>
+  <action name="actionQuery">
+   <property name="text">
+    <string>Запрос</string>
+   </property>
+   <property name="toolTip">
+    <string>Вызов запроса</string>
    </property>
   </action>
  </widget>

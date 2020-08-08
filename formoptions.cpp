@@ -18,6 +18,20 @@ FormOptions::FormOptions(QSqlDatabase db,QWidget *parent) :
 
     base=db;
 
+    //читаем настнойки из базы
+     if(base.isOpen()) {
+        QSqlQuery a_query = QSqlQuery(base);
+        if (!a_query.exec("SELECT organization, date_begin, date_end, rep_contract_found FROM options"))
+                qDebug() << "Ошибка чтения настроек: " << a_query.lastError().text();
+        else {
+            a_query.first();
+            ui->lineEdit_organization->setText(a_query.value(0).toString());
+            ui->dateEdit_begin->setDate(QDate::fromString(a_query.value(1).toString(),"yyyy-MM-dd"));
+            ui->dateEdit_end->setDate(QDate::fromString(a_query.value(2).toString(),"yyyy-MM-dd"));
+            ui->checkBox_rep_contract_found->setChecked(a_query.value(3).toBool());
+        }
+    }
+
 
 }
 
@@ -28,6 +42,15 @@ FormOptions::~FormOptions()
 
 void FormOptions::on_pushButton_close_clicked()
 {
+
+    // сохранение в базе настроек наименования и дат
+     if(base.isOpen()) {
+        QSqlQuery a_query = QSqlQuery(base);
+        QString ss=QString("UPDATE options SET organization = '%1', date_begin = '%2', date_end = '%3', rep_contract_found = '%4';").arg(ui->lineEdit_organization->text()).arg(ui->dateEdit_begin->date().toString("yyyy-MM-dd")).arg(ui->dateEdit_end->date().toString("yyyy-MM-dd")).arg(ui->checkBox_rep_contract_found->isChecked()?"true":"false");
+        if (!a_query.exec(ss))
+                qDebug() << "Ошибка записи настроек: " << a_query.lastError().text();
+    }
+
     close();
 }
 
@@ -39,6 +62,10 @@ void FormOptions::on_pushButton_clearBase_clicked()
     if(QMessageBox::Yes != QMessageBox::question(this, tr("Внимание!"),
                                                  tr("Уверены в удалении данных?")))  return;
 
+    if(!base.isOpen()) {
+        QMessageBox::critical(this,"Error","База не открыта!");
+        return;
+    }
     QSqlQuery a_query = QSqlQuery(base);
 
     //очистка расшифровок

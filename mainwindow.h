@@ -16,6 +16,11 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+
+signals:
+
+    void signalFromQuery(QString sq); // сигнал для запроса
+
 private slots:
     void on_actionBank_triggered();
 
@@ -32,6 +37,27 @@ private slots:
     void on_actionArticles_triggered();
 
     void on_actionCounterparties_triggered();
+
+    void on_actionSaveAs_triggered();
+
+    void on_actionNewBase_triggered();
+
+    void on_actionExit_triggered();
+
+    void on_actionRep_bank_triggered();
+
+    void on_actionAbout_triggered();
+
+    void on_actionRepContracts_triggered();
+
+    void on_actionRepContracsShort_triggered();
+
+    void on_actionRepContractsIsNote_triggered();
+
+    void on_actionQuery_triggered();
+
+    void slot_goQuery(QString sq); // запуск запроса
+
 
 private:
     Ui::MainWindow *ui;

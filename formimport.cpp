@@ -262,7 +262,7 @@ void FormImport::on_pushButton_ImportZ_clicked()
 //                                       qDebug() << "пустая пропущено> " << tt << " " << tt.toDouble();
                                    //если это восстановление
                                    if (ui->checkBox_recovery->isChecked())
-                                       tt="-"+tt; //добавить знак минус
+                                       tt="-"+tt; //добавить знак минус    Возможно надо преодразовать в число умножить на -1
 
 
                            }

@@ -23,6 +23,7 @@ SOURCES += \
     formcounterparties.cpp \
     formimport.cpp \
     formoptions.cpp \
+    formquery.cpp \
     main.cpp \
     mainwindow.cpp \
     mousewheelwidgetadjustmentguard.cpp \
@@ -36,6 +37,7 @@ HEADERS += \
     formcounterparties.h \
     formimport.h \
     formoptions.h \
+    formquery.h \
     mainwindow.h \
     mousewheelwidgetadjustmentguard.h \
     qsqlrelationaldelegateflt.h
@@ -48,6 +50,7 @@ FORMS += \
     formcounterparties.ui \
     formimport.ui \
     formoptions.ui \
+    formquery.ui \
     mainwindow.ui
 
 # Default rules for deployment.

@@ -38,6 +38,7 @@ QWidget *QSqlRelationalDelegateFlt::createEditor(QWidget *parent, const QStyleOp
     combo->setEditable(true);
     // настраиваем комплитер
     combo->insertItem(0,QString::fromUtf8(NULL)); // добавляем пустой элемент
+    combo->setCurrentIndex(combo->findText(sqlModel->data(sqlModel->index(index.row(),index.column())).toString()));  // руками проставляем нужный индекс
 
     QCompleter *mycompletear = new QCompleter(parent);
     mycompletear->setCaseSensitivity(Qt::CaseInsensitive);

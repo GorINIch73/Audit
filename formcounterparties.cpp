@@ -114,6 +114,10 @@ void FormCounterparties::Tune()
 
 void FormCounterparties::on_pushButton_close_clicked()
 {
+    // на всякий случай
+    mapper->submit();
+    modelCounterparties->submit();
+
     close();
 }
 
@@ -174,6 +178,8 @@ void FormCounterparties::on_pushButton_refr_clicked()
 void FormCounterparties::on_pushButton_add_clicked()
 {
     // добавление
+    modelCounterparties->submit(); // субмитим
+
     int row= ui->tableView_counterparties->currentIndex().row()+1; // выбираем следующую
 
     // вставляем

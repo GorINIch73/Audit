@@ -25,6 +25,12 @@ public:
     explicit FormContract(QSqlDatabase db,QWidget *parent = nullptr);
     ~FormContract();
 
+
+signals:
+
+    void signalFromQuery(QString sq); // сигнал для запроса
+
+
 private slots:
 
     void slotSelectionChange(const QItemSelection &current, const QItemSelection &previous);
@@ -54,6 +60,8 @@ private slots:
     void on_pushButton_next_con_clicked();
 
     void on_comboBox_flt_counterparties_currentIndexChanged(int index);
+
+    void on_pushButton_rep_list_clicked();
 
 private:
     Ui::FormContract *ui;

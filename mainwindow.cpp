@@ -7,6 +7,7 @@
 #include "formcounterparties.h"
 #include "formimport.h"
 #include "formoptions.h"
+#include "formquery.h"
 
 
 #include <QSqlDatabase>
@@ -46,6 +47,12 @@ MainWindow::MainWindow(QWidget *parent)
         databaseName=QCoreApplication::arguments().at(1);
         on_actionOpenBase_triggered();
     }
+
+
+    // сигнал создания запроса
+    connect(this,&MainWindow::signalFromQuery,this,&MainWindow::slot_goQuery);
+
+
 }
 
 MainWindow::~MainWindow()
@@ -72,8 +79,15 @@ bool MainWindow::OpenBase()
       this->setWindowTitle("Error!");
       return false;
     }
+
+    //читаем настнойки из базы
+    QSqlQuery query(database);
+    if (!query.exec("SELECT organization, date_begin, date_end FROM options"))
+            qDebug() << "Ошибка чтения настроек: " << query.lastError().text();
+     query.first();
+
     // титульный окна имя базы
-    this->setWindowTitle("Аудит: " + databaseName);
+    this->setWindowTitle("Аудит: '" + query.value(0).toString() + "' База: "+ databaseName);
     return true;
 }
 
@@ -170,3 +184,860 @@ void MainWindow::on_actionCounterparties_triggered()
     ui->tabWidgetMain->setCurrentIndex(0);
 
 }
+
+void MainWindow::on_actionSaveAs_triggered()
+{
+    // дублирование базы
+    if (!databaseName.isEmpty()) {
+        // запросить новое имя
+        QString  newBase = QFileDialog::getSaveFileName(this,tr("Сохранить как"),databaseName,tr("Data base Fules (*.db)"));
+        // если дано новое имя
+        if (databaseName != newBase) {
+            database.close();
+            qDebug() << "copy " << databaseName << " to " << newBase;
+            // возможно надо проверить не открыта ли база кем то еще
+            if (!QFile::copy(databaseName,newBase)) {
+                    QMessageBox::critical(this,"ERROR","База не скопирована!");
+                    return;
+            }
+            databaseName = newBase;
+        }
+        on_actionOpenBase_triggered();
+    }
+}
+
+void MainWindow::on_actionQuery_triggered()
+{
+    // вызов окна запроса
+    // тест
+    emit  signalFromQuery("SELECT DATE('now')");
+
+}
+
+void MainWindow::slot_goQuery(QString sq)
+{
+    // вызов окна запроса
+    // придумать как вызвать из других окон и передать параметры!
+    FormQuery *query = new FormQuery(database, sq, this);
+    ui->tabWidgetMain->insertTab(0,query,tr("Запрос"));
+    ui->tabWidgetMain->setCurrentIndex(0);
+
+}
+
+
+
+void MainWindow::on_actionExit_triggered()
+{
+        QApplication::closeAllWindows();
+}
+
+void MainWindow::on_actionNewBase_triggered()
+{
+    // выбор файла базы данных
+    return; // еще не стедано!
+    QString newBase =  QFileDialog::getSaveFileName(this,tr("Create new base"),"./",tr("Data base Fules (*.qustnr)"));
+
+     if (!newBase.isEmpty()) {
+        // создаем
+
+         //проверяем на наличие файл базы
+         if(QFile(newBase).exists()){
+             qDebug() << "Файла базы есть!";
+             QMessageBox::information(this,"Error","Выбранная база уже существует. Выберете другое имя!");
+             return;
+         }
+
+     // открываем базу
+         QSqlDatabase dbm = QSqlDatabase::addDatabase("QSQLITE","new");
+         dbm.setDatabaseName(newBase);
+         if(!dbm.open()){
+           qDebug() << "Ошибка открытия базы!";
+           QMessageBox::critical(this,"Error",dbm.lastError().text());
+           return;
+         }
+
+         QSqlQuery a_query = QSqlQuery(dbm);
+
+         // запрос на создание таблицы районов
+         QString str = "CREATE TABLE region ("
+                     "id   INTEGER       PRIMARY KEY AUTOINCREMENT UNIQUE,"
+                     "name VARCHAR (255));";
+         if (!a_query.exec(str))
+             qDebug() << "таблица районов: " << a_query.lastError().text();
+
+         // запрос на создание таблицы мест проведения
+         str = "CREATE TABLE place ("
+             "id         INTEGER       PRIMARY KEY AUTOINCREMENT UNIQUE,"
+             "name       VARCHAR (255),"
+             "region_id  INTEGER       REFERENCES region (id),"
+             "for_report BOOLEAN);";
+         if (!a_query.exec(str))
+             qDebug() << "таблица мест проведения: " << a_query.lastError().text();
+
+         // запрос на создание таблицы ответов
+         str = "CREATE TABLE answers ("
+                     "id          INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,"
+                     "question_id INTEGER REFERENCES questions (id),"
+                     "answer      TEXT);";
+         if (!a_query.exec(str))
+             qDebug() << "таблица ответов: " << a_query.lastError().text();
+
+         // запрос на создание таблицы вопросов
+         str = "CREATE TABLE questions ("
+                 "id           INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,"
+                 "question     TEXT,"
+                 "some_answers BOOLEAN DEFAULT (false),"
+                 "be_empty     BOOLEAN DEFAULT (false),"
+                 "satisfaction BOOLEAN DEFAULT (false));";
+         if (!a_query.exec(str))
+             qDebug() << "таблица вопросов: " << a_query.lastError().text();
+
+         // запрос на создание таблицы анкет
+         str = "CREATE TABLE questionnaire ("
+                 "id       INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,"
+                 "place_id INTEGER REFERENCES place (id));";
+         if (!a_query.exec(str))
+             qDebug() << "таблица аекет: " << a_query.lastError().text();
+
+         // запрос на создание таблицы данных по ответам
+         str = "CREATE TABLE answers_data ("
+                 "id               INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,"
+                 "questionnaire_id INTEGER REFERENCES questionnaire (id),"
+                 "question_id      INTEGER REFERENCES questions (id),"
+                 "answer_id        INTEGER REFERENCES answers (id));";
+         if (!a_query.exec(str))
+             qDebug() << "таблица данных по ответам: " << a_query.lastError().text();
+
+         // запрос на создание таблицы с настройками  // как то не так надо передалеть!
+         str = "CREATE TABLE setings ("
+                 "id          INTEGER PRIMARY KEY AUTOINCREMENT"
+                                     " UNIQUE,"
+                 "option_name VARCHAR,"
+                 "option_data VARCHAR"
+                ");";
+         if (!a_query.exec(str))
+             qDebug() << "таблица настроек: " << a_query.lastError().text();
+         // вставить значения опций
+         str = "INSERT INTO setings(option_name) values ('Наименование анкеты'),('Примечание');";
+         if (!a_query.exec(str))
+             qDebug() << "таблица настроек: " << a_query.lastError().text();
+
+
+         //
+         QMessageBox::information(this,"Info","Операция завершена.");
+         dbm.close();
+
+         // откроем созданную базу
+        databaseName=newBase;
+        on_actionOpenBase_triggered();
+     }
+
+}
+
+
+
+void MainWindow::on_actionRep_bank_triggered()
+{
+    // главный отчет по банку
+    // локаль для сумм
+
+    // база открыта?
+    if(!database.isOpen()){
+          qDebug() << "База не открыта!";
+          QMessageBox::critical(this,"Error","База не открыта!");
+          return;
+    }
+
+    QSqlQuery a_query = QSqlQuery(database);
+
+    //читаем настнойки из базы
+    QString organization = "";
+    QString dateBegin = "";
+    QString dateEnd = "";
+
+    if (!a_query.exec("SELECT organization, date_begin, date_end FROM options"))
+            qDebug() << "Ошибка чтения настроек: " << a_query.lastError().text();
+    else {
+        a_query.first();
+        organization = a_query.value(0).toString();
+        dateBegin = a_query.value(1).toString();
+        dateEnd = a_query.value(2).toString();
+    }
+
+
+    // фильтр дат
+    QString flt="";
+    if (!dateBegin.isEmpty() && !dateEnd.isEmpty())
+        flt=QString("WHERE bank.payment_date >= '%1' AND bank.payment_date <= '%2'").arg(dateBegin).arg(dateEnd);
+    // запрос
+    QString query = QString("SELECT strftime('%Y',bank.payment_date), bank.this_receipt, articles.article, ROUND(SUM(sum),2), COUNT(bank.payment_number) FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id %1 GROUP BY strftime('%Y',bank.payment_date), bank.this_receipt, articles.article;").arg(flt);
+    if (!a_query.exec(query)) {
+         qDebug() << "Ошибка запроса отчета: " << a_query.lastError().text();
+         return;
+    }
+    qDebug() << flt;
+    qDebug() << query;
+
+    // формирование и печать
+
+    QString stringStream;
+    QTextStream out(&stringStream);
+
+
+    // формирование отчета
+    out << "<html>\n" << "<head>\n" << "meta Content=\"Text/html;charsrt=Windows-1251\">\n" <<
+           QString("<title>%1</title>\n").arg("Report") <<
+
+           "<style>"
+           "table {"
+            "width: 100%; /* Ширина таблицы */"
+//            "border-collapse: collapse; /* Убираем двойные линии */"
+//            "border-bottom: 1px none #333; /* Линия снизу таблицы */"
+//            "border-bottom: none; /* Линия снизу таблицы */"
+//            "border-top: none; /* Линия сверху таблицы */"
+           "}"
+           "td { "
+            "text-align: left; /* Выравнивание по лево */"
+            "border-bottom: none;"
+           "}"
+           "td, th {"
+            "padding: 1px; /* Поля в ячейках */"
+           "}"
+            "th {"
+            "border-top: 1px dashed;"
+            "}"
+         "  </style>"
+
+           "</head>\n"
+           "<body bgcolor = #ffffff link=#5000A0>\n";
+
+
+    // маркеры смены группы
+    QString val01= ""; // год
+    QString val02= ""; // поступление
+
+    // счетчик для количества
+    double countA=0;
+
+    // титульный
+    out << QString("<h2>ОТЧЕТ по статьям: %1 </h2>").arg(organization);
+    out << QString("<h3>за период: с %1 по %2 </h3>").arg(dateBegin).arg(dateEnd);
+
+    // данные
+    out <<  "<table>\n";
+    while (a_query.next()) {
+        // печать категорий
+        // год
+        if (val01!=a_query.value(0).toString()) {
+            // если поменялось, то пропечатываем
+            out << "<tr>";
+            out <<  QString("<th colspan=\"4\" align=left>%1 </th>").arg(a_query.value(0).toString());
+            // запоминаем новое
+            val01= a_query.value(0).toString();
+            out << "</tr>\n";
+        }
+        // поступление
+        if (val02!=a_query.value(1).toString()) {
+            // вывод итога прошлой группы
+            if(countA!=0) {
+                out << "<tr>";
+                out <<  QString("<td></td>");
+                out <<  QString("<td></td>");
+                out <<  QString("<td align=right><i>ИТОГО по статье: </i></td>");
+                out <<  QString("<td align=right><i>%1</i></td>").arg(QString("%L1").arg(countA,-0,'f',2));
+                countA=0;
+             }
+
+            // смена группы
+            // запоминаем новое
+            val02= a_query.value(1).toString();
+            out << "</tr>\n";
+
+            // если поменялось, то пропечатываем
+            out << "<tr>";
+            out <<  QString("<td></td>");
+            out <<  QString("<th colspan=\"3\" align=left>%1 </th>").arg(a_query.value(1).toBool()?"Поступление":"Расход");
+//            out <<  QString("<th colspan=\"3\" align=left>%1 </th>").arg((!a_query.value(1).toString().isEmpty())? a_query.value(1).toString():QString("&nbsp;"));
+            // запоминаем новое
+//            val02= a_query.value(1).toString();
+            out << "</tr>\n";
+        }
+
+
+        out << "<tr>";
+        // печать основных данных
+        out <<  QString("<td></td>");
+        out <<  QString("<td></td>");
+        out <<  QString("<td  width=\"80%\">%1 </td>").arg((!a_query.value(2).toString().isEmpty())? a_query.value(2).toString():QString("&nbsp;"));
+        out <<  QString("<td align=right>%1 </td>").arg((!a_query.value(3).toString().isEmpty())? QString("%L1").arg(a_query.value(3).toDouble(), -0, 'f', 2):QString("&nbsp;"));
+//        out <<  QString("<td align=right>%1 </td>").arg((!a_query.value(3).toString().isEmpty())? QString::number(a_query.value(3).toDouble(),'f',2):QString("&nbsp;"));
+        out <<  QString("<td align=right>%1 </td>").arg((!a_query.value(4).toString().isEmpty())? a_query.value(4).toString():QString("&nbsp;"));
+
+        //добавляем текущее значение
+        countA=countA+a_query.value(3).toDouble();
+
+        out << "</tr>\n";
+    }
+
+        // пропечатываем последний итог
+        out << "<tr>";
+        out <<  QString("<td></td>");
+        out <<  QString("<td></td>");
+        out <<  QString("<td align=right><i>ИТОГО по статье: </i></td>");
+        out <<  QString("<td align=right><i>%1</i></td>").arg(QString("%L1").arg(countA,-0,'f',2));
+
+    out << "</table>\n";
+
+
+
+    out << "</body>\n" << "</html>\n";
+
+//    qDebug() << out.readAll();
+    // печать
+    QTextDocument document;
+    document.setHtml(stringStream);
+
+    QPrinter printer(QPrinter::PrinterResolution);
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setPaperSize(QPrinter::A4);
+    printer.setOutputFileName("rep_bank.pdf");
+    printer.setPageMargins(QMarginsF(15, 15, 15, 15));
+
+    document.print(&printer);
+
+    // откровем созданный отчет
+    QDesktopServices::openUrl(QUrl(QUrl::fromLocalFile("rep_bank.pdf")));
+
+}
+
+
+void MainWindow::on_actionRepContracts_triggered()
+{
+    // главный отчет по контрактам полный
+
+    // база открыта?
+    if(!database.isOpen()){
+          qDebug() << "База не открыта!";
+          QMessageBox::critical(this,"Error","База не открыта!");
+          return;
+    }
+
+    QSqlQuery a_query = QSqlQuery(database);
+
+    //читаем настнойки из базы
+    QString organization = "";
+    QString dateBegin = "";
+    QString dateEnd = "";
+    bool rep_contract_found = false;
+
+
+    if (!a_query.exec("SELECT organization, date_begin, date_end, rep_contract_found FROM options"))
+            qDebug() << "Ошибка чтения настроек: " << a_query.lastError().text();
+    else {
+        a_query.first();
+        organization = a_query.value(0).toString();
+        dateBegin = a_query.value(1).toString();
+        dateEnd = a_query.value(2).toString();
+        rep_contract_found=a_query.value(3).toBool();
+    }
+
+
+    // фильтр дат
+    QString flt="";
+    if (!dateBegin.isEmpty() && !dateEnd.isEmpty() && rep_contract_found)
+            flt=QString("WHERE bank.payment_date >= '%1' AND bank.payment_date <= '%2' AND contracts.found='true'").arg(dateBegin).arg(dateEnd);
+    else if (rep_contract_found)
+            flt.append("WHERE contracts.found='true'");
+
+    // запрос
+    QString query = QString("SELECT  contracts.state_contract , articles.article, contracts.contract_number, contracts.contract_date, counterparties.counterparty, ROUND(SUM(sum),2), COUNT(DISTINCT contracts.contract_number)  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank_decryption.contract_id=counterparties.id %1 GROUP BY  contracts.state_contract , articles.article, contracts.contract_number, contracts.contract_date;").arg(flt);
+    if (!a_query.exec(query)) {
+         qDebug() << "Ошибка запроса отчета: " << a_query.lastError().text();
+         return;
+    }
+//    qDebug() << flt;
+//    qDebug() << query;
+
+    // формирование и печать
+
+    QString stringStream;
+    QTextStream out(&stringStream);
+
+
+    // формирование отчета
+    out << "<html>\n" << "<head>\n" << "meta Content=\"Text/html;charsrt=Windows-1251\">\n" <<
+           QString("<title>%1</title>\n").arg("Report") <<
+
+           "<style>"
+           "table {"
+            "width: 100%; /* Ширина таблицы */"
+//            "border-collapse: collapse; /* Убираем двойные линии */"
+//            "border-bottom: 1px none #333; /* Линия снизу таблицы */"
+//            "border-bottom: none; /* Линия снизу таблицы */"
+//            "border-top: none; /* Линия сверху таблицы */"
+           "}"
+           "td { "
+            "text-align: left; /* Выравнивание по лево */"
+            "border-bottom: none;"
+           "}"
+           "td, th {"
+            "padding: 1px; /* Поля в ячейках */"
+           "}"
+            "th {"
+            "border-top: 1px dashed;"
+            "}"
+         "  </style>"
+
+           "</head>\n"
+           "<body bgcolor = #ffffff link=#5000A0>\n";
+
+
+    // маркеры смены группы
+    QString val01= ""; // Госконтракт
+    QString val02= ""; // статья
+
+    // счетчик для количества
+    double sumA=0;
+    int countA=0;
+
+    // титульный
+    out << QString("<h2>ОТЧЕТ по контрактам: %1 </h2>").arg(organization);
+    out << QString("- за период: с %1 по %2 ").arg(dateBegin).arg(dateEnd);
+    if (rep_contract_found)
+        out << QString(", включены только найденные контракты.").arg(dateBegin).arg(dateEnd);
+
+
+    // данные
+    out <<  "<table>\n";
+    while (a_query.next()) {
+        // печать категорий
+        // госконтракт
+        if (val01!=a_query.value(0).toString()) {
+            // если поменялось, то пропечатываем
+            out << "<tr>";
+            out <<  QString("<th colspan=\"6\" align=left>%1 </th>").arg(a_query.value(0).toBool()?"Госконтракт":"Договор");
+            // запоминаем новое
+            val01= a_query.value(0).toString();
+            out << "</tr>\n";
+        }
+        // статья
+        if (val02!=a_query.value(1).toString()) {
+            // вывод итога прошлой группы
+            if(countA!=0) {
+                out << "<tr>";
+                out <<  QString("<td></td>");
+                out <<  QString("<td></td>");
+                out <<  QString("<td></td>");
+                out <<  QString("<td></td>");
+                out <<  QString("<td align=right><b>ИТОГО по статье: </b></td>");
+                out <<  QString("<td align=right><b>%1</b></td>").arg(QString("%L1").arg(sumA,-0,'f',2));
+                out <<  QString("<td align=right><b>%1</b></td>").arg(countA);
+                countA=0;
+                sumA=0;
+
+             }
+
+            // смена группы
+            // запоминаем новое
+            val02= a_query.value(1).toString();
+            out << "</tr>\n";
+
+            // если поменялось, то пропечатываем
+            out << "<tr>";
+            out <<  QString("<td></td>");
+            out <<  QString("<th colspan=\"6\" align=left>%1 </th>").arg(a_query.value(1).toString());
+//            out <<  QString("<th colspan=\"3\" align=left>%1 </th>").arg((!a_query.value(1).toString().isEmpty())? a_query.value(1).toString():QString("&nbsp;"));
+            // запоминаем новое
+//            val02= a_query.value(1).toString();
+            out << "</tr>\n";
+        }
+
+
+        out << "<tr>";
+        // печать основных данных
+        out <<  QString("<td></td>");
+        out <<  QString("<td></td>");
+        out <<  QString("<td>%1 </td>").arg((!a_query.value(2).toString().isEmpty())? a_query.value(2).toString():QString("&nbsp;"));
+        out <<  QString("<td>%1 </td>").arg((!a_query.value(3).toString().isEmpty())? a_query.value(3).toString():QString("&nbsp;"));
+//        out <<  QString("<td>%1 </td>").arg((!a_query.value(4).toString().isEmpty())? a_query.value(4).toString():QString("&nbsp;"));
+        out <<  QString("<td  width=\"50%\"><small> %1 </small></td>").arg((!a_query.value(4).toString().isEmpty())? a_query.value(4).toString():QString("&nbsp;"));
+        out <<  QString("<td align=right>%1 </td>").arg((!a_query.value(5).toString().isEmpty())? QString("%L1").arg(a_query.value(5).toDouble(), -0, 'f', 2):QString("&nbsp;"));
+        out <<  QString("<td align=right>%1 </td>").arg((!a_query.value(6).toString().isEmpty())? a_query.value(6).toString():QString("&nbsp;"));
+
+        //добавляем текущее значение
+        countA=countA+a_query.value(6).toInt();
+        sumA=sumA+a_query.value(5).toDouble();
+
+        out << "</tr>\n";
+    }
+
+        // пропечатываем последний итог
+        out << "<tr>";
+        out <<  QString("<td></td>");
+        out <<  QString("<td></td>");
+        out <<  QString("<td></td>");
+        out <<  QString("<td></td>");
+        out <<  QString("<td align=right><b>ИТОГО по статье: </b></td>");
+        out <<  QString("<td align=right><b>%1</b></td>").arg(QString("%L1").arg(sumA,-0,'f',2));
+        out <<  QString("<td align=right><b>%1</b></td>").arg(countA);
+
+    out << "</table>\n";
+
+
+
+    out << "</body>\n" << "</html>\n";
+
+//    qDebug() << out.readAll();
+    // печать
+    QTextDocument document;
+    document.setHtml(stringStream);
+
+    QPrinter printer(QPrinter::PrinterResolution);
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setPaperSize(QPrinter::A4);
+    printer.setOutputFileName("rep_Contracts.pdf");
+    printer.setPageMargins(QMarginsF(15, 15, 15, 15));
+
+    document.print(&printer);
+
+    // откровем созданный отчет
+    QDesktopServices::openUrl(QUrl(QUrl::fromLocalFile("rep_Contracts.pdf")));
+}
+
+
+
+void MainWindow::on_actionRepContracsShort_triggered()
+{
+    // главный отчет по контрактам короткий
+
+    // база открыта?
+    if(!database.isOpen()){
+          qDebug() << "База не открыта!";
+          QMessageBox::critical(this,"Error","База не открыта!");
+          return;
+    }
+
+    QSqlQuery a_query = QSqlQuery(database);
+
+    //читаем настнойки из базы
+    QString organization = "";
+    QString dateBegin = "";
+    QString dateEnd = "";
+    bool rep_contract_found = false;
+
+
+    if (!a_query.exec("SELECT organization, date_begin, date_end, rep_contract_found FROM options"))
+            qDebug() << "Ошибка чтения настроек: " << a_query.lastError().text();
+    else {
+        a_query.first();
+        organization = a_query.value(0).toString();
+        dateBegin = a_query.value(1).toString();
+        dateEnd = a_query.value(2).toString();
+        rep_contract_found=a_query.value(3).toBool();
+    }
+
+
+    // фильтр дат
+    QString flt="";
+    if (!dateBegin.isEmpty() && !dateEnd.isEmpty() && rep_contract_found)
+            flt=QString("WHERE bank.payment_date >= '%1' AND bank.payment_date <= '%2' AND contracts.found='true'").arg(dateBegin).arg(dateEnd);
+    else if (rep_contract_found)
+            flt.append("WHERE contracts.found='true'");
+
+    // запрос
+    QString query = QString("SELECT contracts.state_contract , articles.article, ROUND(SUM(sum),2), COUNT(DISTINCT contracts.contract_number) FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank_decryption.contract_id=counterparties.id %1 GROUP BY  contracts.state_contract , articles.article;").arg(flt);
+    if (!a_query.exec(query)) {
+         qDebug() << "Ошибка запроса отчета: " << a_query.lastError().text();
+         return;
+    }
+//    qDebug() << flt;
+//    qDebug() << query;
+
+    // формирование и печать
+
+    QString stringStream;
+    QTextStream out(&stringStream);
+
+
+    // формирование отчета
+    out << "<html>\n" << "<head>\n" << "meta Content=\"Text/html;charsrt=Windows-1251\">\n" <<
+           QString("<title>%1</title>\n").arg("Report") <<
+
+           "<style>"
+           "table {"
+            "width: 100%; /* Ширина таблицы */"
+//            "border-collapse: collapse; /* Убираем двойные линии */"
+//            "border-bottom: 1px none #333; /* Линия снизу таблицы */"
+//            "border-bottom: none; /* Линия снизу таблицы */"
+//            "border-top: none; /* Линия сверху таблицы */"
+           "}"
+           "td { "
+            "text-align: left; /* Выравнивание по лево */"
+            "border-bottom: none;"
+           "}"
+           "td, th {"
+            "padding: 1px; /* Поля в ячейках */"
+           "}"
+            "th {"
+            "border-top: 1px dashed;"
+            "}"
+         "  </style>"
+
+           "</head>\n"
+           "<body bgcolor = #ffffff link=#5000A0>\n";
+
+
+    // маркеры смены группы
+    QString val01= ""; // Госконтракт
+
+    // счетчик для количества
+    double sumA=0;
+    int countA=0;
+
+    // титульный
+    out << QString("<h2>ОТЧЕТ по контрактам короткий: %1 </h2>").arg(organization);
+    out << QString("- за период: с %1 по %2 ").arg(dateBegin).arg(dateEnd);
+    if (rep_contract_found)
+        out << QString(", включены только найденные контракты.").arg(dateBegin).arg(dateEnd);
+
+
+    // данные
+    out <<  "<table>\n";
+    while (a_query.next()) {
+        // печать категорий
+        // госконтракт
+        // поступление
+        if (val01!=a_query.value(0).toString()) {
+            // вывод итога прошлой группы
+            if(countA!=0) {
+                out << "<tr>";
+                out <<  QString("<td></td>");
+                out <<  QString("<td align=right><b>ИТОГО по категории: </b></td>");
+                out <<  QString("<td align=right><b>%1</b></td>").arg(QString("%L1").arg(sumA,-0,'f',2));
+                out <<  QString("<td align=right><b>%1</b></td>").arg(countA);
+                countA=0;
+                sumA=0;
+             }
+
+            // смена группы
+            // запоминаем новое
+            val01= a_query.value(0).toString();
+            out << "</tr>\n";
+
+            // если поменялось, то пропечатываем
+            out << "<tr>";
+            out <<  QString("<th colspan=\"4\" align=left>%1 </th>").arg(a_query.value(0).toBool()?"Госконтракт":"Договор");
+            out << "</tr>\n";
+        }
+
+
+        out << "<tr>";
+        // печать основных данных
+        out <<  QString("<td></td>");
+        out <<  QString("<td  width=\"90%\"><small> %1 </small></td>").arg((!a_query.value(1).toString().isEmpty())? a_query.value(1).toString():QString("&nbsp;"));
+        out <<  QString("<td align=right>%1 </td>").arg((!a_query.value(2).toString().isEmpty())? QString("%L1").arg(a_query.value(2).toDouble(), -0, 'f', 2):QString("&nbsp;"));
+        out <<  QString("<td align=right>%1 </td>").arg((!a_query.value(3).toString().isEmpty())? a_query.value(3).toString():QString("&nbsp;"));
+
+        //добавляем текущее значение
+        countA=countA+a_query.value(3).toInt();
+        sumA=sumA+a_query.value(2).toDouble();
+
+        out << "</tr>\n";
+    }
+
+        // пропечатываем последний итог
+        out << "<tr>";
+        out <<  QString("<td></td>");
+        out <<  QString("<td align=right><b>ИТОГО по категории: </b></td>");
+        out <<  QString("<td align=right><b>%1</b></td>").arg(QString("%L1").arg(sumA,-0,'f',2));
+        out <<  QString("<td align=right><b>%1</b></td>").arg(countA);
+
+    out << "</table>\n";
+
+
+
+    out << "</body>\n" << "</html>\n";
+
+//    qDebug() << out.readAll();
+    // печать
+    QTextDocument document;
+    document.setHtml(stringStream);
+
+    QPrinter printer(QPrinter::PrinterResolution);
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setPaperSize(QPrinter::A4);
+    printer.setOutputFileName("rep_Contracts_s.pdf");
+    printer.setPageMargins(QMarginsF(15, 15, 15, 15));
+
+    document.print(&printer);
+
+    // откровем созданный отчет
+    QDesktopServices::openUrl(QUrl(QUrl::fromLocalFile("rep_Contracts_s.pdf")));
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+ QMessageBox::information(this,"Info","Программа ведения финансового аудита\n в разрезе статей затрат.\n\nGorINIch`2020 ver0.01\nggorinich@gmail.com");
+}
+
+void MainWindow::on_actionRepContractsIsNote_triggered()
+{
+    // отчет по контрактам с примечанием
+
+    // база открыта?
+    if(!database.isOpen()){
+          qDebug() << "База не открыта!";
+          QMessageBox::critical(this,"Error","База не открыта!");
+          return;
+    }
+
+    QSqlQuery a_query = QSqlQuery(database);
+
+    //читаем настнойки из базы
+    QString organization = "";
+
+    if (!a_query.exec("SELECT organization FROM options"))
+            qDebug() << "Ошибка чтения настроек: " << a_query.lastError().text();
+    else {
+        a_query.first();
+        organization = a_query.value(0).toString();
+    }
+
+
+    // запрос
+    QString query = QString("SELECT counterparties.counterparty, contracts.contract_number, contracts.contract_date, contracts.state_contract, SUM(sum), COUNT(DISTINCT contracts.contract_number), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank_decryption.contract_id=counterparties.id WHERE NOT contracts.note='' GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article");
+    if (!a_query.exec(query)) {
+         qDebug() << "Ошибка запроса отчета: " << a_query.lastError().text();
+         return;
+    }
+//    qDebug() << flt;
+//    qDebug() << query;
+
+    // формирование и печать
+
+    QString stringStream;
+    QTextStream out(&stringStream);
+
+
+    // формирование отчета
+    out << "<html>\n" << "<head>\n" << "meta Content=\"Text/html;charsrt=Windows-1251\">\n" <<
+           QString("<title>%1</title>\n").arg("Report") <<
+
+           "<style>"
+           "table {"
+            "width: 100%; /* Ширина таблицы */"
+//            "border-collapse: collapse; /* Убираем двойные линии */"
+//            "border-bottom: 1px none #333; /* Линия снизу таблицы */"
+//            "border-bottom: none; /* Линия снизу таблицы */"
+//            "border-top: none; /* Линия сверху таблицы */"
+           "}"
+           "td { "
+            "text-align: left; /* Выравнивание по лево */"
+            "border-bottom: none;"
+           "}"
+           "td, th {"
+            "padding: 1px; /* Поля в ячейках */"
+           "}"
+            "th {"
+            "border-top: 1px dashed;"
+            "}"
+         "  </style>"
+
+           "</head>\n"
+           "<body bgcolor = #ffffff link=#5000A0>\n";
+
+
+    // маркеры смены группы
+    QString val01= ""; // Контрагент
+
+    // счетчик для количества
+    double sumA=0;
+    int countA=0;
+
+    // титульный
+    out << QString("<h2>Список контрактов с примечанием: %1 </h2>").arg(organization);
+
+    // данные
+    out <<  "<table>\n";
+    while (a_query.next()) {
+        // печать категорий
+        // контрагент
+        if (val01!=a_query.value(0).toString()) {
+            // вывод итога прошлой группы
+//            if(countA!=0) {
+//                out << "<tr>";
+//                out <<  QString("<td></td>");
+//                out <<  QString("<td></td>");
+//                out <<  QString("<td></td>");
+//                out <<  QString("<td align=right><b>ИТОГО: </b></td>");
+//                out <<  QString("<td align=right><b>%1</b></td>").arg(QString("%L1").arg(sumA,-0,'f',2));
+//                out <<  QString("<td align=right><b>%1</b></td>").arg(countA);
+//                countA=0;
+//                sumA=0;
+//             }
+
+            // смена группы
+            // запоминаем новое
+            val01= a_query.value(0).toString();
+            out << "</tr>\n";
+
+            // если поменялось, то пропечатываем
+            out << "<tr>";
+            out <<  QString("<th colspan=\"7\" align=left>%1 </th>").arg(a_query.value(0).toString());
+            out << "</tr>\n";
+        }
+
+
+        out << "<tr>";
+        // печать основных данных
+        out <<  QString("<td></td>");
+//        out <<  QString("<td  width=\"90%\"><small> %1 </small></td>").arg((!a_query.value(1).toString().isEmpty())? a_query.value(1).toString():QString("&nbsp;"));
+        out <<  QString("<td> %1 </td>").arg((!a_query.value(1).toString().isEmpty())? a_query.value(1).toString():QString("&nbsp;"));
+        out <<  QString("<td> %1 </td>").arg((!a_query.value(2).toString().isEmpty())? a_query.value(2).toString():QString("&nbsp;"));
+        out <<  QString("<td> %1 </td>").arg(a_query.value(3).toBool()?"Гoc":"Дor");
+        out <<  QString("<td align=right>%1 </td>").arg((!a_query.value(4).toString().isEmpty())? QString("%L1").arg(a_query.value(4).toDouble(), -0, 'f', 2):QString("&nbsp;"));
+        out <<  QString("<td align=right>%1 </td>").arg((!a_query.value(5).toString().isEmpty())? a_query.value(5).toString():QString("&nbsp;"));
+        out <<  QString("<td><small> %1 </small></td>").arg((!a_query.value(6).toString().isEmpty())? a_query.value(6).toString().left(25):QString("&nbsp;")); // статья
+        out <<  QString("<td><small> %1 </small></td>").arg((!a_query.value(7).toString().isEmpty())? a_query.value(7).toString():QString("&nbsp;")); // примечание
+
+        //добавляем текущее значение
+        countA=countA+a_query.value(5).toInt();
+        sumA=sumA+a_query.value(4).toDouble();
+
+        out << "</tr>\n";
+    }
+
+        // пропечатываем последний итог
+//        out << "<tr>";
+//        out <<  QString("<td></td>");
+//        out <<  QString("<td></td>");
+//        out <<  QString("<td></td>");
+//        out <<  QString("<td align=right><b>ИТОГО: </b></td>");
+//        out <<  QString("<td align=right><b>%1</b></td>").arg(QString("%L1").arg(sumA,-0,'f',2));
+//        out <<  QString("<td align=right><b>%1</b></td>").arg(countA);
+
+    out << "</table>\n";
+
+
+
+    out << "</body>\n" << "</html>\n";
+
+//    qDebug() << out.readAll();
+    // печать
+    QTextDocument document;
+    document.setHtml(stringStream);
+
+    QPrinter printer(QPrinter::PrinterResolution);
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setPaperSize(QPrinter::A4);
+//    printer.setOrientation(QPrinter::Landscape);
+    printer.setOutputFileName("rep_Contracts_n.pdf");
+    printer.setPageMargins(QMarginsF(10, 10, 10, 10));
+
+    document.print(&printer);
+
+    // откровем созданный отчет
+    QDesktopServices::openUrl(QUrl(QUrl::fromLocalFile("rep_Contracts_n.pdf")));
+
+}
+

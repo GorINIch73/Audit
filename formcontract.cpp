@@ -40,6 +40,9 @@ FormContract::FormContract(QSqlDatabase db,QWidget *parent) :
     connect(ui->tableView_contracts->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
                  SLOT(slotSelectionChange(const QItemSelection &, const QItemSelection &)));
 
+    // сигнал создания запроса во вкладках
+    connect(this, SIGNAL(signalFromQuery(QString)),parent, SLOT(slot_goQuery(QString)));
+
     ui->tableView_contracts->selectRow(0);
 
 }
@@ -85,7 +88,7 @@ void FormContract::seekTable()
         }
         query.first();
     //    ui->lineEdit_b_sum->setText(QString::number(query.value(0).toDouble(),'g',20));
-        ui->lineEdit_b_sum->setText(query.value(0).toString());
+        ui->lineEdit_b_sum->setText(QString("%L1").arg(query.value(0).toDouble(),-0,'f',2));
 
         //сравнение суммы
         QPalette palette = ui->lineEdit_b_sum->palette();
@@ -177,6 +180,8 @@ void FormContract::SetupTable()
 
 
     ui->doubleSpinBox_price->installEventFilter(new MouseWheelWidgetAdjustmentGuard(ui->doubleSpinBox_price)); //блокируем прокрутку
+    ui->doubleSpinBox_price->setGroupSeparatorShown(true); //разделитель групп
+
     ui->dateEdit_contract_date->installEventFilter(new MouseWheelWidgetAdjustmentGuard(ui->dateEdit_contract_date)); //блокируем прокрутку
     ui->dateEdit_due_date->installEventFilter(new MouseWheelWidgetAdjustmentGuard(ui->dateEdit_due_date)); //блокируем прокрутку
 
@@ -244,6 +249,10 @@ void FormContract::SetupTable()
 
 void FormContract::on_pushButton_close_clicked()
 {
+    // на всякий случай
+    mapper->submit();
+    modelContracts->submit();
+
     close();
 }
 
@@ -290,6 +299,8 @@ void FormContract::on_pushButton_refr_clicked()
 void FormContract::on_pushButton_add_clicked()
 {
     // добавление
+    modelContracts->submit(); // субмитим
+
     //int row=modelContracts->rowCount();     // определяем количество записей
 
     // будем вставлять на следующую строку - как я понял играет только ыизуальную роль
@@ -381,4 +392,10 @@ void FormContract::on_comboBox_flt_counterparties_currentIndexChanged(int index)
 
     }
 
+}
+
+void FormContract::on_pushButton_rep_list_clicked()
+{
+    // запрос на создание списка для проверки
+    emit signalFromQuery("SELECT counterparties.counterparty, contracts.contract_number, contracts.contract_date, contracts.state_contract, SUM(sum), COUNT(DISTINCT contracts.contract_number), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank_decryption.contract_id=counterparties.id GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article");
 }
