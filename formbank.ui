@@ -196,6 +196,16 @@
           </widget>
          </item>
          <item>
+          <widget class="QCheckBox" name="checkBox_use_counterparties">
+           <property name="toolTip">
+            <string>Использовать контрагента в общем фильтре</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QLineEdit" name="lineEdit_flt_art">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -217,7 +227,7 @@
          <item>
           <widget class="QCheckBox" name="checkBox_flt_nodec">
            <property name="toolTip">
-            <string>Показать только нерасшифрованый</string>
+            <string>Показать только нерасшифрованные записи</string>
            </property>
            <property name="text">
             <string>Нерасшифр.</string>
@@ -548,7 +558,7 @@
          <item>
           <widget class="QComboBox" name="comboBox_counterparty">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -736,6 +746,26 @@
            <property name="icon">
             <iconset resource="pix.qrc">
              <normaloff>:/pix/add.png</normaloff>:/pix/add.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_clearCnt">
+           <property name="toolTip">
+            <string>Очистить контракт</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="pix.qrc">
+             <normaloff>:/pix/del.png</normaloff>:/pix/del.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>8</width>
+             <height>8</height>
+            </size>
            </property>
           </widget>
          </item>

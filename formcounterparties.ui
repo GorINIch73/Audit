@@ -219,6 +219,9 @@
          </item>
         </layout>
        </item>
+       <item>
+        <widget class="QTableView" name="tableView_counterparties"/>
+       </item>
       </layout>
      </item>
      <item>
@@ -243,9 +246,6 @@
       </layout>
      </item>
     </layout>
-   </item>
-   <item>
-    <widget class="QTableView" name="tableView_counterparties"/>
    </item>
   </layout>
  </widget>

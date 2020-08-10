@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>390</width>
-    <height>151</height>
+    <width>398</width>
+    <height>272</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,6 +16,19 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QPlainTextEdit" name="plainTextEdit"/>
+   </item>
+   <item>
+    <widget class="QPlainTextEdit" name="plainTextEdit_m">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout">

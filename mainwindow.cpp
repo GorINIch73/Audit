@@ -234,8 +234,7 @@ void MainWindow::on_actionExit_triggered()
 void MainWindow::on_actionNewBase_triggered()
 {
     // выбор файла базы данных
-    return; // еще не стедано!
-    QString newBase =  QFileDialog::getSaveFileName(this,tr("Create new base"),"./",tr("Data base Fules (*.qustnr)"));
+    QString newBase =  QFileDialog::getSaveFileName(this,tr("Create new base"),"./",tr("Data base Fules (*.db)"));
 
      if (!newBase.isEmpty()) {
         // создаем
@@ -258,69 +257,87 @@ void MainWindow::on_actionNewBase_triggered()
 
          QSqlQuery a_query = QSqlQuery(dbm);
 
-         // запрос на создание таблицы районов
-         QString str = "CREATE TABLE region ("
-                     "id   INTEGER       PRIMARY KEY AUTOINCREMENT UNIQUE,"
-                     "name VARCHAR (255));";
+         // запрос на создание таблицы ПП
+         QString str = "CREATE TABLE bank ("
+             "id                    INTEGER         PRIMARY KEY AUTOINCREMENT"
+                                                   " UNIQUE,"
+             "payment_number        VARCHAR,"
+             "payment_date          DATE            DEFAULT [2000-01-01],"
+             "counterparty_id       INTEGER         REFERENCES counterparties (id),"
+             "decryption_of_payment TEXT,"
+             "amount_of_payment     DECIMAL (20, 2) DEFAULT (0),"
+             "this_receipt          BOOLEAN         DEFAULT (false),"
+             "article               VARCHAR,"
+             "note                  VARCHAR"
+         ");";
          if (!a_query.exec(str))
-             qDebug() << "таблица районов: " << a_query.lastError().text();
+             qDebug() << "таблица ПП: " << a_query.lastError().text();
 
-         // запрос на создание таблицы мест проведения
-         str = "CREATE TABLE place ("
-             "id         INTEGER       PRIMARY KEY AUTOINCREMENT UNIQUE,"
-             "name       VARCHAR (255),"
-             "region_id  INTEGER       REFERENCES region (id),"
-             "for_report BOOLEAN);";
-         if (!a_query.exec(str))
-             qDebug() << "таблица мест проведения: " << a_query.lastError().text();
 
-         // запрос на создание таблицы ответов
-         str = "CREATE TABLE answers ("
-                     "id          INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,"
-                     "question_id INTEGER REFERENCES questions (id),"
-                     "answer      TEXT);";
+         // запрос на создание таблицы Расшифровок
+         str = "CREATE TABLE bank_decryption ("
+             "id                   INTEGER         PRIMARY KEY AUTOINCREMENT"
+                                                  " UNIQUE,"
+             "bank_id              INTEGER         REFERENCES bank (id),"
+             "sum                  DECIMAL (20, 2),"
+             "article_id           INTEGER         REFERENCES articles (id),"
+             "contract_id          INTEGER         REFERENCES contracts (id),"
+             "expense_confirmation BOOLEAN         DEFAULT (false) "
+         ");";
          if (!a_query.exec(str))
-             qDebug() << "таблица ответов: " << a_query.lastError().text();
+             qDebug() << "таблица Расшифровок: " << a_query.lastError().text();
 
-         // запрос на создание таблицы вопросов
-         str = "CREATE TABLE questions ("
-                 "id           INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,"
-                 "question     TEXT,"
-                 "some_answers BOOLEAN DEFAULT (false),"
-                 "be_empty     BOOLEAN DEFAULT (false),"
-                 "satisfaction BOOLEAN DEFAULT (false));";
+         // запрос на создание таблицы Статей
+         str = "CREATE TABLE articles ("
+             "id      INTEGER PRIMARY KEY AUTOINCREMENT"
+                             " UNIQUE,"
+             "article VARCHAR,"
+             "code    VARCHAR,"
+             "subcode VARCHAR"
+         ");";
          if (!a_query.exec(str))
-             qDebug() << "таблица вопросов: " << a_query.lastError().text();
+             qDebug() << "таблица Статей: " << a_query.lastError().text();
 
-         // запрос на создание таблицы анкет
-         str = "CREATE TABLE questionnaire ("
-                 "id       INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,"
-                 "place_id INTEGER REFERENCES place (id));";
+         // запрос на создание таблицы Контрагентов
+         str = "CREATE TABLE counterparties ("
+             "id           INTEGER PRIMARY KEY AUTOINCREMENT"
+                                  " UNIQUE,"
+             "counterparty TEXT,"
+             "note         VARCHAR"
+         ");";
          if (!a_query.exec(str))
-             qDebug() << "таблица аекет: " << a_query.lastError().text();
+             qDebug() << "таблица Контрагентов: " << a_query.lastError().text();
 
-         // запрос на создание таблицы данных по ответам
-         str = "CREATE TABLE answers_data ("
-                 "id               INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,"
-                 "questionnaire_id INTEGER REFERENCES questionnaire (id),"
-                 "question_id      INTEGER REFERENCES questions (id),"
-                 "answer_id        INTEGER REFERENCES answers (id));";
+         // запрос на создание таблицы Контрактов
+         str = "CREATE TABLE contracts ("
+             "id              INTEGER         PRIMARY KEY AUTOINCREMENT"
+                                             " UNIQUE,"
+             "contract_number VARCHAR,"
+             "contract_date   DATE            DEFAULT [2000-01-01],"
+             "due_date        DATE            DEFAULT [2000-01-01],"
+             "counterparty_id INTEGER         REFERENCES counterparties (id),"
+             "price           DECIMAL (20, 2) DEFAULT (0),"
+             "state_contract  BOOLEAN         DEFAULT (false),"
+             "completed       BOOLEAN         DEFAULT (false),"
+             "found           BOOLEAN         DEFAULT (false),"
+             "note            VARCHAR"
+         ");";
          if (!a_query.exec(str))
-             qDebug() << "таблица данных по ответам: " << a_query.lastError().text();
+             qDebug() << "таблица Контрактов: " << a_query.lastError().text();
 
-         // запрос на создание таблицы с настройками  // как то не так надо передалеть!
-         str = "CREATE TABLE setings ("
-                 "id          INTEGER PRIMARY KEY AUTOINCREMENT"
-                                     " UNIQUE,"
-                 "option_name VARCHAR,"
-                 "option_data VARCHAR"
-                ");";
+         // запрос на создание таблицы Настроек
+         str = "CREATE TABLE options ("
+             "organization       VARCHAR,"
+             "date_begin         DATE,"
+             "date_end           DATE,"
+             "rep_contract_found BOOLEAN DEFAULT (false) "
+         ");";
          if (!a_query.exec(str))
-             qDebug() << "таблица настроек: " << a_query.lastError().text();
-         // вставить значения опций
-         str = "INSERT INTO setings(option_name) values ('Наименование анкеты'),('Примечание');";
+             qDebug() << "таблица Настроек: " << a_query.lastError().text();
+         // вставить строку
+         str = "INSERT INTO options (organization) values ('');";
          if (!a_query.exec(str))
-             qDebug() << "таблица настроек: " << a_query.lastError().text();
+             qDebug() << "таблица настроек строка: " << a_query.lastError().text();
 
 
          //

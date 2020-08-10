@@ -118,21 +118,24 @@ void DialogNewContract::setColor()
 {
      if(base.isOpen() && !ui->lineEditNumber->text().isEmpty()) {
         QSqlQuery query(base);
-        QString ss=QString("SELECT id FROM contracts WHERE contract_number='%1' AND contract_date='%2'").arg(ui->lineEditNumber->text()).arg(ui->dateEditDate->date().toString("yyyy-MM-dd"));
+//        QString ss=QString("SELECT * FROM contracts  WHERE contract_number='%1' AND contract_date='%2'").arg(ui->lineEditNumber->text()).arg(ui->dateEditDate->date().toString("yyyy-MM-dd"));
+        QString ss=QString("SELECT contract_number, contract_date, counterparties.counterparty FROM contracts left join counterparties on contracts.counterparty_id=counterparties.id WHERE contract_number='%1' AND contract_date='%2'").arg(ui->lineEditNumber->text()).arg(ui->dateEditDate->date().toString("yyyy-MM-dd"));
         qDebug() << ss;
-//        query.exec(ss);
+        query.exec(ss);
 
         QPalette palette = ui->lineEditNumber->palette();
 
         if(query.first()) {
             // устанавливаем цвет в красный
-            //qDebug() << "Dublikate";
+            qDebug() << "Dublikate";
             palette.setColor(QPalette::Base, Qt::red);
             ui->lineEditNumber->setPalette(palette);
+            ui->plainTextEdit_m->setPlainText(QString("Дубликат: %1 %2 %3").arg(query.value(0).toString()).arg(query.value(1).toString()).arg(query.value(2).toString()));
         }
         else {
-            // устанавливаем цвет в красный
+            // устанавливаем цвет в белый
             //qDebug() << "Color reset";
+            ui->plainTextEdit_m->setPlainText("");
             palette.setColor(QPalette::Base, Qt::white);
             ui->lineEditNumber->setPalette(palette);
         }

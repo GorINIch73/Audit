@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <QDebug>
+#include <QStatusTipEvent>
 
 
 FormOptions::FormOptions(QSqlDatabase db,QWidget *parent) :
@@ -66,6 +67,9 @@ void FormOptions::on_pushButton_clearBase_clicked()
         QMessageBox::critical(this,"Error","База не открыта!");
         return;
     }
+
+    QCoreApplication::postEvent(this, new QStatusTipEvent(QString("Очистка базы подождите ...")));
+
     QSqlQuery a_query = QSqlQuery(base);
 
     //очистка расшифровок
@@ -115,11 +119,9 @@ void FormOptions::on_pushButton_clearBase_clicked()
 
     }
 
-
-
     //
     QMessageBox::information(this,"Info","Операция завершена.");
-
+    QCoreApplication::postEvent(this, new QStatusTipEvent(QString("Очистка базы завершена.")));
 }
 
 void FormOptions::on_checkBox_counterparties_stateChanged(int arg1)

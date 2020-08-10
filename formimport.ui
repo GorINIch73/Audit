@@ -19,7 +19,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Файл для импорта (CSV разделитель: табуляция):</string>
+        <string>Файл для импорта txt (TSV разделитель: табуляция):</string>
        </property>
       </widget>
      </item>

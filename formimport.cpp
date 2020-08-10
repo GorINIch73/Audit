@@ -41,7 +41,7 @@ void FormImport::on_pushButton_getFile_clicked()
 
     // откты файл импорта
     // выбор файла
-    importName = QFileDialog::getOpenFileName(this,QString("Открыть файл"),QDir::currentPath(),tr("Типы файлов (*.csv;*.txt;);;Все файлы (*.*)"));
+    importName = QFileDialog::getOpenFileName(this,QString("Открыть файл"),QDir::currentPath(),tr("Типы файлов (*.tsv;*.csv;*.txt;);;Все файлы (*.*)"));
     //importName=QString("d:/Qt/Project/base_a/import.txt"); // временно пропускаем выбор
     ui->lineEdit_file->setText(importName);
     qDebug() << "Импорт из: " << importName;
@@ -77,6 +77,7 @@ void FormImport::on_pushButton_getFile_clicked()
                combo->addItem("decryption_of_payment");
                combo->addItem("amount_of_payment");
                combo->addItem("article");
+               combo->addItem("note");
                combo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
                ui->tableWidget->setCellWidget(0, i, combo);
 
@@ -110,6 +111,7 @@ void FormImport::on_pushButton_close_clicked()
 void FormImport::on_pushButton_ImportZ_clicked()
 {
     //импорт кучей
+    // надо реализовать составное примечание  из поля и ручного - хз как
 
     // подтверждение импорта
     if(QMessageBox::Yes != QMessageBox::question(this, tr("Внимание!"),
@@ -127,6 +129,9 @@ void FormImport::on_pushButton_ImportZ_clicked()
 
     QString sep = "\t";
     QString tabl = "bank";
+
+    bool manual_note=false;
+
        QFile file(importName);
        if(file.open (QIODevice::ReadOnly)){
 
@@ -155,6 +160,8 @@ void FormImport::on_pushButton_ImportZ_clicked()
                    req.append(box->currentText());
                    req.append(",");
                    count_t++;
+                   //проверка на поле примечание
+                   if (box->currentText()=="note") manual_note=false;
                }
             }
 
@@ -168,10 +175,10 @@ void FormImport::on_pushButton_ImportZ_clicked()
            }
            req.chop(1);
 
-           // если не пустое поле с примечанием добавляем его
-           if (!ui->lineEdit_note->text().isEmpty())
+           // если не пустое поле с примечанием и оно не добавлено в таблице добавляем его принудительно
+           if (!ui->lineEdit_note->text().isEmpty() && manual_note)
                 req.append(",note");
-           // если кстановлен признак поступления добавляем его
+           // если установлен признак поступления добавляем его принудительно
            if (ui->checkBox_receipt->isChecked())
                 req.append(",this_receipt");
 
@@ -272,6 +279,12 @@ void FormImport::on_pushButton_ImportZ_clicked()
                                    tt=date.toString("yyyy-MM-dd");
                                    //qDebug << date;
                            }
+                           // если поле это примечание выбранное в таблице и не пустое примечание в поле лайнэдит то совмещаем строки
+                           if (box->currentText() == "note" && !ui->lineEdit_note->text().isEmpty()) {
+                                   tt= QString("%1 : %2").arg(ui->lineEdit_note->text()).arg(tt);
+                           }
+
+
 
                             //если это не контрагнеты то вставляем просто значение
                             val_line.append(tt);
@@ -282,8 +295,8 @@ void FormImport::on_pushButton_ImportZ_clicked()
                // собрали строку
                val_line.chop(1);
 
-               // если не пустое поле с примечанием добавляем его
-               if (!ui->lineEdit_note->text().isEmpty()) {
+               // если не пустое поле с примечанием и добавлено вручную добавляем его
+               if (!ui->lineEdit_note->text().isEmpty() && manual_note) {
                     val_line.append(",'");
                     val_line.append(ui->lineEdit_note->text());
                     val_line.append("'");

@@ -82,7 +82,8 @@ private slots:
 
     void on_checkBox_flt_nodec_stateChanged(int arg1);
 
-    void on_comboBox_counterparty_activated(const QString &arg1);
+
+    void on_pushButton_clearCnt_clicked();
 
 private:
     Ui::FormBank *ui;
