@@ -98,9 +98,6 @@
    <addaction name="actionContracts"/>
    <addaction name="actionCounterparties"/>
    <addaction name="actionArticles"/>
-   <addaction name="actionRep_bank"/>
-   <addaction name="actionImportPP"/>
-   <addaction name="actionOptions"/>
   </widget>
   <action name="actionBank">
    <property name="text">

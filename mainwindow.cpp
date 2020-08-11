@@ -118,6 +118,18 @@ void MainWindow::on_actionOpenBase_triggered()
             ui->actionCloseBase->setEnabled(true);
 
             ui->actionSaveAs->setEnabled(true);
+
+            ui->actionBank->setEnabled(true);
+            ui->actionArticles->setEnabled(true);
+            ui->actionCounterparties->setEnabled(true);
+            ui->actionContracts->setEnabled(true);
+            ui->actionOptions->setEnabled(true);
+            ui->actionImportPP->setEnabled(true);
+            ui->actionRep_bank->setEnabled(true);
+            ui->actionRepContracts->setEnabled(true);
+            ui->actionRepContracsShort->setEnabled(true);
+            ui->actionRepContractsIsNote->setEnabled(true);
+
             // открываем новую базу
             OpenBase();
      }
@@ -135,8 +147,18 @@ void MainWindow::on_actionCloseBase_triggered()
     this->setWindowTitle("Аудит: no base");
     ui->actionCloseBase->setEnabled(false);
     ui->actionOpenBase->setEnabled(true);
-
     ui->actionSaveAs->setEnabled(false);
+
+    ui->actionBank->setEnabled(false);
+    ui->actionArticles->setEnabled(false);
+    ui->actionCounterparties->setEnabled(false);
+    ui->actionContracts->setEnabled(false);
+    ui->actionOptions->setEnabled(false);
+    ui->actionImportPP->setEnabled(false);
+    ui->actionRep_bank->setEnabled(false);
+    ui->actionRepContracts->setEnabled(false);
+    ui->actionRepContracsShort->setEnabled(false);
+    ui->actionRepContractsIsNote->setEnabled(false);
 
 }
 

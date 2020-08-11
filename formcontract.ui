@@ -66,6 +66,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_refr">
+           <property name="toolTip">
+            <string>Обновить</string>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -77,6 +80,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_add">
+           <property name="toolTip">
+            <string>Добавить</string>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -88,6 +94,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_del">
+           <property name="toolTip">
+            <string>Удалить</string>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -139,6 +148,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_prev_con">
+           <property name="toolTip">
+            <string>Предыдущий контрагент</string>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -156,6 +168,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_next_con">
+           <property name="toolTip">
+            <string>Следующий контрагент</string>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -174,7 +189,7 @@
          <item>
           <widget class="QLineEdit" name="lineEdit_flt_all">
            <property name="toolTip">
-            <string>Фильтр по назначению, сумме, примечанию, дате</string>
+            <string>Фильтр по номеру, примечанию</string>
            </property>
           </widget>
          </item>
@@ -201,14 +216,14 @@
        <item row="1" column="0">
         <widget class="QPushButton" name="pushButton_rep02">
          <property name="toolTip">
-          <string>Очистить все расшифровки</string>
+          <string/>
          </property>
          <property name="text">
           <string/>
          </property>
          <property name="icon">
           <iconset resource="pix.qrc">
-           <normaloff>:/pix/forma.png</normaloff>:/pix/forma.png</iconset>
+           <normaloff>:/pix/query.png</normaloff>:/pix/query.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -227,14 +242,14 @@
           </sizepolicy>
          </property>
          <property name="toolTip">
-          <string>Добавить расшифровки с выбранной статьей</string>
+          <string>Сформировать список контрактов</string>
          </property>
          <property name="text">
           <string/>
          </property>
          <property name="icon">
           <iconset resource="pix.qrc">
-           <normaloff>:/pix/forma.png</normaloff>:/pix/forma.png</iconset>
+           <normaloff>:/pix/query.png</normaloff>:/pix/query.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -253,6 +268,9 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Зактыть вкладку</string>
        </property>
        <property name="text">
         <string/>

@@ -310,11 +310,19 @@ void FormBank::on_pushButton_last_clicked()
 
 void FormBank::on_pushButton_refr_clicked()
 {
+
+    // субмитим изменения
+    modelBank->submit();
+    modelBank_decryption->submit();
+
     //восстановление курсора
     int row = ui->tableView_bank->currentIndex().row();
     //QString flt = modelBank->filter();
 
-    //обновить по простому
+    // перенастраиваем
+    SetupTable();
+
+    //селектим
     modelBank->select();
     modelBank_decryption->select();
     modelArticles->select();
@@ -429,7 +437,9 @@ void FormBank::on_pushButton_flt_clr_clicked()
 void FormBank::on_pushButton_add_dec_clicked()
 {
     //добавление расшифровки по сумме ПП
-
+    // субмитим
+    modelBank->submit();
+    modelBank_decryption->submit();
 
     // запрос на оперделение уже учтенной суммы платежа, для вычисления остатка
     double summ=modelBank->data(modelBank->index(ui->tableView_bank->currentIndex().row(),modelBank->fieldIndex("amount_of_payment"))).toDouble();

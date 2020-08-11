@@ -19,5 +19,9 @@
         <file>pix/dog_a.png</file>
         <file>pix/dog_d.png</file>
         <file>pix/Иконки.svg</file>
+        <file>pix/erase.png</file>
+        <file>pix/prog.png</file>
+        <file>pix/query.png</file>
+        <file>pix/rep.png</file>
     </qresource>
 </RCC>
