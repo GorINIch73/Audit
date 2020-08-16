@@ -81,14 +81,17 @@ void FormContract::seekTable()
 
         QSqlQuery query(base);
 
+
         QString ss= QString("SELECT round(SUM(sum),2) FROM bank_decryption WHERE contract_id = \%1 ").arg(modelContracts->data(modelContracts->index(ui->tableView_contracts->currentIndex().row(), 0)).toString());
         if(!query.exec(ss)) {
-           qDebug() << "ERROR SELECT bank_decryption: " << query.lastError().text();
+           qDebug() << "ERROR SELECT bank_decryption seek: " << query.lastError().text();  // хз почему делает при открытии 3 раза 2 из которых с ошибкой из за пустого списка
            return;
         }
         query.first();
     //    ui->lineEdit_b_sum->setText(QString::number(query.value(0).toDouble(),'g',20));
         ui->lineEdit_b_sum->setText(QString("%L1").arg(query.value(0).toDouble(),-0,'f',2));
+
+//        qDebug() << "bank_decryption seek ok";
 
         //сравнение суммы
         QPalette palette = ui->lineEdit_b_sum->palette();

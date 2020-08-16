@@ -21,6 +21,8 @@ FormBank::FormBank(QSqlDatabase db, QWidget *parent) :
     ui->setupUi(this);
     setAttribute(Qt::WA_DeleteOnClose);
 
+
+
     base=db;
     //создание обьектов таблиц
     modelBank = new QSqlRelationalTableModel(this,base);
