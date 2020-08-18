@@ -135,7 +135,7 @@ void FormQuery::customContextMenu(const QPoint &)
 void FormQuery::aCopy()
 {
        qDebug() << "Copy";
-
+        // странно работает! переделать!!
        QAbstractItemModel * model = ui->tableView->model();
        QItemSelectionModel * selection = ui->tableView->selectionModel();
        QModelIndexList indexes = selection->selectedIndexes();
@@ -143,13 +143,16 @@ void FormQuery::aCopy()
        QString selected_text;
        // You need a pair of indexes to find the row changes
        QModelIndex previous = indexes.first();
+     //  int first_row=previous.row();
        indexes.removeFirst();
        foreach(const QModelIndex &current, indexes)
        {
-           QVariant data = model->data(current);
+           //QVariant data = model->data(current);
+           QVariant data = model->data(previous);
            QString text = data.toString();
            // At this point `text` contains the text in one cell
            selected_text.append(text);
+
            // If you are at the start of the row the row number of the previous index
            // isn't the same.  Text is followed by a row separator, which is a newline.
            if (current.row() != previous.row())
@@ -164,6 +167,13 @@ void FormQuery::aCopy()
            previous = current;
        }
 
+       // добавляем последний
+       QVariant data = model->data(indexes.last());
+       QString text = data.toString();
+       selected_text.append(text);
+       selected_text.append('\n');
+
+        qDebug() << selected_text;
        QClipboard *clipboard = QGuiApplication::clipboard();
        clipboard->setText(selected_text);
 

@@ -27,6 +27,11 @@ public:
     explicit FormBank(QSqlDatabase db, QWidget *parent = nullptr);
     ~FormBank();
 
+signals:
+
+    void signalFromQuery(QString sq); // сигнал для запроса
+
+
 private slots:
     void on_pushButton_close_clicked();
     void slotSelectionChange(const QItemSelection &current, const QItemSelection &previous);
@@ -84,6 +89,8 @@ private slots:
 
 
     void on_pushButton_clearCnt_clicked();
+
+    void on_pushButton_rep_b_clicked();
 
 private:
     Ui::FormBank *ui;

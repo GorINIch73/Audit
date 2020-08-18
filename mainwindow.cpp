@@ -103,7 +103,7 @@ void MainWindow::on_actionOpenBase_triggered()
     // отктыьб базу данных
     // выбор файла базы данных
     if (databaseName.isEmpty())
-     databaseName = QFileDialog::getOpenFileName(this,tr("Open base"),"./",tr("Data base Fules (*.db)"));
+     databaseName = QFileDialog::getOpenFileName(this,tr("Open base"),"./",tr("Data base Fules (*.db); (*)"));
 
      if (!databaseName.isEmpty()) {
         // закрывкем старую

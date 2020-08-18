@@ -57,6 +57,8 @@ FormBank::FormBank(QSqlDatabase db, QWidget *parent) :
     connect(ui->tableView_bank->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
                  SLOT(slotSelectionChange(const QItemSelection &, const QItemSelection &)));
 
+    // сигнал создания запроса во вкладках
+    connect(this, SIGNAL(signalFromQuery(QString)),parent, SLOT(slot_goQuery(QString)));
     ui->tableView_bank->selectRow(0);
 
 }
@@ -260,7 +262,7 @@ void FormBank::TunBank_decryption()
     ui->comboBox_counterparty->setCurrentIndex(ui->comboBox_counterparty->findText(ui->comboBox_counterparty->currentText())); // хз только рак корректно работает - принудительно ищем индекс
 
 
-    // посчтитать итого
+    // посчтитать итого расшифровок
 
     QSqlQuery query(base);
 
@@ -272,6 +274,21 @@ void FormBank::TunBank_decryption()
     query.first();
 //    ui->lineEdit_d_sum->setText(query.value(0).toString());
     ui->lineEdit_d_sum->setText(QString("%L1").arg(query.value(0).toDouble(),-0,'f',2));
+
+    // расчитать сумму ИТОГО банка
+
+    if (!modelBank->filter().isEmpty()) {
+        ss= QString("SELECT round(SUM(amount_of_payment),2) FROM bank WHERE (NOT this_receipt = true) AND ( \%1 ) ").arg(modelBank->filter());
+        qDebug() << ss;
+
+        if(!query.exec(ss)) {
+           qDebug() << "ERROR SELECT bank: " << query.lastError().text();
+           return;
+        }
+        query.first();
+        qDebug() << "Сумма" << query.value(0).toString();
+        ui->lineEdit_summa_b->setText(QString("%L1").arg(query.value(0).toDouble(),-0,'f',2));
+    }
 
 }
 
@@ -911,4 +928,36 @@ void FormBank::on_pushButton_clearCnt_clicked()
     }
 
     modelBank_decryption->select();
+}
+
+void FormBank::on_pushButton_rep_b_clicked()
+{
+    // запрос на создание списка для проверки
+
+//    QSqlQuery a_query = QSqlQuery(base);
+
+//    //читаем настнойки из базы
+//    QString organization = "";
+//    QString dateBegin = "";
+//    QString dateEnd = "";
+
+//    if (!a_query.exec("SELECT organization, date_begin, date_end FROM options"))
+//            qDebug() << "Ошибка чтения настроек: " << a_query.lastError().text();
+//    else {
+//        a_query.first();
+//        organization = a_query.value(0).toString();
+//        dateBegin = a_query.value(1).toString();
+//        dateEnd = a_query.value(2).toString();
+//    }
+
+//    // фильтр дат
+//    QString flt="";
+//    if (!dateBegin.isEmpty() && !dateEnd.isEmpty())
+//        flt=QString("WHERE bank.payment_date >= '%1' AND bank.payment_date <= '%2'").arg(dateBegin).arg(dateEnd);
+//    // запрос
+//    QString query = QString("SELECT strftime('%Y',bank.payment_date), bank.this_receipt, articles.article, ROUND(SUM(sum),2), COUNT(bank.payment_number) FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id %1 GROUP BY strftime('%Y',bank.payment_date), bank.this_receipt, articles.article;").arg(flt);
+
+
+    emit signalFromQuery("SELECT strftime('%Y',bank.payment_date), bank.this_receipt, articles.article, ROUND(SUM(sum),2), COUNT(bank.payment_number) FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id GROUP BY strftime('%Y',bank.payment_date), bank.this_receipt, articles.article;");
+
 }
