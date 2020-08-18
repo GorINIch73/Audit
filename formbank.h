@@ -92,6 +92,8 @@ private slots:
 
     void on_pushButton_rep_b_clicked();
 
+    void on_pushButton_Rep_Err_clicked();
+
 private:
     Ui::FormBank *ui;
 

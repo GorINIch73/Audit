@@ -103,7 +103,7 @@ void FormCounterparties::Tune()
     }
 
         //запрос
-        QString ff = QString("SELECT articles.article, sum, bank.payment_date, bank.payment_number, bank.decryption_of_payment, expense_confirmation FROM bank_decryption inner join bank on bank_decryption.bank_id=bank.id inner join articles on bank_decryption.article_id=articles.id WHERE counterparty_id = \%1 ORDER BY articles.article").arg(modelCounterparties->data(modelCounterparties->index(ui->tableView_counterparties->currentIndex().row(), 0)).toString());
+        QString ff = QString("SELECT articles.article, ROUND(sum,2), bank.payment_date, bank.payment_number, bank.decryption_of_payment, expense_confirmation FROM bank_decryption inner join bank on bank_decryption.bank_id=bank.id inner join articles on bank_decryption.article_id=articles.id WHERE counterparty_id = \%1 ORDER BY articles.article").arg(modelCounterparties->data(modelCounterparties->index(ui->tableView_counterparties->currentIndex().row(), 0)).toString());
 //        qDebug() << ff;
         modelBank_decryption->setQuery(ff,base);
 

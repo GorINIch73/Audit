@@ -141,39 +141,32 @@ void FormQuery::aCopy()
        QModelIndexList indexes = selection->selectedIndexes();
 
        QString selected_text;
-       // You need a pair of indexes to find the row changes
+       // Запоминаем первое значение
        QModelIndex previous = indexes.first();
-     //  int first_row=previous.row();
+        // записываем первое значение - оно всегда есть
+       selected_text.append(model->data(previous).toString());
+       //удаляем первое значение из последующей обработки
        indexes.removeFirst();
        foreach(const QModelIndex &current, indexes)
        {
-           //QVariant data = model->data(current);
-           QVariant data = model->data(previous);
-           QString text = data.toString();
-           // At this point `text` contains the text in one cell
-           selected_text.append(text);
 
-           // If you are at the start of the row the row number of the previous index
-           // isn't the same.  Text is followed by a row separator, which is a newline.
+           // если та же строка, что и предыдущая, то ставим табуляцию иначе конец строки
            if (current.row() != previous.row())
            {
                selected_text.append('\n');
            }
-           // Otherwise it's the same row, so append a column separator, which is a tab.
            else
            {
                selected_text.append('\t');
            }
+
+           // добавляем текущую
+           selected_text.append(model->data(current).toString());
+           // запоминаем
            previous = current;
        }
 
-       // добавляем последний
-       QVariant data = model->data(indexes.last());
-       QString text = data.toString();
-       selected_text.append(text);
-       selected_text.append('\n');
-
-        qDebug() << selected_text;
+//        qDebug() << selected_text;
        QClipboard *clipboard = QGuiApplication::clipboard();
        clipboard->setText(selected_text);
 

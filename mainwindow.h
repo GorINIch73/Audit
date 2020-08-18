@@ -4,6 +4,16 @@
 #include <QMainWindow>
 #include <QSqlDatabase>
 
+#define ORGANIZATION_NAME "gorinich-co"
+#define ORGANIZATION_DOMAIN ""
+#define APPLICATION_NAME "audit"
+#define SETTINGS_BASE_FILE1 "File1"
+#define SETTINGS_BASE_FILE2 "File2"
+#define SETTINGS_BASE_FILE3 "File3"
+
+#define FILE_EXT ".dbad"
+
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -58,6 +68,14 @@ private slots:
 
     void slot_goQuery(QString sq); // запуск запроса
 
+    void slot_OpenBase(QString fb); // открвть базу по имени
+
+
+    void on_actionFile01_triggered();
+
+    void on_actionFile02_triggered();
+
+    void on_actionFile03_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -66,5 +84,7 @@ private:
     QSqlDatabase database;
 
     bool OpenBase();
+    void SetHistory();
+
 };
 #endif // MAINWINDOW_H

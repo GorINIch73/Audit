@@ -29,6 +29,10 @@
 #include <QPainter>
 #include <QDesktopServices>
 #include <QCommandLineParser>
+#include <QSettings>
+
+
+
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -48,9 +52,12 @@ MainWindow::MainWindow(QWidget *parent)
         on_actionOpenBase_triggered();
     }
 
+    SetHistory();
+
 
     // сигнал создания запроса
     connect(this,&MainWindow::signalFromQuery,this,&MainWindow::slot_goQuery);
+
 
 
 }
@@ -88,7 +95,55 @@ bool MainWindow::OpenBase()
 
     // титульный окна имя базы
     this->setWindowTitle("Аудит: '" + query.value(0).toString() + "' База: "+ databaseName);
-    return true;
+
+     // добавляем имя базы в историю
+     QSettings settings(QSettings::IniFormat, QSettings::UserScope, ORGANIZATION_NAME, APPLICATION_NAME);
+ //     settings.setValue(SETTINGS_BASE_FILE1, "");
+     QString file1=settings.value(SETTINGS_BASE_FILE1, "").toString();
+     QString file2=settings.value(SETTINGS_BASE_FILE2, "").toString();
+     QString file3=settings.value(SETTINGS_BASE_FILE3, "").toString();
+
+     if(file1!=databaseName) {
+         // сохраняем
+         settings.setValue(SETTINGS_BASE_FILE3, file2);
+         settings.setValue(SETTINGS_BASE_FILE2, file1);
+         settings.setValue(SETTINGS_BASE_FILE1, databaseName);
+         // сбвигаем меню
+         ui->actionFile01->setText(databaseName);
+         ui->actionFile02->setText(file1);
+         ui->actionFile03->setText(file2);
+     }
+
+
+     return true;
+}
+
+void MainWindow::SetHistory()
+{
+    // чтот динамически не выхло пока сделаю по простому
+    // gпрочитать и добавить историю открытий баз
+
+    // считать из настроек имя базы
+
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, ORGANIZATION_NAME, APPLICATION_NAME);
+//     settings.setValue(SETTINGS_BASE_FILE1, "");
+    QString file1=settings.value(SETTINGS_BASE_FILE1, "").toString();
+    QString file2=settings.value(SETTINGS_BASE_FILE2, "").toString();
+    QString file3=settings.value(SETTINGS_BASE_FILE3, "").toString();
+
+//    if(!file1.isEmpty())
+//        ui->menu->addAction(file1, this, SLOT(quit()));
+//    if(!file2.isEmpty())
+//        ui->menu->addAction(file2, this, SLOT(slot_OpenBase(file2)));
+//    if(!file3.isEmpty())
+//        ui->menu->addAction(file3, this, SLOT(slot_OpenBase(file3)));
+
+    if(!file1.isEmpty())
+        ui->actionFile01->setText(file1);
+    if(!file2.isEmpty())
+        ui->actionFile02->setText(file2);
+    if(!file3.isEmpty())
+        ui->actionFile03->setText(file3);
 }
 
 void MainWindow::on_actionBank_triggered()
@@ -98,12 +153,59 @@ void MainWindow::on_actionBank_triggered()
     ui->tabWidgetMain->setCurrentIndex(0);
 }
 
+void MainWindow::slot_OpenBase(QString fb)
+{
+    qDebug() << "Open history";
+
+    databaseName = fb;
+    on_actionOpenBase_triggered();
+}
+
+
+void MainWindow::on_actionFile01_triggered()
+{
+    //файл истории 01
+    if(!ui->actionFile01->text().isEmpty()) {
+        databaseName = ui->actionFile01->text();
+        on_actionOpenBase_triggered();
+    }
+}
+
+void MainWindow::on_actionFile02_triggered()
+{
+    //файл истории 02
+    if(!ui->actionFile02->text().isEmpty()) {
+        databaseName = ui->actionFile02->text();
+        on_actionOpenBase_triggered();
+    }
+
+}
+
+void MainWindow::on_actionFile03_triggered()
+{
+    //файл истории 03
+    if(!ui->actionFile03->text().isEmpty()) {
+        databaseName = ui->actionFile03->text();
+        on_actionOpenBase_triggered();
+    }
+
+}
+
+
 void MainWindow::on_actionOpenBase_triggered()
 {
     // отктыьб базу данных
     // выбор файла базы данных
     if (databaseName.isEmpty())
-     databaseName = QFileDialog::getOpenFileName(this,tr("Open base"),"./",tr("Data base Fules (*.db); (*)"));
+     databaseName = QFileDialog::getOpenFileName(this,tr("Open base"),"./",QString("Data base Files (*%1);; All file (*)").arg(FILE_EXT));
+
+    // если файл присутствует
+    //проверяем на наличие файл базы
+    if(!QFile(databaseName).exists()){
+        qDebug() << "Файла базы нет!";
+        QMessageBox::information(this,"Error","Выбранная база не существует!");
+        return;
+    }
 
      if (!databaseName.isEmpty()) {
         // закрывкем старую
@@ -212,11 +314,15 @@ void MainWindow::on_actionSaveAs_triggered()
     // дублирование базы
     if (!databaseName.isEmpty()) {
         // запросить новое имя
-        QString  newBase = QFileDialog::getSaveFileName(this,tr("Сохранить как"),databaseName,tr("Data base Fules (*.db)"));
+        QString  newBase = QFileDialog::getSaveFileName(this,tr("Сохранить как"),databaseName,QString("Data base Fules (*%1);; All (*)").arg(FILE_EXT));
         // если дано новое имя
         if (databaseName != newBase) {
             database.close();
             qDebug() << "copy " << databaseName << " to " << newBase;
+            //если нет расширения добавляем
+            if (newBase.indexOf(FILE_EXT)==-1)
+                newBase.append(FILE_EXT);
+
             // возможно надо проверить не открыта ли база кем то еще
             if (!QFile::copy(databaseName,newBase)) {
                     QMessageBox::critical(this,"ERROR","База не скопирована!");
@@ -247,7 +353,6 @@ void MainWindow::slot_goQuery(QString sq)
 }
 
 
-
 void MainWindow::on_actionExit_triggered()
 {
         QApplication::closeAllWindows();
@@ -256,10 +361,14 @@ void MainWindow::on_actionExit_triggered()
 void MainWindow::on_actionNewBase_triggered()
 {
     // выбор файла базы данных
-    QString newBase =  QFileDialog::getSaveFileName(this,tr("Create new base"),"./",tr("Data base Fules (*.db)"));
+    QString newBase =  QFileDialog::getSaveFileName(this,tr("Create new base"),"./",QString("Data base Fules (*%1);;All (*)").arg(FILE_EXT));
 
      if (!newBase.isEmpty()) {
         // создаем
+
+         //если нет расширения добавляем
+         if (newBase.indexOf(FILE_EXT)==-1)
+             newBase.append(FILE_EXT);
 
          //проверяем на наличие файл базы
          if(QFile(newBase).exists()){

@@ -49,6 +49,10 @@
     <addaction name="actionNewBase"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
+    <addaction name="separator"/>
+    <addaction name="actionFile01"/>
+    <addaction name="actionFile02"/>
+    <addaction name="actionFile03"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -233,6 +237,21 @@
    </property>
    <property name="toolTip">
     <string>Вызов запроса</string>
+   </property>
+  </action>
+  <action name="actionFile01">
+   <property name="text">
+    <string/>
+   </property>
+  </action>
+  <action name="actionFile02">
+   <property name="text">
+    <string/>
+   </property>
+  </action>
+  <action name="actionFile03">
+   <property name="text">
+    <string/>
    </property>
   </action>
  </widget>

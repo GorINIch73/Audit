@@ -455,24 +455,48 @@
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_6"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton_rep_b">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="pix.qrc">
-         <normaloff>:/pix/query.png</normaloff>:/pix/query.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>24</width>
-         <height>24</height>
-        </size>
-       </property>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QPushButton" name="pushButton_rep_b">
+         <property name="toolTip">
+          <string>Итоги</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="pix.qrc">
+           <normaloff>:/pix/query.png</normaloff>:/pix/query.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>24</width>
+           <height>24</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_Rep_Err">
+         <property name="toolTip">
+          <string>Выборка неравняющихся расшифровок</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="pix.qrc">
+           <normaloff>:/pix/query.png</normaloff>:/pix/query.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>24</width>
+           <height>24</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_close">

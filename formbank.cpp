@@ -959,5 +959,12 @@ void FormBank::on_pushButton_rep_b_clicked()
 
 
     emit signalFromQuery("SELECT strftime('%Y',bank.payment_date), bank.this_receipt, articles.article, ROUND(SUM(sum),2), COUNT(bank.payment_number) FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id GROUP BY strftime('%Y',bank.payment_date), bank.this_receipt, articles.article;");
+    // SELECT * FROM (SELECT bank.id, bank.payment_number, bank.payment_date, bank.amount_of_payment, ROUND(SUM(sum),2) AS summa, COUNT(bank.payment_number) AS count FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id GROUP BY bank.id, bank_decryption.bank_id) WHERE NOT (amount_of_payment = summa)
+
+}
+
+void FormBank::on_pushButton_Rep_Err_clicked()
+{
+    emit signalFromQuery("SELECT * FROM (SELECT bank.id, bank.payment_number, bank.payment_date,  ROUND(bank.amount_of_payment,2), ROUND(SUM(sum),2) AS summa, COUNT(bank.payment_number) AS count FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id GROUP BY bank.id, bank_decryption.bank_id) WHERE NOT (amount_of_payment = summa)");
 
 }

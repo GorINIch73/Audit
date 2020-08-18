@@ -86,7 +86,7 @@ void FormArticles::SetupTable()
 
     //Таблица расшифровок
     modelBank_decryption->setQuery("SELECT * FROM bank_decryption",base);
-//    modelBank_decryption->setQuery("SELECT counterparties.counterparty, sum, bank.payment_date, bank.payment_number, expense_confirmation, bank.decryption_of_payment  FROM bank_decryption inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank.counterparty_id=counterparties.id ORDER BY counterparties.counterparty",base);
+//    modelBank_decryption->setQuery("SELECT counterparties.counterparty, ROUND(sum,2), bank.payment_date, bank.payment_number, expense_confirmation, bank.decryption_of_payment  FROM bank_decryption inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank.counterparty_id=counterparties.id ORDER BY counterparties.counterparty",base);
 
     // названия колонок
     modelBank_decryption->setHeaderData(0,Qt::Horizontal,"Контрагент");
@@ -123,7 +123,7 @@ void FormArticles::Tune()
         }
         //запрос
 //        QString ff = QString("SELECT counterparties.counterparty, sum, bank.payment_date, bank.payment_number, bank.decryption_of_payment, expense_confirmation  FROM bank_decryption inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank.counterparty_id=counterparties.id WHERE article_id = \%1 \%2 ORDER BY counterparties.counterparty").arg(modelArticles->data(modelArticles->index(ui->tableView_articles->currentIndex().row(), 0)).toString()).arg(ss);
-        QString ff = QString("SELECT counterparties.counterparty, sum, bank.payment_date, bank.payment_number, bank.decryption_of_payment, expense_confirmation  FROM bank_decryption inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank.counterparty_id=counterparties.id WHERE article_id = \%1 \%2 ORDER BY counterparties.counterparty");
+        QString ff = QString("SELECT counterparties.counterparty, ROUND(sum,2), bank.payment_date, bank.payment_number, bank.decryption_of_payment, expense_confirmation  FROM bank_decryption inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank.counterparty_id=counterparties.id WHERE article_id = \%1 \%2 ORDER BY counterparties.counterparty");
         ff=ff.arg(modelArticles->data(modelArticles->index(ui->tableView_articles->currentIndex().row(), 0)).toString()).arg(ss);
 //        qDebug() << ff;
         modelBank_decryption->setQuery(ff,base);
