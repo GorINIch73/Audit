@@ -39,9 +39,9 @@
   <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>270</y>
-     <width>311</width>
+     <x>30</x>
+     <y>180</y>
+     <width>501</width>
      <height>66</height>
     </rect>
    </property>
@@ -140,6 +140,38 @@
      <widget class="QCheckBox" name="checkBox_rep_contract_found">
       <property name="text">
        <string>Отчет по контрактам только для найденных</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QFrame" name="frame_3">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>260</y>
+     <width>501</width>
+     <height>45</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Box</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item>
+     <widget class="QPushButton" name="pushButton_ImportArticles">
+      <property name="text">
+       <string>Импорт справочника Статей</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton_ExportArticles">
+      <property name="text">
+       <string>Экспорт справочника Статей</string>
       </property>
      </widget>
     </item>

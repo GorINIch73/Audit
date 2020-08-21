@@ -258,8 +258,8 @@ void FormBank::TunBank_decryption()
 
     // при изменение строки в таблвьюве устанавливаем маппер на соответствующую запись
     mapper->setCurrentIndex(ui->tableView_bank->currentIndex().row());
-    // руками настраиваем индекс тулбокса
-    ui->comboBox_counterparty->setCurrentIndex(ui->comboBox_counterparty->findText(ui->comboBox_counterparty->currentText())); // хз только рак корректно работает - принудительно ищем индекс
+    // руками настраиваем индекс комбобокса
+    ui->comboBox_counterparty->setCurrentIndex(ui->comboBox_counterparty->findText(ui->comboBox_counterparty->currentText())); // хз только так корректно работает - принудительно ищем индекс
 
 
     // посчтитать итого расшифровок
@@ -734,13 +734,20 @@ void FormBank::on_pushButton_contracts_add_new_clicked()
 
     DialogNewContract *dialog = new DialogNewContract(base, ui->plainTextEdit_decryption->toPlainText(),this);
     if(dialog->exec() == QDialog::Accepted) {
-        qDebug() << "-----------------------------------------------------------";
-        qDebug() << dialog->getDate();
-        qDebug() << dialog->getNumber();
-        qDebug() << dialog->getState();
+//        qDebug() << "-----------------------------------------------------------";
+//        qDebug() << dialog->getDate();
+//        qDebug() << dialog->getNumber();
+//        qDebug() << dialog->getState();
     // добавляем контракт
-
+        QString idc="";
         QSqlQuery query(base);
+        //получаем id контрагента по тексту в комбобоксе - мжет надо брать из модеи?
+        //modelBank->data(modelBank->index(ui->tableView_bank->currentIndex().row(), modelBank->fieldIndex("counterparty_id"))).toString()
+
+        if(!query.exec(QString("SELECT id, counterparty FROM counterparties WHERE counterparty = '%1'").arg(ui->comboBox_counterparty->currentText())))
+             qDebug() << "ERROR serch counterparties : " << query.lastError().text();
+        if(query.first())
+            idc = query.value(0).toString();
 
         QString ss= QString("INSERT INTO contracts (contract_number, contract_date,counterparty_id, state_contract) VALUES (");
         ss.append("'");
@@ -749,13 +756,12 @@ void FormBank::on_pushButton_contracts_add_new_clicked()
         ss.append(dialog->getDate());
         ss.append("','");
         //ss.append(modelBank->data(modelBank->index(ui->tableView_bank->currentIndex().row(), modelBank->fieldIndex("counterparty_id"))).toString());
-        // берем индекс с комбобокса ради простоты - если будет глючить притется добавлять вспомогательное поле
-        ss.append(QString::number(ui->comboBox_counterparty->currentIndex()));
+        ss.append(idc);
         ss.append("','");
         ss.append(dialog->getState()?"true":"false");
         ss.append("')");
 
-        qDebug() << ss;
+//        qDebug() << ss;
     //    qDebug() << ff;
         if(!query.exec(ss)) {
            qDebug() << "ERROR INSERT kontract: " << query.lastError().text();

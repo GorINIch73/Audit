@@ -77,6 +77,11 @@ void FormContract::seekTable()
 
         // при изменение строки в таблвьюве устанавливаем маппер на соответствующую запись
         mapper->setCurrentIndex(ui->tableView_contracts->currentIndex().row());
+
+        // руками настраиваем индекс комбобокса
+        ui->comboBox_counterparty_id->setCurrentIndex(ui->comboBox_counterparty_id->findText(ui->comboBox_counterparty_id->currentText())); // хз только так корректно работает - принудительно ищем индекс
+
+
         // посчтитать итого
 
         QSqlQuery query(base);
@@ -400,5 +405,5 @@ void FormContract::on_comboBox_flt_counterparties_currentIndexChanged(int index)
 void FormContract::on_pushButton_rep_list_clicked()
 {
     // запрос на создание списка для проверки
-    emit signalFromQuery("SELECT counterparties.counterparty, contracts.contract_number, contracts.contract_date, contracts.state_contract, SUM(sum), COUNT(DISTINCT contracts.contract_number), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank_decryption.contract_id=counterparties.id GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article");
+    emit signalFromQuery("SELECT counterparties.counterparty, contracts.contract_number, contracts.contract_date, contracts.state_contract, SUM(sum), COUNT(DISTINCT bank.id), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id =counterparties.id GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article");
 }

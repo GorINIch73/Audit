@@ -25,6 +25,10 @@ private slots:
 
     void on_checkBox_bank_stateChanged(int arg1);
 
+    void on_pushButton_ImportArticles_clicked();
+
+    void on_pushButton_ExportArticles_clicked();
+
 private:
     Ui::FormOptions *ui;
     QSqlDatabase base;

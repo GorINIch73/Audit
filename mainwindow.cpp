@@ -120,7 +120,7 @@ bool MainWindow::OpenBase()
 
 void MainWindow::SetHistory()
 {
-    // чтот динамически не выхло пока сделаю по простому
+    // чтот динамически не вышло -  пока сделаю по простому
     // gпрочитать и добавить историю открытий баз
 
     // считать из настроек имя базы
@@ -357,6 +357,13 @@ void MainWindow::on_actionExit_triggered()
 {
         QApplication::closeAllWindows();
 }
+
+void MainWindow::on_actionAbout_triggered()
+{
+    //об авторах
+    QMessageBox::information(this,"Info","Программа ведения финансового аудита\n в разрезе статей затрат.\n\nGorINIch`2020 ver0.02\nggorinich@gmail.com");
+}
+
 
 void MainWindow::on_actionNewBase_triggered()
 {
@@ -698,7 +705,9 @@ void MainWindow::on_actionRepContracts_triggered()
             flt.append("WHERE contracts.found='true'");
 
     // запрос
-    QString query = QString("SELECT  contracts.state_contract , articles.article, contracts.contract_number, contracts.contract_date, counterparties.counterparty, ROUND(SUM(sum),2), COUNT(DISTINCT contracts.contract_number)  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank_decryption.contract_id=counterparties.id %1 GROUP BY  contracts.state_contract , articles.article, contracts.contract_number, contracts.contract_date;").arg(flt);
+//    QString query = QString("SELECT  contracts.state_contract , articles.article, contracts.contract_number, contracts.contract_date, counterparties.counterparty, ROUND(SUM(sum),2), COUNT(DISTINCT contracts.contract_number)  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank_decryption.contract_id=counterparties.id %1 GROUP BY  contracts.state_contract , articles.article, contracts.contract_number, contracts.contract_date;").arg(flt);
+    QString query = QString("SELECT  contracts.state_contract , articles.article, contracts.contract_number, contracts.contract_date, counterparties.counterparty, ROUND(SUM(sum),2), COUNT(DISTINCT contracts.contract_number)  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id =counterparties.id %1 GROUP BY  contracts.state_contract , articles.article, contracts.contract_number, contracts.contract_date;").arg(flt);
+//    counterparties on contracts.counterparty_id =counterparties.id
     if (!a_query.exec(query)) {
          qDebug() << "Ошибка запроса отчета: " << a_query.lastError().text();
          return;
@@ -856,7 +865,7 @@ void MainWindow::on_actionRepContracts_triggered()
 
 void MainWindow::on_actionRepContracsShort_triggered()
 {
-    // главный отчет по контрактам короткий
+    // главный отчет по контрактам короткий по субкодам
 
     // база открыта?
     if(!database.isOpen()){
@@ -893,7 +902,7 @@ void MainWindow::on_actionRepContracsShort_triggered()
             flt.append("WHERE contracts.found='true'");
 
     // запрос
-    QString query = QString("SELECT contracts.state_contract , articles.article, ROUND(SUM(sum),2), COUNT(DISTINCT contracts.contract_number) FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank_decryption.contract_id=counterparties.id %1 GROUP BY  contracts.state_contract , articles.article;").arg(flt);
+    QString query = QString("SELECT contracts.state_contract , articles.subcode, ROUND(SUM(sum),2), COUNT(DISTINCT contracts.contract_number) FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id=counterparties.id %1 GROUP BY  contracts.state_contract , articles.subcode;").arg(flt);
     if (!a_query.exec(query)) {
          qDebug() << "Ошибка запроса отчета: " << a_query.lastError().text();
          return;
@@ -943,7 +952,7 @@ void MainWindow::on_actionRepContracsShort_triggered()
     int countA=0;
 
     // титульный
-    out << QString("<h2>ОТЧЕТ по контрактам короткий: %1 </h2>").arg(organization);
+    out << QString("<h2>ОТЧЕТ по контрактам короткий по субкодам для акта: %1 </h2>").arg(organization);
     out << QString("- за период: с %1 по %2 ").arg(dateBegin).arg(dateEnd);
     if (rep_contract_found)
         out << QString(", включены только найденные контракты.").arg(dateBegin).arg(dateEnd);
@@ -1023,10 +1032,6 @@ void MainWindow::on_actionRepContracsShort_triggered()
     QDesktopServices::openUrl(QUrl(QUrl::fromLocalFile("rep_Contracts_s.pdf")));
 }
 
-void MainWindow::on_actionAbout_triggered()
-{
- QMessageBox::information(this,"Info","Программа ведения финансового аудита\n в разрезе статей затрат.\n\nGorINIch`2020 ver0.01\nggorinich@gmail.com");
-}
 
 void MainWindow::on_actionRepContractsIsNote_triggered()
 {
@@ -1053,7 +1058,7 @@ void MainWindow::on_actionRepContractsIsNote_triggered()
 
 
     // запрос
-    QString query = QString("SELECT counterparties.counterparty, contracts.contract_number, contracts.contract_date, contracts.state_contract, SUM(sum), COUNT(DISTINCT contracts.contract_number), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank_decryption.contract_id=counterparties.id WHERE NOT contracts.note='' GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article");
+    QString query = QString("SELECT counterparties.counterparty, contracts.contract_number, contracts.contract_date, contracts.state_contract, SUM(sum), COUNT(DISTINCT contracts.contract_number), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id=counterparties.id WHERE NOT contracts.note='' GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article");
     if (!a_query.exec(query)) {
          qDebug() << "Ошибка запроса отчета: " << a_query.lastError().text();
          return;

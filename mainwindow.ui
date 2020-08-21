@@ -217,10 +217,10 @@
   </action>
   <action name="actionRepContracsShort">
    <property name="text">
-    <string>Отчет по контрактам короткий</string>
+    <string>Отчет по контрактам по субкодам</string>
    </property>
    <property name="toolTip">
-    <string>Отчет по контрактам короткий</string>
+    <string>Отчет по контрактам короткий по субкодам</string>
    </property>
   </action>
   <action name="actionRepContractsIsNote">
