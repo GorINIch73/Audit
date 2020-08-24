@@ -235,7 +235,7 @@ void FormOptions::on_pushButton_ImportArticles_clicked()
     //
     QString fileName;
     QString sep = "\t";
-       fileName = QFileDialog::getOpenFileName(this,QString::fromUtf8("Открыть файл"), QDir::currentPath(),"Файлы TSV (*.tsv;*.csv;);;Все файлы (*.*)");
+       fileName = QFileDialog::getOpenFileName(this,QString::fromUtf8("Открыть файл"), QDir::currentPath(),"Файлы TSV (*.tsv *.csv);;Все файлы (*)");
        QFile file(fileName);
        if(file.open (QIODevice::ReadOnly)){
 
