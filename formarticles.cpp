@@ -31,6 +31,8 @@ FormArticles::FormArticles(QSqlDatabase db,QWidget *parent) :
     connect(ui->tableView_articles->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
                  SLOT(slotSelectionChange(const QItemSelection &, const QItemSelection &)));
 
+    // сигнал создания запроса во вкладках
+    connect(this, SIGNAL(signalFromQuery(QString)),parent, SLOT(slot_goQuery(QString)));
     ui->tableView_articles->selectRow(0);
 
 }
@@ -123,7 +125,7 @@ void FormArticles::Tune()
         }
         //запрос
 //        QString ff = QString("SELECT counterparties.counterparty, sum, bank.payment_date, bank.payment_number, bank.decryption_of_payment, expense_confirmation  FROM bank_decryption inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank.counterparty_id=counterparties.id WHERE article_id = \%1 \%2 ORDER BY counterparties.counterparty").arg(modelArticles->data(modelArticles->index(ui->tableView_articles->currentIndex().row(), 0)).toString()).arg(ss);
-        QString ff = QString("SELECT counterparties.counterparty, ROUND(sum,2), bank.payment_date, bank.payment_number, bank.decryption_of_payment, expense_confirmation  FROM bank_decryption inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank.counterparty_id=counterparties.id WHERE article_id = \%1 \%2 ORDER BY counterparties.counterparty");
+        QString ff = QString("SELECT counterparties.counterparty, ROUND(sum,2), bank.payment_date, bank.payment_number, bank.decryption_of_payment, expense_confirmation  FROM bank_decryption inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank.counterparty_id=counterparties.id WHERE article_id = \%1 \%2 ORDER BY counterparties.counterparty, bank.payment_date");
         ff=ff.arg(modelArticles->data(modelArticles->index(ui->tableView_articles->currentIndex().row(), 0)).toString()).arg(ss);
 //        qDebug() << ff;
         modelBank_decryption->setQuery(ff,base);
@@ -267,4 +269,11 @@ void FormArticles::on_pushButton_del_clicked()
     modelArticles->removeRow(ui->tableView_articles->currentIndex().row());
     // прыгаем на предыдущую запись
     ui->tableView_articles->selectRow(ui->tableView_articles->currentIndex().row()-1);
+}
+
+void FormArticles::on_pushButton_lst_clicked()
+{
+    // запрос на список полный платежей со статьями
+    // запрос не редактирован - переделать на правильный!
+       emit signalFromQuery("SELECT counterparties.counterparty, contracts.contract_number, contracts.contract_date, contracts.state_contract, SUM(sum), COUNT(DISTINCT bank.id), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id =counterparties.id GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article");
 }

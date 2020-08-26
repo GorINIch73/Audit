@@ -21,6 +21,11 @@ public:
     explicit FormArticles(QSqlDatabase db,QWidget *parent = nullptr);
     ~FormArticles();
 
+
+signals:
+
+    void signalFromQuery(QString sq); // сигнал для запроса
+
 private slots:
     void slotSelectionChange(const QItemSelection &current, const QItemSelection &previous);
 
@@ -47,6 +52,8 @@ private slots:
     void on_pushButton_add_clicked();
 
     void on_pushButton_del_clicked();
+
+    void on_pushButton_lst_clicked();
 
 private:
     Ui::FormArticles *ui;
