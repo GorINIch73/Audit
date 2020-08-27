@@ -275,5 +275,5 @@ void FormArticles::on_pushButton_lst_clicked()
 {
     // запрос на список полный платежей со статьями
     // запрос не редактирован - переделать на правильный!
-       emit signalFromQuery("SELECT counterparties.counterparty, contracts.contract_number, contracts.contract_date, contracts.state_contract, SUM(sum), COUNT(DISTINCT bank.id), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id =counterparties.id GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article");
+       emit signalFromQuery("SELECT articles.article, bank.payment_date, bank.payment_number, counterparties.counterparty, ROUND(bank.amount_of_payment,2) AS summa_bank, ROUND(sum,2) AS summa_description, bank.decryption_of_payment FROM bank_decryption inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank.counterparty_id=counterparties.id inner join articles on bank_decryption.article_id=articles.id ORDER BY articles.article, bank.payment_date, counterparties.counterparty");
 }

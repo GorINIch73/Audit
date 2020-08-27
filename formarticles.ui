@@ -113,7 +113,7 @@
      <item>
       <widget class="QPushButton" name="pushButton_lst">
        <property name="toolTip">
-        <string>Список платежей</string>
+        <string>Список платежей по статьям</string>
        </property>
        <property name="text">
         <string/>
