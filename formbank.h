@@ -94,6 +94,12 @@ private slots:
 
     void on_pushButton_Rep_Err_clicked();
 
+    void on_pushButton_rep_nd_clicked();
+
+    void on_checkBox_flt_noContr_stateChanged(int arg1);
+
+    void on_pushButton_noContr_clicked();
+
 private:
     Ui::FormBank *ui;
 

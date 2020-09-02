@@ -458,6 +458,7 @@ void MainWindow::on_actionNewBase_triggered()
              "state_contract  BOOLEAN         DEFAULT (false),"
              "completed       BOOLEAN         DEFAULT (false),"
              "found           BOOLEAN         DEFAULT (false),"
+             "for_audit       BOOLEAN         DEFAULT (false), "
              "note            VARCHAR"
          ");";
          if (!a_query.exec(str))
@@ -468,12 +469,13 @@ void MainWindow::on_actionNewBase_triggered()
              "organization       VARCHAR,"
              "date_begin         DATE,"
              "date_end           DATE,"
-             "rep_contract_found BOOLEAN DEFAULT (false) "
+             "rep_contract_found BOOLEAN DEFAULT (false),"
+             "regexp_c           VARCHAR"
          ");";
          if (!a_query.exec(str))
              qDebug() << "таблица Настроек: " << a_query.lastError().text();
-         // вставить строку
-         str = "INSERT INTO options (organization) values ('');";
+         // вставить строку насстноек
+         str = "INSERT INTO options (organization, regexp_c) values ('','(кон|конт|контр|контракт|дог|догов|договор)(.|)\\s{0,}(N|)\\s{0,}(\\S{1,})\\s{0,}от\\s{0,}((0[1-9]|[12][0-9]|3[01])[-\\.](0[1-9]|1[012])[-\\.]((19|20)(\\d{2})|\\d{2}))\\D');";
          if (!a_query.exec(str))
              qDebug() << "таблица настроек строка: " << a_query.lastError().text();
 

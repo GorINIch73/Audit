@@ -334,7 +334,7 @@ void FormImport::on_pushButton_ImportZ_clicked()
 
            }
 
-           ui->plainTextEdit_rep->appendPlainText(QString("Импорт завершон! Обработано %1 записей").arg(count-1));
+           ui->plainTextEdit_rep->appendPlainText(QString("Импорт завершён! Обработано %1 записей").arg(count-1));
 
         }
         else {

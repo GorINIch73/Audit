@@ -22,6 +22,9 @@ QWidget *QSqlRelationalDelegateFlt::createEditor(QWidget *parent, const QStyleOp
     if (!childModel)
         return QSqlRelationalDelegate::createEditor(parent, option, index);
 
+    //обновляем на случай изменения
+    childModel->select();
+
     const QSqlDriver *const driver = childModel->database().driver();
 
     // настраиваем комбобокс

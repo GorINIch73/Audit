@@ -29,6 +29,10 @@ private slots:
 
     void on_pushButton_ExportArticles_clicked();
 
+    void on_pushButton_add_contracts_clicked();
+
+    void on_pushButton_regexp_def_clicked();
+
 private:
     Ui::FormOptions *ui;
     QSqlDatabase base;

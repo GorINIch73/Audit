@@ -63,6 +63,8 @@ void FormQuery::SetupTable()
     }
     //Таблица
     model->setQuery(squery,base);
+    if (!model->lastError().text().isEmpty())
+            qDebug() << model->lastError().text();
 
     // названия колонок
 //    modelBank_decryption->setHeaderData(0,Qt::Horizontal,"Статья");

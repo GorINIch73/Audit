@@ -131,6 +131,13 @@
           </widget>
          </item>
          <item>
+          <widget class="QLineEdit" name="lineEdit_flt_all">
+           <property name="toolTip">
+            <string>Фильтр по номеру, примечанию</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QComboBox" name="comboBox_flt_counterparties">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -187,13 +194,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit_flt_all">
-           <property name="toolTip">
-            <string>Фильтр по номеру, примечанию</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QPushButton" name="pushButton_flt_clr">
            <property name="toolTip">
             <string>Сбросить фильтр</string>
@@ -214,9 +214,15 @@
      <item>
       <layout class="QGridLayout" name="gridLayout">
        <item row="1" column="0">
-        <widget class="QPushButton" name="pushButton_rep02">
+        <widget class="QPushButton" name="pushButton_rep_list">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="toolTip">
-          <string/>
+          <string>Сформировать список контрактов</string>
          </property>
          <property name="text">
           <string/>
@@ -234,15 +240,9 @@
         </widget>
        </item>
        <item row="0" column="0">
-        <widget class="QPushButton" name="pushButton_rep_list">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
+        <widget class="QPushButton" name="pushButton_rep_for_audit">
          <property name="toolTip">
-          <string>Сформировать список контрактов</string>
+          <string>Список для проверки</string>
          </property>
          <property name="text">
           <string/>
@@ -295,6 +295,16 @@
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QCheckBox" name="checkBox_for_audit">
+           <property name="toolTip">
+            <string>Выбран для проверки</string>
+           </property>
+           <property name="text">
+            <string>Для проверки</string>
+           </property>
+          </widget>
+         </item>
          <item>
           <widget class="QCheckBox" name="checkBox_found">
            <property name="text">

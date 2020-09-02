@@ -4,6 +4,7 @@
 #include <QRegExp>
 #include <QDebug>
 #include <QSqlQuery>
+#include <QSqlError>
 
 DialogNewContract::DialogNewContract(QSqlDatabase db,QString decryption, QWidget *parent) :
     QDialog(parent),
@@ -57,10 +58,21 @@ void DialogNewContract::on_buttonBox_accepted()
 void DialogNewContract::Decrypt(QString decryption)
 {
     // расшифровка
-    // \d{1,2}[-/\.]\d{1,2}[-/\.]\d{4} 01.12.1997 без проверок
-    // ((0[1-9]|[12][0-9]|3[01])[-\.](0[1-9]|1[012])[-\.]((19|20)(\d{2})|\d{2}))\D 01.12.1998г
-    // (кон|конт|контр)\s(\S{1,})\sот\s((0[1-9]|[12][0-9]|3[01])[-\.](0[1-9]|1[012])[-\.]((19|20)(\d{2})|\d{2}))\D
-    QString srx="(кон|конт|контр|контракт|дог|догов|договор)(.|)\\s{0,}(N|)\\s{0,}(\\S{1,})\\s{0,}от\\s{0,}((0[1-9]|[12][0-9]|3[01])[-\\.](0[1-9]|1[012])[-\\.]((19|20)(\\d{2})|\\d{2}))\\D";
+
+
+    //QString srx="(кон|конт|контр|контракт|дог|догов|договор)(.|)\\s{0,}(N|)\\s{0,}(\\S{1,})\\s{0,}от\\s{0,}((0[1-9]|[12][0-9]|3[01])[-\\.](0[1-9]|1[012])[-\\.]((19|20)(\\d{2})|\\d{2}))\\D";
+    QString srx = "";
+    // читаем строку из настроек
+    QSqlQuery o_query = QSqlQuery(base);
+    if (!o_query.exec("SELECT regexp_c FROM options"))
+            qDebug() << "Ошибка чтения настроек regexp: " << o_query.lastError().text();
+    else {
+        o_query.first();
+        srx=o_query.value(0).toString();
+    }
+
+//    qDebug() << srx;
+
     //создание регулярного выражения с заданным шаблоном
     QRegExp rx(srx);
     rx.setCaseSensitivity(Qt::CaseInsensitive); // не чувствительность к регистру
@@ -109,9 +121,13 @@ void DialogNewContract::Decrypt(QString decryption)
 
 void DialogNewContract::on_lineEditNumber_textChanged(const QString &arg1)
 {
-    // проверяем на присутствие такого же имени и даты в бвзе
+    // проверяем на присутствие такого же номера и даты в бвзе
     setColor();
-
+}
+void DialogNewContract::on_dateEditDate_dateChanged(const QDate &date)
+{
+    // проверяем на присутствие такого же номера и даты в бвзе
+    setColor();
 }
 
 void DialogNewContract::setColor()
@@ -142,3 +158,5 @@ void DialogNewContract::setColor()
     }
 
 }
+
+

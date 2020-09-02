@@ -50,7 +50,11 @@ FormBank::FormBank(QSqlDatabase db, QWidget *parent) :
     modelBank_decryption->select();
     modelArticles->select();
     modelCounterparties->select();
-//    modelContracts->select();
+
+    ui->comboBox_flt_counterparties->setCurrentIndex(-1); //убираем значения по умолчанию в комбобоксах после селекта
+    ui->comboBox_articles->setCurrentIndex(-1); //убираем значения по умолчанию в комбобоксах после селекта
+    ui->comboBox_contracts->setCurrentIndex(-1); //убираем значения по умолчанию в комбобоксах после селекта
+
 
 
     // сигнал изменения строки выделения в tableVewBank
@@ -105,6 +109,7 @@ void FormBank::SetupTable()
     modelBank->setHeaderData(modelBank->fieldIndex("article"),Qt::Horizontal,"статья");
     modelBank->setHeaderData(modelBank->fieldIndex("note"),Qt::Horizontal,"примечание");
 
+//    modelBank->select();
 
     ui->tableView_bank->setModel(modelBank);
     ui->tableView_bank->setColumnHidden(0, true);    // Скрываем колонку с id записей
@@ -144,6 +149,7 @@ void FormBank::SetupTable()
     ui->comboBox_counterparty->setFocusPolicy(Qt::StrongFocus);
     ui->comboBox_counterparty->installEventFilter(new MouseWheelWidgetAdjustmentGuard(ui->comboBox_counterparty)); //блокируем прокрутку
     ui->comboBox_counterparty->insertItem(0,QString::fromUtf8(NULL)); // добавляем пустой элемент
+//    ui->comboBox_counterparty->setCurrentIndex(0); // устанавливаем на пустой элемент
 
     //     настраиваем комплитер
     completer->setCaseSensitivity(Qt::CaseInsensitive);
@@ -160,6 +166,7 @@ void FormBank::SetupTable()
 
     mapper->setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
 
+//    modelBank->select();
 
 
     //Таблица расшифровок
@@ -178,6 +185,8 @@ void FormBank::SetupTable()
     modelBank_decryption->setHeaderData(modelBank_decryption->fieldIndex("contract_id"),Qt::Horizontal,"Контракт");
     modelBank_decryption->setHeaderData(modelBank_decryption->fieldIndex("expense_confirmation"),Qt::Horizontal,"Исполнен");
 
+//    modelBank_decryption->select();
+
     ui->tableView_decryption->setModel(modelBank_decryption);
     ui->tableView_decryption->setItemDelegate(a_delegate);
 
@@ -192,6 +201,7 @@ void FormBank::SetupTable()
     ui->tableView_decryption->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive); // по содержимому
     ui->tableView_decryption->setColumnWidth(3,250);
     ui->tableView_decryption->setColumnWidth(4,200);
+
 
     //комбобокс для статей
     modelArticles->setTable("articles");
@@ -209,10 +219,12 @@ void FormBank::SetupTable()
     completer_articles->setCompletionColumn(modelArticles->fieldIndex("article")); // номер колонки с данными подстановки
     ui->comboBox_articles->setCompleter(completer_articles);
 
+    //modelArticles->select();
 
     //комбобокс для фильтра когтрагентов
     modelCounterparties->setTable("counterparties");
     modelCounterparties->setSort(modelCounterparties->fieldIndex("counterparty"),Qt::AscendingOrder);
+    modelCounterparties->select();
 
     ui->comboBox_flt_counterparties->setModel(modelCounterparties);
     ui->comboBox_flt_counterparties->setModelColumn(modelCounterparties->fieldIndex("counterparty"));
@@ -226,6 +238,13 @@ void FormBank::SetupTable()
     completer_counterparties->setModel(modelCounterparties);
     completer_counterparties->setCompletionColumn(modelCounterparties->fieldIndex("counterparty")); // номер колонки с данными подстановки
     ui->comboBox_flt_counterparties->setCompleter(completer_counterparties);
+
+//    ui->comboBox_flt_counterparties->insertItem(0,QString::fromUtf8(NULL)); // добавляем пустой элемент
+//    ui->comboBox_flt_counterparties->setCurrentIndex(0);
+
+
+//    modelCounterparties->select();
+
 
     //комбобокс для контрактов
     modelContracts->setQuery("SELECT id, contracts.contract_number || '  ' || contracts.contract_date AS name FROM contracts",base);
@@ -244,6 +263,7 @@ void FormBank::SetupTable()
     completer_contracts->setCompletionColumn(1); // номер колонки с данными подстановки
     ui->comboBox_contracts->setCompleter(completer_contracts);
     ui->comboBox_contracts->setCurrentText("");
+
 
 
 }
@@ -348,6 +368,10 @@ void FormBank::on_pushButton_refr_clicked()
     modelCounterparties->select();
     modelContracts->setQuery(modelContracts->query().lastQuery(),base); // хз работает только так
 
+    ui->comboBox_flt_counterparties->setCurrentIndex(-1); //убираем значения по умолчанию в комбобоксах после селекта
+    ui->comboBox_articles->setCurrentIndex(-1); //убираем значения по умолчанию в комбобоксах после селекта
+    ui->comboBox_contracts->setCurrentIndex(-1); //убираем значения по умолчанию в комбобоксах после селекта
+
     // восстанавливаем строку
     ui->tableView_bank->selectRow(row);
     QCoreApplication::postEvent(this, new QStatusTipEvent(QString("Обновлено.")));
@@ -440,10 +464,12 @@ void FormBank::on_lineEdit_flt_all_textChanged(const QString &arg1)
 
 void FormBank::on_pushButton_flt_clr_clicked()
 {
+    //очистка фильтра
     ui->lineEdit_flt_num->setText("");
     ui->lineEdit_flt_all->setText("");
     ui->lineEdit_flt_art->setText("");
     ui->checkBox_flt_nodec->setChecked(false);
+    ui->checkBox_flt_noContr->setChecked(false);
     ui->checkBox_use_counterparties->setChecked(false);
 
     modelBank->setFilter("");
@@ -703,7 +729,6 @@ void FormBank::on_comboBox_flt_counterparties_currentIndexChanged(int index)
 void FormBank::on_checkBox_flt_nodec_stateChanged(int arg1)
 {
     // фильтр на нерасшифрованых
-    // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     if (ui->checkBox_flt_nodec->isChecked()) {
         qDebug() << "нераспределенные";
@@ -725,6 +750,28 @@ void FormBank::on_checkBox_flt_nodec_stateChanged(int arg1)
 
 }
 
+void FormBank::on_checkBox_flt_noContr_stateChanged(int arg1)
+{
+    // фильтр на безконтрактных
+
+    if (ui->checkBox_flt_noContr->isChecked()) {
+        QString ff = QString(" bank.id IN (SELECT bank_id FROM bank_decryption WHERE contract_id IS NULL) ");
+        modelBank->setFilter(ff);
+        modelBank->select();
+        ui->tableView_bank->selectRow(0);
+        TunBank_decryption(); // на случай если результат пустой
+        QCoreApplication::postEvent(this, new QStatusTipEvent(QString("Активен фильт по записям без контрактов.")));
+
+    }
+    else {
+        modelBank->setFilter("");
+        modelBank->select();
+        ui->tableView_bank->selectRow(0);
+        QCoreApplication::postEvent(this, new QStatusTipEvent(QString("")));
+
+    }
+
+}
 
 void FormBank::on_pushButton_contracts_add_new_clicked()
 {
@@ -972,5 +1019,22 @@ void FormBank::on_pushButton_rep_b_clicked()
 void FormBank::on_pushButton_Rep_Err_clicked()
 {
     emit signalFromQuery("SELECT * FROM (SELECT bank.id, bank.payment_number, bank.payment_date,  ROUND(bank.amount_of_payment,2), ROUND(SUM(sum),2) AS summa, COUNT(bank.payment_number) AS count FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id GROUP BY bank.id, bank_decryption.bank_id) WHERE NOT (amount_of_payment = summa)");
+
+}
+
+void FormBank::on_pushButton_rep_nd_clicked()
+{
+    //запрос на нерасшифрованные платежи
+    // bank.id NOT IN (SELECT bank_id FROM bank_decryption)
+    emit signalFromQuery("SELECT bank.payment_date, bank.payment_number, counterparties.counterparty, bank.decryption_of_payment, ROUND(bank.amount_of_payment,2) FROM bank left join counterparties on bank.counterparty_id = counterparties.id WHERE bank.id NOT IN (SELECT bank_id FROM bank_decryption) ORDER BY bank.payment_date, bank.payment_number");
+
+}
+
+
+
+void FormBank::on_pushButton_noContr_clicked()
+{
+    //запрос на платежи без проставленных контрактов по статье
+    emit signalFromQuery("SELECT articles.article, bank.payment_date, bank.payment_number, counterparties.counterparty, bank.decryption_of_payment, ROUND(bank.amount_of_payment,2) FROM bank left join counterparties on bank.counterparty_id = counterparties.id left join bank_decryption on bank.id = bank_decryption.bank_id left join articles on articles.id = bank_decryption.article_id WHERE (bank_decryption.contract_id IS NULL AND bank_decryption.bank_id IS NOT NULL)  ORDER BY articles.article, bank.payment_date, bank.payment_number");
 
 }

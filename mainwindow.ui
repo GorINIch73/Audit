@@ -78,9 +78,9 @@
      <string>Отчеты</string>
     </property>
     <addaction name="actionRep_bank"/>
-    <addaction name="actionRepContracts"/>
     <addaction name="actionRepContracsShort"/>
     <addaction name="actionRepContractsIsNote"/>
+    <addaction name="actionRepContracts"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>

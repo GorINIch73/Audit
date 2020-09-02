@@ -63,6 +63,8 @@ private slots:
 
     void on_pushButton_rep_list_clicked();
 
+    void on_pushButton_rep_for_audit_clicked();
+
 private:
     Ui::FormContract *ui;
 

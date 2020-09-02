@@ -71,8 +71,8 @@ void FormContract::seekTable()
     }
 
         // настраиваем фильтр расшифровки в зависимости от выбранного платежа
-    //    QString ff = QString("SELECT * FROM bank_decryption WHERE contract_id = \%1 ").arg(modelContracts->data(modelContracts->index(ui->tableView_contracts->currentIndex().row(), 0)).toString());
-        QString ff = QString("SELECT sum, articles.article, bank.payment_date, bank.payment_number, expense_confirmation  FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id WHERE contract_id = \%1 order by bank.payment_date").arg(modelContracts->data(modelContracts->index(ui->tableView_contracts->currentIndex().row(), 0)).toString());
+//        QString ff = QString("SELECT sum, articles.article, bank.payment_date, bank.payment_number, expense_confirmation  FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id WHERE contract_id = \%1 order by bank.payment_date").arg(modelContracts->data(modelContracts->index(ui->tableView_contracts->currentIndex().row(), 0)).toString());
+        QString ff = QString("SELECT ROUND(sum,2), bank.payment_date, bank.payment_number, articles.article, bank.decryption_of_payment, expense_confirmation  FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id WHERE contract_id = \%1 order by bank.payment_date").arg(modelContracts->data(modelContracts->index(ui->tableView_contracts->currentIndex().row(), 0)).toString());
         modelBank_decryption->setQuery(ff,base);
 
         // при изменение строки в таблвьюве устанавливаем маппер на соответствующую запись
@@ -159,6 +159,7 @@ void FormContract::SetupTable()
     modelContracts->setHeaderData(modelContracts->fieldIndex("state_contract"),Qt::Horizontal,"Госконтракт");
     modelContracts->setHeaderData(modelContracts->fieldIndex("completed"),Qt::Horizontal,"Завершен");
     modelContracts->setHeaderData(modelContracts->fieldIndex("found"),Qt::Horizontal,"Найден");
+    modelContracts->setHeaderData(modelContracts->fieldIndex("for_audit"),Qt::Horizontal,"Для проверки");
     modelContracts->setHeaderData(modelContracts->fieldIndex("note"),Qt::Horizontal,"Примечание");
 
 
@@ -183,6 +184,7 @@ void FormContract::SetupTable()
     mapper->addMapping(ui->checkBox_state_contract, modelContracts->fieldIndex("state_contract"));
     mapper->addMapping(ui->checkBox_completed, modelContracts->fieldIndex("completed"));
     mapper->addMapping(ui->checkBox_found, modelContracts->fieldIndex("found"));
+    mapper->addMapping(ui->checkBox_for_audit, modelContracts->fieldIndex("for_audit"));
     mapper->addMapping(ui->plainTextEdit_note, modelContracts->fieldIndex("note"));
     mapper->setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
 
@@ -300,6 +302,8 @@ void FormContract::on_pushButton_refr_clicked()
     modelBank_decryption->setQuery(modelBank_decryption->query().lastQuery(),base);
     modelCounterparties->setQuery(modelCounterparties->query().lastQuery(),base);
 
+    ui->comboBox_flt_counterparties->setCurrentIndex(-1); //обираем выбор
+
     // восстанавливаем строку
     ui->tableView_contracts->selectRow(row);
 }
@@ -404,6 +408,13 @@ void FormContract::on_comboBox_flt_counterparties_currentIndexChanged(int index)
 
 void FormContract::on_pushButton_rep_list_clicked()
 {
+    // запрос на создание списка
+    emit signalFromQuery("SELECT contracts.for_audit, counterparties.counterparty, contracts.contract_number, contracts.contract_date, contracts.state_contract, ROUND(SUM(sum),2), COUNT(DISTINCT bank.id), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id =counterparties.id GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article ORDER BY contracts.for_audit, contracts.contract_date, contracts.contract_number");
+}
+
+void FormContract::on_pushButton_rep_for_audit_clicked()
+{
     // запрос на создание списка для проверки
-    emit signalFromQuery("SELECT counterparties.counterparty, contracts.contract_number, contracts.contract_date, contracts.state_contract, SUM(sum), COUNT(DISTINCT bank.id), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id =counterparties.id GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article");
+    emit signalFromQuery("SELECT counterparties.counterparty, contracts.contract_number, contracts.contract_date, contracts.state_contract, ROUND(SUM(sum),2), COUNT(DISTINCT bank.id), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id =counterparties.id WHERE contracts.for_audit GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article ORDER BY contracts.contract_date, contracts.contract_number");
+
 }

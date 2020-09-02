@@ -27,6 +27,8 @@ private slots:
     void on_lineEditNumber_textChanged(const QString &arg1);
     void setColor();
 
+    void on_dateEditDate_dateChanged(const QDate &date);
+
 private:
     Ui::DialogNewContract *ui;
 
