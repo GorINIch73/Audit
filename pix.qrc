@@ -23,5 +23,9 @@
         <file>pix/prog.png</file>
         <file>pix/query.png</file>
         <file>pix/rep.png</file>
+        <file>pix/article.png</file>
+        <file>pix/bank.png</file>
+        <file>pix/conterp.png</file>
+        <file>pix/contracts.png</file>
     </qresource>
 </RCC>

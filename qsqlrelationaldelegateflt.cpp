@@ -4,6 +4,7 @@
 #include <QtDebug>
 #include <QSqlRecord>
 #include <QSqlField>
+#include <QSpinBox>
 
 QSqlRelationalDelegateFlt::QSqlRelationalDelegateFlt(QObject * parent) : QSqlRelationalDelegate(parent)
 {
@@ -18,9 +19,22 @@ QWidget *QSqlRelationalDelegateFlt::createEditor(QWidget *parent, const QStyleOp
     const QSqlRelationalTableModel *sqlModel = qobject_cast<const QSqlRelationalTableModel *>(index.model());
     // выковыриваем связанную модель
     QSqlTableModel *childModel = sqlModel ? sqlModel->relationModel(index.column()) : nullptr;
+    //если нет связи
+    if (!childModel) {
+        // если это сумма, то отдать спинер - сделано влоб, пока никак!
+        if (index.column()==sqlModel->fieldIndex("sum")) {
+            QDoubleSpinBox *editor = new QDoubleSpinBox(parent);
+            editor->setFrame(false);
+            editor->setMinimum(-10000000000.00);
+            editor->setMaximum(10000000000.00);
+            editor->setDecimals(2);
+            editor->setGroupSeparatorShown(true);
 
-    if (!childModel)
+            return editor;
+        }
+
         return QSqlRelationalDelegate::createEditor(parent, option, index);
+    }
 
     //обновляем на случай изменения
     childModel->select();

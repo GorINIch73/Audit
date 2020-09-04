@@ -651,6 +651,13 @@
            <property name="showGroupSeparator" stdset="0">
             <bool>false</bool>
            </property>
+           <property name="time">
+            <time>
+             <hour>1</hour>
+             <minute>0</minute>
+             <second>0</second>
+            </time>
+           </property>
            <property name="calendarPopup">
             <bool>true</bool>
            </property>
@@ -743,6 +750,9 @@
            </property>
            <property name="buttonSymbols">
             <enum>QAbstractSpinBox::PlusMinus</enum>
+           </property>
+           <property name="showGroupSeparator" stdset="0">
+            <bool>true</bool>
            </property>
            <property name="decimals">
             <number>2</number>

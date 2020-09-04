@@ -299,14 +299,14 @@ void FormBank::TunBank_decryption()
 
     if (!modelBank->filter().isEmpty()) {
         ss= QString("SELECT round(SUM(amount_of_payment),2) FROM bank WHERE (NOT this_receipt = true) AND ( \%1 ) ").arg(modelBank->filter());
-        qDebug() << ss;
+        //qDebug() << ss;
 
         if(!query.exec(ss)) {
            qDebug() << "ERROR SELECT bank: " << query.lastError().text();
            return;
         }
         query.first();
-        qDebug() << "Сумма" << query.value(0).toString();
+        //qDebug() << "Сумма" << query.value(0).toString();
         ui->lineEdit_summa_b->setText(QString("%L1").arg(query.value(0).toDouble(),-0,'f',2));
     }
 

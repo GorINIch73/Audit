@@ -361,7 +361,7 @@ void MainWindow::on_actionExit_triggered()
 void MainWindow::on_actionAbout_triggered()
 {
     //об авторах
-    QMessageBox::information(this,"Info","Программа ведения финансового аудита\n в разрезе статей затрат.\n\nGorINIch`2020 ver0.02\nggorinich@gmail.com");
+    QMessageBox::information(this,"Info","Программа ведения финансового аудита\n в разрезе статей затрат.\n\nGorINIch`2020 ver0.03\nggorinich@gmail.com");
 }
 
 

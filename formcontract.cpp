@@ -217,15 +217,17 @@ void FormContract::SetupTable()
     //Таблица расшифровок
     //modelBank_decryption->setTable("bank_decryption");
 
-//    modelBank_decryption->setQuery("SELECT sum, articles.article, bank.payment_date, bank.payment_number, expense_confirmation  FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id order by bank.payment_date",base);
+//    QString ff = QString("SELECT ROUND(sum,2), bank.payment_date, bank.payment_number, articles.article, bank.decryption_of_payment, expense_confirmation  FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id WHERE contract_id = \%1 order by bank.payment_date").arg(modelContracts->data(modelContracts->index(ui->tableView_contracts->currentIndex().row(), 0)).toString());
+
     modelBank_decryption->setQuery("SELECT * FROM bank_decryption",base);
 
     // названия колонок
     modelBank_decryption->setHeaderData(0,Qt::Horizontal,"Сумма");
-    modelBank_decryption->setHeaderData(1,Qt::Horizontal,"Статья");
-    modelBank_decryption->setHeaderData(2,Qt::Horizontal,"Дата платежа");
-    modelBank_decryption->setHeaderData(3,Qt::Horizontal,"Номер ПП");
-    modelBank_decryption->setHeaderData(4,Qt::Horizontal,"Подтверждение расхода");
+    modelBank_decryption->setHeaderData(1,Qt::Horizontal,"Дата платежа");
+    modelBank_decryption->setHeaderData(2,Qt::Horizontal,"Номер ПП");
+    modelBank_decryption->setHeaderData(3,Qt::Horizontal,"Статья");
+    modelBank_decryption->setHeaderData(4,Qt::Horizontal,"Назначение платежа");
+    modelBank_decryption->setHeaderData(5,Qt::Horizontal,"Подтверждение расхода");
 
     ui->tableView_decryption->setModel(modelBank_decryption);
     ui->tableView_decryption->setEditTriggers(QAbstractItemView::NoEditTriggers);  //запрет редактирования

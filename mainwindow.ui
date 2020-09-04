@@ -92,6 +92,12 @@
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
@@ -104,6 +110,10 @@
    <addaction name="actionArticles"/>
   </widget>
   <action name="actionBank">
+   <property name="icon">
+    <iconset resource="pix.qrc">
+     <normaloff>:/pix/bank.png</normaloff>:/pix/bank.png</iconset>
+   </property>
    <property name="text">
     <string>Банк</string>
    </property>
@@ -112,6 +122,10 @@
    </property>
   </action>
   <action name="actionArticles">
+   <property name="icon">
+    <iconset resource="pix.qrc">
+     <normaloff>:/pix/article.png</normaloff>:/pix/article.png</iconset>
+   </property>
    <property name="text">
     <string>Статьи</string>
    </property>
@@ -120,6 +134,10 @@
    </property>
   </action>
   <action name="actionCounterparties">
+   <property name="icon">
+    <iconset resource="pix.qrc">
+     <normaloff>:/pix/conterp.png</normaloff>:/pix/conterp.png</iconset>
+   </property>
    <property name="text">
     <string>Контрагенты</string>
    </property>
@@ -128,6 +146,10 @@
    </property>
   </action>
   <action name="actionContracts">
+   <property name="icon">
+    <iconset resource="pix.qrc">
+     <normaloff>:/pix/contracts.png</normaloff>:/pix/contracts.png</iconset>
+   </property>
    <property name="text">
     <string>Контракты</string>
    </property>
@@ -152,6 +174,10 @@
    </property>
   </action>
   <action name="actionRep_bank">
+   <property name="icon">
+    <iconset resource="pix.qrc">
+     <normaloff>:/pix/rep.png</normaloff>:/pix/rep.png</iconset>
+   </property>
    <property name="text">
     <string>Отчет по банку основной</string>
    </property>
@@ -208,6 +234,10 @@
    </property>
   </action>
   <action name="actionRepContracts">
+   <property name="icon">
+    <iconset resource="pix.qrc">
+     <normaloff>:/pix/rep.png</normaloff>:/pix/rep.png</iconset>
+   </property>
    <property name="text">
     <string>Отчет по контрактам подробный</string>
    </property>
@@ -216,6 +246,10 @@
    </property>
   </action>
   <action name="actionRepContracsShort">
+   <property name="icon">
+    <iconset resource="pix.qrc">
+     <normaloff>:/pix/rep.png</normaloff>:/pix/rep.png</iconset>
+   </property>
    <property name="text">
     <string>Отчет по контрактам по субкодам</string>
    </property>
@@ -224,6 +258,10 @@
    </property>
   </action>
   <action name="actionRepContractsIsNote">
+   <property name="icon">
+    <iconset resource="pix.qrc">
+     <normaloff>:/pix/rep.png</normaloff>:/pix/rep.png</iconset>
+   </property>
    <property name="text">
     <string>Контракты с примечанием</string>
    </property>
@@ -232,6 +270,10 @@
    </property>
   </action>
   <action name="actionQuery">
+   <property name="icon">
+    <iconset resource="pix.qrc">
+     <normaloff>:/pix/query.png</normaloff>:/pix/query.png</iconset>
+   </property>
    <property name="text">
     <string>Запрос</string>
    </property>
@@ -255,6 +297,8 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="pix.qrc"/>
+ </resources>
  <connections/>
 </ui>
