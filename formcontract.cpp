@@ -62,7 +62,6 @@ void FormContract::slotSelectionChange(const QItemSelection &current, const QIte
 
 void FormContract::seekTable()
 {
-
     // смена контракта
     if (modelContracts->data(modelContracts->index(ui->tableView_contracts->currentIndex().row(), 0)).toString().isEmpty()) {
         //если пустая запись
@@ -121,6 +120,7 @@ void FormContract::seekTable()
 
 void FormContract::on_lineEdit_flt_all_textChanged(const QString &arg1)
 {
+    mapper->submit(); // субмитим поля - вдруг изменились
     //фильтр
     if (!arg1.isEmpty()) {
         QString ff = QString("contracts.contract_number Like '\%%1\%' OR contracts.contract_date Like '\%%1\%' OR contracts.price Like '\%%1\%' OR contracts.note Like '\%%1\%'").arg(arg1);
@@ -270,6 +270,8 @@ void FormContract::on_pushButton_close_clicked()
 
 void FormContract::on_pushButton_first_clicked()
 {
+    mapper->submit(); // субмитим поля - вдруг изменились
+
     // перая запись
     ui->tableView_contracts->selectRow(0);
 
@@ -277,12 +279,14 @@ void FormContract::on_pushButton_first_clicked()
 
 void FormContract::on_pushButton_prev_clicked()
 {
+    mapper->submit(); // субмитим поля - вдруг изменились
     // прыгаем на предыдущую запись
     ui->tableView_contracts->selectRow(ui->tableView_contracts->currentIndex().row()-1);
 }
 
 void FormContract::on_pushButton_next_clicked()
 {
+    mapper->submit(); // субмитим поля - вдруг изменились
     // прыгаем на следующую запись
     ui->tableView_contracts->selectRow(ui->tableView_contracts->currentIndex().row()+1);
 
@@ -290,12 +294,14 @@ void FormContract::on_pushButton_next_clicked()
 
 void FormContract::on_pushButton_last_clicked()
 {
+    mapper->submit(); // субмитим поля - вдруг изменились
     // последняя запись
     ui->tableView_contracts->selectRow(modelContracts->rowCount()-1);
 }
 
 void FormContract::on_pushButton_refr_clicked()
 {
+    mapper->submit(); // субмитим поля - вдруг изменились
     //восстановление курсора
     int row = ui->tableView_contracts->currentIndex().row();
 
@@ -367,6 +373,7 @@ void FormContract::on_pushButton_del_clicked()
 
 void FormContract::on_pushButton_flt_clr_clicked()
 {
+    mapper->submit(); // субмитим поля - вдруг изменились
     ui->lineEdit_flt_all->setText("");
 
     modelContracts->setFilter("");
@@ -378,12 +385,14 @@ void FormContract::on_pushButton_flt_clr_clicked()
 
 void FormContract::on_pushButton_prev_con_clicked()
 {
+    mapper->submit(); // субмитим поля - вдруг изменились
     // прыгаем на предыдущую запись
     ui->comboBox_flt_counterparties->setCurrentIndex(ui->comboBox_flt_counterparties->currentIndex()-1);
 }
 
 void FormContract::on_pushButton_next_con_clicked()
 {
+    mapper->submit(); // субмитим поля - вдруг изменились
     // прыгаем на следующую запись
     ui->comboBox_flt_counterparties->setCurrentIndex(ui->comboBox_flt_counterparties->currentIndex()+1);
 
@@ -391,6 +400,7 @@ void FormContract::on_pushButton_next_con_clicked()
 
 void FormContract::on_comboBox_flt_counterparties_currentIndexChanged(int index)
 {
+    mapper->submit(); // субмитим поля - вдруг изменились
     if (!ui->comboBox_flt_counterparties->currentText().isEmpty()) {
         QString ff = QString("counterparty_id ='%1\'").arg(modelCounterparties->data(modelCounterparties->index(index,0)).toString());
         modelContracts->setFilter(ff);

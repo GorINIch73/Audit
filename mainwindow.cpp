@@ -701,10 +701,15 @@ void MainWindow::on_actionRepContracts_triggered()
 
     // фильтр дат
     QString flt="";
-    if (!dateBegin.isEmpty() && !dateEnd.isEmpty() && rep_contract_found)
-            flt=QString("WHERE bank.payment_date >= '%1' AND bank.payment_date <= '%2' AND contracts.found='true'").arg(dateBegin).arg(dateEnd);
-    else if (rep_contract_found)
-            flt.append("WHERE contracts.found='true'");
+    if ((!dateBegin.isEmpty() && !dateEnd.isEmpty()) || rep_contract_found) {
+        flt.append("WHERE ");
+
+        if (!dateBegin.isEmpty() && !dateEnd.isEmpty())
+            flt.append(QString("bank.payment_date >= '%1' AND bank.payment_date <= '%2'").arg(dateBegin).arg(dateEnd));
+        if (rep_contract_found)
+            flt.append(" AND contracts.found=true ");
+    }
+
 
     // запрос
 //    QString query = QString("SELECT  contracts.state_contract , articles.article, contracts.contract_number, contracts.contract_date, counterparties.counterparty, ROUND(SUM(sum),2), COUNT(DISTINCT contracts.contract_number)  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank_decryption.contract_id=counterparties.id %1 GROUP BY  contracts.state_contract , articles.article, contracts.contract_number, contracts.contract_date;").arg(flt);
@@ -898,10 +903,16 @@ void MainWindow::on_actionRepContracsShort_triggered()
 
     // фильтр дат
     QString flt="";
-    if (!dateBegin.isEmpty() && !dateEnd.isEmpty() && rep_contract_found)
-            flt=QString("WHERE bank.payment_date >= '%1' AND bank.payment_date <= '%2' AND contracts.found='true'").arg(dateBegin).arg(dateEnd);
-    else if (rep_contract_found)
-            flt.append("WHERE contracts.found='true'");
+    if ((!dateBegin.isEmpty() && !dateEnd.isEmpty()) || rep_contract_found) {
+        flt.append("WHERE ");
+
+        if (!dateBegin.isEmpty() && !dateEnd.isEmpty())
+            flt.append(QString("bank.payment_date >= '%1' AND bank.payment_date <= '%2'").arg(dateBegin).arg(dateEnd));
+        if (rep_contract_found)
+            flt.append(" AND contracts.found=true ");
+    }
+
+    qDebug() << "фильтр: " << flt;
 
     // запрос
     QString query = QString("SELECT contracts.state_contract , articles.subcode, ROUND(SUM(sum),2), COUNT(DISTINCT contracts.contract_number) FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id=counterparties.id %1 GROUP BY  contracts.state_contract , articles.subcode;").arg(flt);
@@ -1060,7 +1071,7 @@ void MainWindow::on_actionRepContractsIsNote_triggered()
 
 
     // запрос
-    QString query = QString("SELECT counterparties.counterparty, contracts.contract_number, contracts.contract_date, contracts.state_contract, SUM(sum), COUNT(DISTINCT contracts.contract_number), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id=counterparties.id WHERE NOT contracts.note='' GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article");
+    QString query = QString("SELECT counterparties.counterparty, contracts.contract_number, contracts.contract_date, contracts.state_contract, SUM(sum), COUNT(DISTINCT bank.id), articles.article, contracts.note, contracts.found  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id=counterparties.id WHERE NOT contracts.note='' GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article");
     if (!a_query.exec(query)) {
          qDebug() << "Ошибка запроса отчета: " << a_query.lastError().text();
          return;
@@ -1153,6 +1164,7 @@ void MainWindow::on_actionRepContractsIsNote_triggered()
         out <<  QString("<td align=right>%1 </td>").arg((!a_query.value(4).toString().isEmpty())? QString("%L1").arg(a_query.value(4).toDouble(), -0, 'f', 2):QString("&nbsp;"));
         out <<  QString("<td align=right>%1 </td>").arg((!a_query.value(5).toString().isEmpty())? a_query.value(5).toString():QString("&nbsp;"));
         out <<  QString("<td><small> %1 </small></td>").arg((!a_query.value(6).toString().isEmpty())? a_query.value(6).toString().left(25):QString("&nbsp;")); // статья
+        out <<  QString("<td><small> %1 </small></td>").arg((!a_query.value(8).toString().isEmpty())? a_query.value(8).toString():QString("&nbsp;")); // найден
         out <<  QString("<td><small> %1 </small></td>").arg((!a_query.value(7).toString().isEmpty())? a_query.value(7).toString():QString("&nbsp;")); // примечание
 
         //добавляем текущее значение
