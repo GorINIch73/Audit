@@ -130,7 +130,7 @@ void FormImport::on_pushButton_ImportZ_clicked()
     QString sep = "\t";
     QString tabl = "bank";
 
-    bool manual_note=false;
+    bool manual_note=true;
 
        QFile file(importName);
        if(file.open (QIODevice::ReadOnly)){
@@ -186,7 +186,8 @@ void FormImport::on_pushButton_ImportZ_clicked()
            req.append(") VALUES ");
             // данные
 
-           int count=0; // счетчик
+           int count=0; // счетчик всего
+           int countAdd=0; // счетчик добавлено
 
            // Цикл до конца файла
            while(!ts.atEnd()){
@@ -309,11 +310,13 @@ void FormImport::on_pushButton_ImportZ_clicked()
 
                val_line.append("),");
                //если сумма пп не ноль то добавляем строку к запросу
-               if (!zero)
+               if (!zero) {
                    req.append(val_line);
+                   countAdd++; // счетчик добавленныз строк
+               }
 
 //               qDebug()<<req;
-               count++;
+               count++; // счетчик обраьотаных записей
                // дергаем интерфейс, что бы не зависал
                QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
                // следующая строка
@@ -334,7 +337,7 @@ void FormImport::on_pushButton_ImportZ_clicked()
 
            }
 
-           ui->plainTextEdit_rep->appendPlainText(QString("Импорт завершён! Обработано %1 записей").arg(count-1));
+           ui->plainTextEdit_rep->appendPlainText(QString("Импорт завершён! Обработано %1 записей, добавлено %2 записей").arg(count).arg(countAdd));
 
         }
         else {
