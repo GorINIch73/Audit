@@ -78,6 +78,9 @@ void FormContract::seekTable()
         mapper->setCurrentIndex(ui->tableView_contracts->currentIndex().row());
 
         // руками настраиваем индекс комбобокса
+//        qDebug() << ui->comboBox_counterparty_id->currentText();
+//        qDebug() << ui->comboBox_counterparty_id->findText(ui->comboBox_counterparty_id->currentText());
+
         ui->comboBox_counterparty_id->setCurrentIndex(ui->comboBox_counterparty_id->findText(ui->comboBox_counterparty_id->currentText())); // хз только так корректно работает - принудительно ищем индекс
 
 
@@ -270,7 +273,8 @@ void FormContract::on_pushButton_close_clicked()
 
 void FormContract::on_pushButton_first_clicked()
 {
-    mapper->submit(); // субмитим поля - вдруг изменились
+//    mapper->submit(); // субмитим поля - вдруг изменились
+    modelContracts->submit();
 
     // перая запись
     ui->tableView_contracts->selectRow(0);
@@ -279,14 +283,16 @@ void FormContract::on_pushButton_first_clicked()
 
 void FormContract::on_pushButton_prev_clicked()
 {
-    mapper->submit(); // субмитим поля - вдруг изменились
+//    mapper->submit(); // субмитим поля - вдруг изменились
+    modelContracts->submit();
     // прыгаем на предыдущую запись
     ui->tableView_contracts->selectRow(ui->tableView_contracts->currentIndex().row()-1);
 }
 
 void FormContract::on_pushButton_next_clicked()
 {
-    mapper->submit(); // субмитим поля - вдруг изменились
+//    mapper->submit(); // субмитим поля - вдруг изменились
+    modelContracts->submit();
     // прыгаем на следующую запись
     ui->tableView_contracts->selectRow(ui->tableView_contracts->currentIndex().row()+1);
 
@@ -294,8 +300,10 @@ void FormContract::on_pushButton_next_clicked()
 
 void FormContract::on_pushButton_last_clicked()
 {
-    mapper->submit(); // субмитим поля - вдруг изменились
+//    mapper->submit(); // субмитим поля - вдруг изменились
+    modelContracts->submit();
     // последняя запись
+    qDebug() << modelContracts->rowCount(); // иногда дает количество больше чем записей, и плодит дубликаты во вьюве!!!!!
     ui->tableView_contracts->selectRow(modelContracts->rowCount()-1);
 }
 
@@ -373,7 +381,9 @@ void FormContract::on_pushButton_del_clicked()
 
 void FormContract::on_pushButton_flt_clr_clicked()
 {
-    mapper->submit(); // субмитим поля - вдруг изменились
+//    mapper->submit(); // субмитим поля - вдруг изменились
+    modelContracts->submit();
+
     ui->lineEdit_flt_all->setText("");
 
     modelContracts->setFilter("");
@@ -400,7 +410,9 @@ void FormContract::on_pushButton_next_con_clicked()
 
 void FormContract::on_comboBox_flt_counterparties_currentIndexChanged(int index)
 {
-    mapper->submit(); // субмитим поля - вдруг изменились
+//    mapper->submit(); // субмитим поля - вдруг изменились
+    modelContracts->submit();
+
     if (!ui->comboBox_flt_counterparties->currentText().isEmpty()) {
         QString ff = QString("counterparty_id ='%1\'").arg(modelCounterparties->data(modelCounterparties->index(index,0)).toString());
         modelContracts->setFilter(ff);
@@ -428,5 +440,12 @@ void FormContract::on_pushButton_rep_for_audit_clicked()
 {
     // запрос на создание списка для проверки
     emit signalFromQuery("SELECT counterparties.counterparty, contracts.contract_number, contracts.contract_date, contracts.state_contract, ROUND(SUM(sum),2), COUNT(DISTINCT bank.id), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id =counterparties.id WHERE contracts.for_audit GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article ORDER BY contracts.contract_date, contracts.contract_number");
+
+}
+
+void FormContract::on_pushButton_Dubl_rep_clicked()
+{
+    // запрос на создание списка дубликатов номеров
+    emit signalFromQuery("SELECT contract_number, COUNT(*) FROM contracts GROUP BY contract_number HAVING COUNT(*) > 1");
 
 }

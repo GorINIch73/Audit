@@ -361,7 +361,10 @@ void MainWindow::on_actionExit_triggered()
 void MainWindow::on_actionAbout_triggered()
 {
     //об авторах
-    QMessageBox::information(this,"Info","Программа ведения финансового аудита\n в разрезе статей затрат.\n\nGorINIch`2020 ver0.03\nggorinich@gmail.com");
+    // дата компиляции
+    //const QString BUILDV =  QStringLiteral(__DATE__ " " __TIME__);
+
+    QMessageBox::information(this,"Info",QString("Программа ведения финансового аудита\n в разрезе статей затрат.\n\nGorINIch`2020 ver0.03 %1 \nggorinich@gmail.com").arg(BUILDV));
 }
 
 

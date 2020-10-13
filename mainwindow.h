@@ -13,6 +13,8 @@
 
 #define FILE_EXT ".dbad"
 
+const QString BUILDV =  QStringLiteral(__DATE__ " " __TIME__);
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

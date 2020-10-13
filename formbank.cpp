@@ -324,24 +324,32 @@ void FormBank::on_comboBox_counterparty_currentIndexChanged(int index)
 
 void FormBank::on_pushButton_first_clicked()
 {
+//    mapper->submit();
+    modelBank->submit();
     // прыгаем на первую
     ui->tableView_bank->selectRow(0);
 }
 
 void FormBank::on_pushButton_prev_clicked()
 {
+//    mapper->submit();
+    modelBank->submit();
     // прыгаем на предыдущую запись
     ui->tableView_bank->selectRow(ui->tableView_bank->currentIndex().row()-1);
 }
 
 void FormBank::on_pushButton_next_clicked()
 {
+//    mapper->submit();
+    modelBank->submit();
     // прыгаем на следующую запись
     ui->tableView_bank->selectRow(ui->tableView_bank->currentIndex().row()+1);
 }
 
 void FormBank::on_pushButton_last_clicked()
 {
+//    mapper->submit();
+    modelBank->submit();
     // последняя запись
     ui->tableView_bank->selectRow(modelBank->rowCount()-1);
 
@@ -351,6 +359,7 @@ void FormBank::on_pushButton_refr_clicked()
 {
 
     // субмитим изменения
+//    mapper->submit();
     modelBank->submit();
     modelBank_decryption->submit();
 
@@ -432,7 +441,7 @@ void FormBank::on_pushButton_del_clicked()
 void FormBank::on_lineEdit_flt_all_textChanged(const QString &arg1)
 {
     //фильтр по назначению платежа примечанию сумме
-
+    modelBank->submit();
     if (!arg1.isEmpty()) {
 
 
@@ -464,6 +473,7 @@ void FormBank::on_lineEdit_flt_all_textChanged(const QString &arg1)
 
 void FormBank::on_pushButton_flt_clr_clicked()
 {
+    modelBank->submit();
     //очистка фильтра
     ui->lineEdit_flt_num->setText("");
     ui->lineEdit_flt_all->setText("");
@@ -517,7 +527,7 @@ void FormBank::on_pushButton_add_dec_clicked()
 void FormBank::on_lineEdit_flt_art_textChanged(const QString &arg1)
 {
     //фильтр КОСГУ если проставлено
-
+    modelBank->submit();
 
     if (!arg1.isEmpty()) {
 //        QString ff = QString("article Like '\%%1\%' OR bank.note Like '\%%1\%' OR bank.amount_of_payment Like '\%%1\%'").arg(arg1);
@@ -674,6 +684,7 @@ void FormBank::on_pushButton_clear_dec_clicked()
 void FormBank::on_lineEdit_flt_num_textChanged(const QString &arg1)
 {
     //фильтр номеру ПП
+    modelBank->submit();
 
     if (!arg1.isEmpty()) {
         QString ff = QString("payment_number ='%1\'").arg(arg1);
@@ -707,7 +718,7 @@ void FormBank::on_pushButton_prev_con_clicked()
 void FormBank::on_comboBox_flt_counterparties_currentIndexChanged(int index)
 {
     //фильтр номеру контрагенту
-
+    modelBank->submit();
     if (!ui->comboBox_flt_counterparties->currentText().isEmpty()) {
         QString ff = QString("counterparty_id ='%1\'").arg(modelCounterparties->data(modelCounterparties->index(index,modelCounterparties->fieldIndex("id"))).toString());
         modelBank->setFilter(ff);
@@ -729,7 +740,7 @@ void FormBank::on_comboBox_flt_counterparties_currentIndexChanged(int index)
 void FormBank::on_checkBox_flt_nodec_stateChanged(int arg1)
 {
     // фильтр на нерасшифрованых
-
+    modelBank->submit();
     if (ui->checkBox_flt_nodec->isChecked()) {
         qDebug() << "нераспределенные";
         QString ff = QString(" bank.id NOT IN (SELECT bank_id FROM bank_decryption) ");
@@ -753,7 +764,7 @@ void FormBank::on_checkBox_flt_nodec_stateChanged(int arg1)
 void FormBank::on_checkBox_flt_noContr_stateChanged(int arg1)
 {
     // фильтр на безконтрактных
-
+    modelBank->submit();
     if (ui->checkBox_flt_noContr->isChecked()) {
         QString ff = QString(" bank.id IN (SELECT bank_id FROM bank_decryption WHERE contract_id IS NULL) ");
         modelBank->setFilter(ff);
