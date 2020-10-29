@@ -473,7 +473,7 @@
          </property>
          <property name="icon">
           <iconset resource="pix.qrc">
-           <normaloff>:/pix/query.png</normaloff>:/pix/query.png</iconset>
+           <normaloff>:/pix/queryS.png</normaloff>:/pix/queryS.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -513,7 +513,7 @@
          </property>
          <property name="icon">
           <iconset resource="pix.qrc">
-           <normaloff>:/pix/query.png</normaloff>:/pix/query.png</iconset>
+           <normaloff>:/pix/queryC.png</normaloff>:/pix/queryC.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -572,6 +572,13 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="0,0">

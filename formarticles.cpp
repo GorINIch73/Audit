@@ -83,6 +83,8 @@ void FormArticles::SetupTable()
     mapper->addMapping(ui->lineEdit_article, modelArticles->fieldIndex("article"));
     mapper->addMapping(ui->lineEdit_code, modelArticles->fieldIndex("code"));
     mapper->addMapping(ui->lineEdit_subcode, modelArticles->fieldIndex("subcode"));
+    mapper->addMapping(ui->lineEdit_f14, modelArticles->fieldIndex("f14"));
+    mapper->addMapping(ui->plainTextEdit_note, modelArticles->fieldIndex("note"));
     mapper->setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
 
 

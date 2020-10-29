@@ -440,12 +440,13 @@ void FormBank::on_pushButton_del_clicked()
 
 void FormBank::on_lineEdit_flt_all_textChanged(const QString &arg1)
 {
-    //фильтр по назначению платежа примечанию сумме
+    //общий фильтр по назначению платежа примечанию сумме
     modelBank->submit();
     if (!arg1.isEmpty()) {
 
 
-        QString ff = QString("(decryption_of_payment Like '\%%1\%' OR bank.note Like '\%%1\%' OR bank.amount_of_payment Like '\%%1\%' OR bank.payment_date Like '\%%1\%')").arg(arg1);
+        QString ff = QString("(decryption_of_payment Like '\%%1\%' OR bank.note Like '\%%1\%' OR bank.amount_of_payment Like '\%%1\%' OR bank.payment_date Like '\%%1\%' OR bank.counterparty_id IN (SELECT id FROM counterparties WHERE counterparty LIKE '\%%1\%'))").arg(arg1);
+//        QString ff = QString("(decryption_of_payment Like '\%%1\%' OR bank.note Like '\%%1\%' OR bank.amount_of_payment Like '\%%1\%' OR bank.payment_date Like '\%%1\%')").arg(arg1);
         // если установлено условие использования в фильтре контрагента то добавляем его
         if (ui->checkBox_use_counterparties->isChecked() && !ui->comboBox_flt_counterparties->currentText().isEmpty())
             ff.append(QString("AND counterparty_id ='%1\'").arg(modelCounterparties->data(modelCounterparties->index(ui->comboBox_flt_counterparties->currentIndex(),modelCounterparties->fieldIndex("id"))).toString()));
@@ -998,37 +999,14 @@ void FormBank::on_pushButton_rep_b_clicked()
 {
     // запрос на создание списка для проверки
 
-//    QSqlQuery a_query = QSqlQuery(base);
-
-//    //читаем настнойки из базы
-//    QString organization = "";
-//    QString dateBegin = "";
-//    QString dateEnd = "";
-
-//    if (!a_query.exec("SELECT organization, date_begin, date_end FROM options"))
-//            qDebug() << "Ошибка чтения настроек: " << a_query.lastError().text();
-//    else {
-//        a_query.first();
-//        organization = a_query.value(0).toString();
-//        dateBegin = a_query.value(1).toString();
-//        dateEnd = a_query.value(2).toString();
-//    }
-
-//    // фильтр дат
-//    QString flt="";
-//    if (!dateBegin.isEmpty() && !dateEnd.isEmpty())
-//        flt=QString("WHERE bank.payment_date >= '%1' AND bank.payment_date <= '%2'").arg(dateBegin).arg(dateEnd);
-//    // запрос
-//    QString query = QString("SELECT strftime('%Y',bank.payment_date), bank.this_receipt, articles.article, ROUND(SUM(sum),2), COUNT(bank.payment_number) FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id %1 GROUP BY strftime('%Y',bank.payment_date), bank.this_receipt, articles.article;").arg(flt);
-
-
-    emit signalFromQuery("SELECT strftime('%Y',bank.payment_date), bank.this_receipt, articles.article, ROUND(SUM(sum),2), COUNT(bank.payment_number) FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id GROUP BY strftime('%Y',bank.payment_date), bank.this_receipt, articles.article;");
-    // SELECT * FROM (SELECT bank.id, bank.payment_number, bank.payment_date, bank.amount_of_payment, ROUND(SUM(sum),2) AS summa, COUNT(bank.payment_number) AS count FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id GROUP BY bank.id, bank_decryption.bank_id) WHERE NOT (amount_of_payment = summa)
+//    emit signalFromQuery("SELECT strftime('%Y',bank.payment_date), bank.this_receipt, articles.article, ROUND(SUM(sum),2), COUNT(bank.payment_number) FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id GROUP BY strftime('%Y',bank.payment_date), bank.this_receipt, articles.article;");
+    emit signalFromQuery("SELECT strftime('%Y',bank.payment_date), bank.this_receipt, articles.article, articles.f14, ROUND(SUM(sum),2), COUNT(bank.payment_number) FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id GROUP BY strftime('%Y',bank.payment_date), bank.this_receipt, articles.article ORDER BY strftime('%Y',bank.payment_date), bank.this_receipt, articles.f14, articles.article;");
 
 }
 
 void FormBank::on_pushButton_Rep_Err_clicked()
 {
+    //запрос на
     emit signalFromQuery("SELECT * FROM (SELECT bank.id, bank.payment_number, bank.payment_date,  ROUND(bank.amount_of_payment,2), ROUND(SUM(sum),2) AS summa, COUNT(bank.payment_number) AS count FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id GROUP BY bank.id, bank_decryption.bank_id) WHERE NOT (amount_of_payment = summa)");
 
 }

@@ -126,7 +126,7 @@ void FormContract::on_lineEdit_flt_all_textChanged(const QString &arg1)
     mapper->submit(); // субмитим поля - вдруг изменились
     //фильтр
     if (!arg1.isEmpty()) {
-        QString ff = QString("contracts.contract_number Like '\%%1\%' OR contracts.contract_date Like '\%%1\%' OR contracts.price Like '\%%1\%' OR contracts.note Like '\%%1\%'").arg(arg1);
+        QString ff = QString("contracts.contract_number Like '\%%1\%' OR contracts.contract_date Like '\%%1\%' OR contracts.price Like '\%%1\%' OR contracts.note Like '\%%1\%' OR contracts.counterparty_id IN (SELECT id FROM counterparties WHERE counterparty LIKE '\%%1\%')").arg(arg1);
 
         modelContracts->setFilter(ff);
         modelContracts->select();
@@ -433,13 +433,14 @@ void FormContract::on_comboBox_flt_counterparties_currentIndexChanged(int index)
 void FormContract::on_pushButton_rep_list_clicked()
 {
     // запрос на создание списка
-    emit signalFromQuery("SELECT contracts.for_audit, counterparties.counterparty, contracts.contract_number, contracts.contract_date, contracts.state_contract, ROUND(SUM(sum),2), COUNT(DISTINCT bank.id), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id =counterparties.id GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article ORDER BY contracts.for_audit, contracts.contract_date, contracts.contract_number");
+    emit signalFromQuery("SELECT contracts.for_audit, counterparties.counterparty, 'N ' || contracts.contract_number, contracts.contract_date, contracts.state_contract, ROUND(SUM(sum),2), COUNT(DISTINCT bank.id), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id =counterparties.id GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article ORDER BY contracts.for_audit, contracts.contract_date, contracts.contract_number");
 }
 
 void FormContract::on_pushButton_rep_for_audit_clicked()
 {
     // запрос на создание списка для проверки
-    emit signalFromQuery("SELECT counterparties.counterparty, contracts.contract_number, contracts.contract_date, contracts.state_contract, ROUND(SUM(sum),2), COUNT(DISTINCT bank.id), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id =counterparties.id WHERE contracts.for_audit GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article ORDER BY contracts.contract_date, contracts.contract_number");
+//    emit signalFromQuery("SELECT counterparties.counterparty, contracts.contract_number, contracts.contract_date, contracts.state_contract, ROUND(SUM(sum),2), COUNT(DISTINCT bank.id), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id =counterparties.id WHERE contracts.for_audit GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article ORDER BY contracts.contract_date, contracts.contract_number");
+    emit signalFromQuery("SELECT counterparties.counterparty, 'N ' || contracts.contract_number, contracts.contract_date, contracts.state_contract, ROUND(SUM(sum),2), COUNT(DISTINCT bank.id), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id =counterparties.id WHERE contracts.for_audit GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article ORDER BY contracts.contract_date, contracts.contract_number");
 
 }
 

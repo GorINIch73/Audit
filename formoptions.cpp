@@ -178,7 +178,7 @@ void FormOptions::on_pushButton_ExportArticles_clicked()
 
     QSqlQuery query = QSqlQuery(base);
 
-    if (!query.exec("SELECT article, code, subcode FROM articles;")) {
+    if (!query.exec("SELECT article, code, subcode, f14, note FROM articles;")) {
           qDebug() << "Запрос статей: " << query.lastError().text();
           return;
     }
@@ -199,6 +199,11 @@ void FormOptions::on_pushButton_ExportArticles_clicked()
               ss.append(query.record().value(1).toString().remove('\n'));
               ss.append('\t');
               ss.append(query.record().value(2).toString().remove('\n'));
+              ss.append('\t');
+              ss.append(query.record().value(3).toString().remove('\n'));
+              ss.append('\t');
+              ss.append(query.record().value(4).toString().replace('\n','\r')); // надо прижумать как экспортировать и импортировать текст с форматированием
+//              ss.append(query.record().value(4).toString());
               ss.append('\n');
 //              qDebug() << query.record().value(0).toString();
 //              qDebug() << query.record().value(1).toString();
@@ -250,20 +255,21 @@ void FormOptions::on_pushButton_ImportArticles_clicked()
            QTextStream ts (&file);
 
            // Cтрока в которую будем формировать запросы
-           QString req = "INSERT INTO articles (article, code, subcode) VALUES ";
+           QString req = "INSERT INTO articles (article, code, subcode, f14, note) VALUES ";
            // Цикл до конца файла
            while(!ts.atEnd()){
                // Обрезаем строку до разделителя
                QStringList line = ts.readLine().split(sep);
-               if (line.count()<3) {
+               if (line.count()<5) {
                    qDebug() << tr("число колонок меньше трех! Импорт невозможен! ") << line;
                }
                //qDebug() << "import: " << line;
                // предпологается жеткая структура
                req.append("(\""+line.at(0)+"\",");
                req.append("\""+line.at(1)+"\",");
-               req.append("\""+line.at(2)+"\"),");
-
+               req.append("\""+line.at(2)+"\",");
+               req.append("\""+line.at(3)+"\",");
+               req.append("\""+line.at(4)+"\"),");
             }
            file.close ();
 
@@ -271,7 +277,7 @@ void FormOptions::on_pushButton_ImportArticles_clicked()
           req.chop(1);
           req.append(";");
 
-//          qDebug()<<req;
+          qDebug()<<req;
 
            // добавляем в базу
            QSqlQuery query(base);

@@ -158,6 +158,10 @@
    </property>
   </action>
   <action name="actionOptions">
+   <property name="icon">
+    <iconset resource="pix.qrc">
+     <normaloff>:/pix/tools.png</normaloff>:/pix/tools.png</iconset>
+   </property>
    <property name="text">
     <string>Настройки</string>
    </property>
@@ -218,6 +222,10 @@
    </property>
   </action>
   <action name="actionExit">
+   <property name="icon">
+    <iconset resource="pix.qrc">
+     <normaloff>:/pix/quit.png</normaloff>:/pix/quit.png</iconset>
+   </property>
    <property name="text">
     <string>Выход</string>
    </property>

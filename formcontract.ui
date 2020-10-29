@@ -138,6 +138,20 @@
           </widget>
          </item>
          <item>
+          <widget class="QPushButton" name="pushButton_flt_clr">
+           <property name="toolTip">
+            <string>Сбросить фильтр</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="pix.qrc">
+             <normaloff>:/pix/clear.png</normaloff>:/pix/clear.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QComboBox" name="comboBox_flt_counterparties">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -193,43 +207,43 @@
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_flt_clr">
-           <property name="toolTip">
-            <string>Сбросить фильтр</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="pix.qrc">
-             <normaloff>:/pix/clear.png</normaloff>:/pix/clear.png</iconset>
-           </property>
-          </widget>
-         </item>
         </layout>
        </item>
       </layout>
      </item>
      <item>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="1" column="1">
-        <widget class="QPushButton" name="pushButton_rep_list">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="pushButton_rep_for_audit">
          <property name="toolTip">
-          <string>Сформировать список контрактов</string>
+          <string>Список для проверки</string>
          </property>
          <property name="text">
           <string/>
          </property>
          <property name="icon">
           <iconset resource="pix.qrc">
-           <normaloff>:/pix/query.png</normaloff>:/pix/query.png</iconset>
+           <normaloff>:/pix/queryS.png</normaloff>:/pix/queryS.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>24</width>
+           <height>24</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="pushButton_Dubl_rep">
+         <property name="toolTip">
+          <string>Дубликаты номеров</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="pix.qrc">
+           <normaloff>:/pix/queryC.png</normaloff>:/pix/queryC.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -240,29 +254,15 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QPushButton" name="pushButton_rep_for_audit">
+        <widget class="QPushButton" name="pushButton_rep_list">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="toolTip">
-          <string>Список для проверки</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="pix.qrc">
-           <normaloff>:/pix/query.png</normaloff>:/pix/query.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>24</width>
-           <height>24</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QPushButton" name="pushButton_Dubl_rep">
-         <property name="toolTip">
-          <string>Дубликаты номеров</string>
+          <string>Сформировать список контрактов</string>
          </property>
          <property name="text">
           <string/>
@@ -308,6 +308,13 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_11">

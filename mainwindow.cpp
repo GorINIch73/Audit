@@ -364,7 +364,7 @@ void MainWindow::on_actionAbout_triggered()
     // дата компиляции
     //const QString BUILDV =  QStringLiteral(__DATE__ " " __TIME__);
 
-    QMessageBox::information(this,"Info",QString("Программа ведения финансового аудита\n в разрезе статей затрат.\n\nGorINIch`2020 ver0.03 %1 \nggorinich@gmail.com").arg(BUILDV));
+    QMessageBox::information(this,"Info",QString("Программа ведения финансового аудита\n в разрезе статей затрат.\n\nGorINIch`2020 ver0.05 %1 \nggorinich@gmail.com").arg(BUILDV));
 }
 
 
@@ -434,7 +434,9 @@ void MainWindow::on_actionNewBase_triggered()
                              " UNIQUE,"
              "article VARCHAR,"
              "code    VARCHAR,"
-             "subcode VARCHAR"
+             "subcode VARCHAR,"
+             "f14     VARCHAR,"
+             "note    TEXT"
          ");";
          if (!a_query.exec(str))
              qDebug() << "таблица Статей: " << a_query.lastError().text();

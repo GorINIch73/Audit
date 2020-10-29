@@ -27,5 +27,8 @@
         <file>pix/bank.png</file>
         <file>pix/conterp.png</file>
         <file>pix/contracts.png</file>
+        <file>pix/queryC.png</file>
+        <file>pix/queryS.png</file>
+        <file>pix/quit.png</file>
     </qresource>
 </RCC>
