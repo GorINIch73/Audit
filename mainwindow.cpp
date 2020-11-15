@@ -364,7 +364,7 @@ void MainWindow::on_actionAbout_triggered()
     // дата компиляции
     //const QString BUILDV =  QStringLiteral(__DATE__ " " __TIME__);
 
-    QMessageBox::information(this,"Info",QString("Программа ведения финансового аудита\n в разрезе статей затрат.\n\nGorINIch`2020 ver0.05 %1 \nggorinich@gmail.com").arg(BUILDV));
+    QMessageBox::information(this,"Info",QString("Программа ведения финансового аудита\n в разрезе статей затрат.\n\n %1 %2 \nggorinich@gmail.com").arg(VER_PROG).arg(BUILDV));
 }
 
 
