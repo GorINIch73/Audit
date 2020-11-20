@@ -63,6 +63,13 @@
         </widget>
        </item>
        <item>
+        <widget class="Line" name="line_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="pushButton_refr">
          <property name="text">
           <string/>
@@ -70,6 +77,13 @@
          <property name="icon">
           <iconset resource="pix.qrc">
            <normaloff>:/pix/reload.png</normaloff>:/pix/reload.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
         </widget>
        </item>
@@ -96,6 +110,13 @@
         </widget>
        </item>
       </layout>
+     </item>
+     <item>
+      <widget class="Line" name="line_5">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer_2">

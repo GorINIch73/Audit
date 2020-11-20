@@ -57,6 +57,7 @@ void FormImport::on_pushButton_getFile_clicked()
 //           qDebug() << "import: " << line;
 
 
+           ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch); // стреч
 
            ui->tableWidget->setColumnCount(line.count());
            ui->tableWidget->insertRow(0);
@@ -86,12 +87,14 @@ void FormImport::on_pushButton_getFile_clicked()
 
            ui->tableWidget->insertRow(1); //вставляем пустышку
            //добавляем пару строк примера
-           for(int c=2; c<4; ++c) {
-               // читаем строку с данными
-               line = ts.readLine().split(sep);
-               ui->tableWidget->insertRow(c);
-               for (int i = 0; i < line.size(); ++i)
-                   ui->tableWidget->setItem(c, i, new QTableWidgetItem(line.at(i)));
+           for(int c=2; c<10; ++c) {
+               // читаем строку с данными если не пустое
+               if(!ts.atEnd()) {
+                   line = ts.readLine().split(sep);
+                   ui->tableWidget->insertRow(c);
+                   for (int i = 0; i < line.size(); ++i)
+                       ui->tableWidget->setItem(c, i, new QTableWidgetItem(line.at(i)));
+               }
            }
 
        }

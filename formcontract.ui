@@ -65,6 +65,13 @@
           </widget>
          </item>
          <item>
+          <widget class="Line" name="line_3">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="pushButton_refr">
            <property name="toolTip">
             <string>Обновить</string>
@@ -75,6 +82,13 @@
            <property name="icon">
             <iconset resource="pix.qrc">
              <normaloff>:/pix/reload.png</normaloff>:/pix/reload.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="Line" name="line_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
            </property>
           </widget>
          </item>
@@ -212,6 +226,13 @@
       </layout>
      </item>
      <item>
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="0">
         <widget class="QPushButton" name="pushButton_rep_for_audit">
@@ -280,6 +301,13 @@
         </widget>
        </item>
       </layout>
+     </item>
+     <item>
+      <widget class="Line" name="line_5">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_close">
