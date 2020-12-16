@@ -661,7 +661,7 @@ void MainWindow::on_actionRep_bank_triggered()
 
     QPrinter printer(QPrinter::PrinterResolution);
     printer.setOutputFormat(QPrinter::PdfFormat);
-    printer.setPaperSize(QPrinter::A4);
+//    printer.setPageSize( setPaperSize(QPrinter::A4);
     printer.setOutputFileName("rep_bank.pdf");
     printer.setPageMargins(QMarginsF(15, 15, 15, 15));
 
@@ -863,7 +863,7 @@ void MainWindow::on_actionRepContracts_triggered()
 
     QPrinter printer(QPrinter::PrinterResolution);
     printer.setOutputFormat(QPrinter::PdfFormat);
-    printer.setPaperSize(QPrinter::A4);
+//    printer.setPaperSize(QPrinter::A4);
     printer.setOutputFileName("rep_Contracts.pdf");
     printer.setPageMargins(QMarginsF(15, 15, 15, 15));
 
@@ -1040,7 +1040,7 @@ void MainWindow::on_actionRepContracsShort_triggered()
 
     QPrinter printer(QPrinter::PrinterResolution);
     printer.setOutputFormat(QPrinter::PdfFormat);
-    printer.setPaperSize(QPrinter::A4);
+//    printer.setPaperSize(QPrinter::A4);
     printer.setOutputFileName("rep_Contracts_s.pdf");
     printer.setPageMargins(QMarginsF(15, 15, 15, 15));
 
@@ -1201,7 +1201,7 @@ void MainWindow::on_actionRepContractsIsNote_triggered()
 
     QPrinter printer(QPrinter::PrinterResolution);
     printer.setOutputFormat(QPrinter::PdfFormat);
-    printer.setPaperSize(QPrinter::A4);
+//    printer.setPaperSize(QPrinter::A4);
 //    printer.setOrientation(QPrinter::Landscape);
     printer.setOutputFileName("rep_Contracts_n.pdf");
     printer.setPageMargins(QMarginsF(10, 10, 10, 10));

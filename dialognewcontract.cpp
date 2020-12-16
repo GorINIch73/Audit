@@ -1,7 +1,8 @@
 #include "dialognewcontract.h"
 #include "ui_dialognewcontract.h"
 
-#include <QRegExp>
+//#include <QRegExp>
+#include <QRegularExpression>
 #include <QDebug>
 #include <QSqlQuery>
 #include <QSqlError>
@@ -74,12 +75,13 @@ void DialogNewContract::Decrypt(QString decryption)
 //    qDebug() << srx;
 
     //создание регулярного выражения с заданным шаблоном
-    QRegExp rx(srx);
-    rx.setCaseSensitivity(Qt::CaseInsensitive); // не чувствительность к регистру
+    QRegularExpression rx(srx);
+    rx.setPatternOptions(QRegularExpression::CaseInsensitiveOption); // не чувствительность к регистру
 
 
     //проверка на корректность
-    if (!rx.isValid() && rx.isEmpty() && rx.exactMatch("")){
+//    if (!rx.isValid() && rx.is isEmpty() && rx.exactMatch("")){
+      if (!rx.isValid()){
         qDebug() << "Error! Regex is not valid.";
         return;
     }
@@ -87,8 +89,8 @@ void DialogNewContract::Decrypt(QString decryption)
     //установка свойства жадости
     //rx.setMinimal(false);
     //позиция курсора поиска
-
-    if(rx.indexIn(decryption) >-1 ) {
+    QRegularExpressionMatch match = rx.match(decryption);
+    if(match.hasMatch() ) {
 
         // ищем первое вхождение
 //        qDebug() << "cap0";
@@ -101,17 +103,17 @@ void DialogNewContract::Decrypt(QString decryption)
 //        qDebug() << rx.cap(6);
 //        qDebug() << rx.cap(7);
 
-        ui->lineEditNumber->setText(rx.cap(4));
-        if(rx.cap(9).isNull()) {
+        ui->lineEditNumber->setText(match.captured(4));
+        if(match.captured(9).isNull()) {
             //QString ss = QString("%1.%2.20%3").arg(rx.cap(5)).arg(rx.cap(6)).arg(rx.cap(7));
-            ui->dateEditDate->setDate(QDate::fromString(QString("%1.%2.20%3").arg(rx.cap(6)).arg(rx.cap(7)).arg(rx.cap(8)),"dd.MM.yyyy")); //приведение даты к длинному формату
+            ui->dateEditDate->setDate(QDate::fromString(QString("%1.%2.20%3").arg(match.captured(6)).arg(match.captured(7)).arg(match.captured(8)),"dd.MM.yyyy")); //приведение даты к длинному формату
         }
         else
-            ui->dateEditDate->setDate(QDate::fromString(rx.cap(5),"dd.MM.yyyy"));
+            ui->dateEditDate->setDate(QDate::fromString(match.captured(5),"dd.MM.yyyy"));
 
         ui->checkBoxState->setChecked(false);
         // сомнительное определение - часто просто пишут контракт думаю не нужно полагаться на это
-        if(rx.cap(1).left(1)=="к")
+        if(match.captured(1).left(1)=="к")
             ui->checkBoxState->setChecked(true);
 
 

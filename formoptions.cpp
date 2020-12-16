@@ -331,10 +331,10 @@ void FormOptions::on_pushButton_add_contracts_clicked()
     int count=0; // счетчик
 
     //создание регулярного выражения с заданным шаблоном
-    QRegExp rx(ui->lineEdit_regex->text());
-    rx.setCaseSensitivity(Qt::CaseInsensitive); // не чувствительность к регистру
+    QRegularExpression rx(ui->lineEdit_regex->text());
+    rx.setPatternOptions(QRegularExpression::CaseInsensitiveOption); // не чувствительность к регистру
     //проверка на корректность
-    if (!rx.isValid() && rx.isEmpty() && rx.exactMatch("")){
+    if (!rx.isValid()){
         qDebug() << "Error! Regex is not valid.";
         return;
     }
@@ -354,17 +354,18 @@ void FormOptions::on_pushButton_add_contracts_clicked()
         // определяем номер дату контракта
 
         // если что то найдено
-        if(rx.indexIn(query_bank.value(2).toString()) >-1 ) {
+        QRegularExpressionMatch match = rx.match(query_bank.value(2).toString());
+        if(match.hasMatch() ) {
             // первое вхождение
-            sNum = rx.cap(4);
-            if(rx.cap(9).isNull()) {
-                sDate = QDate::fromString(QString("%1.%2.20%3").arg(rx.cap(6)).arg(rx.cap(7)).arg(rx.cap(8)),"dd.MM.yyyy").toString("yyyy-MM-dd"); //приведение даты к длинному формату
+            sNum = match.captured(4);
+            if(match.captured(9).isNull()) {
+                sDate = QDate::fromString(QString("%1.%2.20%3").arg(match.captured(6)).arg(match.captured(7)).arg(match.captured(8)),"dd.MM.yyyy").toString("yyyy-MM-dd"); //приведение даты к длинному формату
             }
             else
-                sDate = QDate::fromString(rx.cap(5),"dd.MM.yyyy").toString("yyyy-MM-dd");
+                sDate = QDate::fromString(match.captured(5),"dd.MM.yyyy").toString("yyyy-MM-dd");
 
             // сомнительное определение - часто просто пишут контракт думаю не нужно полагаться на это
-            if(rx.cap(1).left(1)=="к")
+            if(match.captured(1).left(1)=="к")
                 state = true;
 
             // если номер и дата не пустые!
