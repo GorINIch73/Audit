@@ -275,9 +275,7 @@ void FormArticles::on_pushButton_del_clicked()
 
 void FormArticles::on_pushButton_lst_clicked()
 {
-    // запрос на список полный платежей со статьями
-    // запрос не редактирован - переделать на правильный!
-//       emit signalFromQuery("SELECT articles.article, bank.payment_date, bank.payment_number, counterparties.counterparty, ROUND(bank.amount_of_payment,2) AS summa_bank, ROUND(sum,2) AS summa_description, bank.decryption_of_payment FROM bank_decryption inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank.counterparty_id=counterparties.id inner join articles on bank_decryption.article_id=articles.id ORDER BY articles.article, bank.payment_date, counterparties.counterparty");
+    // запрос на список платежей со статье
     // фильтр или по строке фильтра или по выбранномой статье
     QString flt= "";
     QString sID = modelArticles->data(modelArticles->index(ui->tableView_articles->currentIndex().row(), 0)).toString();
@@ -286,6 +284,20 @@ void FormArticles::on_pushButton_lst_clicked()
         flt= QString(" WHERE article_id = \%1").arg(sID);
     else
         flt = QString("WHERE article_id = \%1 AND (sum Like '\%%2\%' OR bank.payment_date Like '\%%2\%' OR bank.payment_number Like '\%%2\%' OR counterparties.counterparty Like '\%%2\%' OR bank.decryption_of_payment Like '\%%2\%')").arg(sID).arg(ui->lineEdit_flt_dec->text());
+
+    qDebug() << flt;
+
+    emit signalFromQuery(QString("SELECT articles.article, bank.payment_date, bank.payment_number, counterparties.counterparty, ROUND(bank.amount_of_payment,2) AS summa_bank, ROUND(sum,2) AS summa_description, bank.decryption_of_payment FROM bank_decryption inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank.counterparty_id=counterparties.id inner join articles on bank_decryption.article_id=articles.id  \%1 ORDER BY articles.article, bank.payment_date, counterparties.counterparty").arg(flt));
+}
+
+void FormArticles::on_pushButton_lst_all_clicked()
+{
+    // запрос на список  платежей по фильтру
+    // фильтр или по строке фильтра
+    QString flt= "";
+
+    if (!ui->lineEdit_flt_dec->text().isEmpty())
+        flt = QString("WHERE sum Like '\%%1\%' OR bank.payment_date Like '\%%1\%' OR bank.payment_number Like '\%%1\%' OR counterparties.counterparty Like '\%%1\%' OR bank.decryption_of_payment Like '\%%1\%'").arg(ui->lineEdit_flt_dec->text());
 
     qDebug() << flt;
 

@@ -134,7 +134,27 @@
      <item>
       <widget class="QPushButton" name="pushButton_lst">
        <property name="toolTip">
-        <string>Список платежей по статьям</string>
+        <string>Список платежей по статье</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="pix.qrc">
+         <normaloff>:/pix/query.png</normaloff>:/pix/query.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_lst_all">
+       <property name="toolTip">
+        <string>Список полный</string>
        </property>
        <property name="text">
         <string/>

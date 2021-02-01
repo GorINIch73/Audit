@@ -55,6 +55,8 @@ private slots:
 
     void on_pushButton_lst_clicked();
 
+    void on_pushButton_lst_all_clicked();
+
 private:
     Ui::FormArticles *ui;
 
