@@ -157,6 +157,9 @@ void FormOptions::on_pushButton_ExportArticles_clicked()
 
     // запросить новое имя
     QString  exportName = QFileDialog::getSaveFileName(this,tr("Экспортировать как"),".//exportarticles.tsv",tr("File TSV (*.tsv)"));
+   // databaseName = QFileDialog::getOpenFileName(this,tr("Open base"),"./",QString("Data base Files (*%1);; All file (*)").arg(FILE_EXT));
+
+   // если файл присутствует
 
     //если пустое
     if(exportName.isEmpty()){

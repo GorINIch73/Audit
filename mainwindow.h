@@ -10,7 +10,7 @@
 #define SETTINGS_BASE_FILE1 "File1"
 #define SETTINGS_BASE_FILE2 "File2"
 #define SETTINGS_BASE_FILE3 "File3"
-#define VER_PROG "GorINIch`2020 ver0.07"
+#define VER_PROG "GorINIch`2021 ver0.09"
 
 
 #define FILE_EXT ".dbad"

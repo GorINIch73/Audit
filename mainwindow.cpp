@@ -407,7 +407,7 @@ void MainWindow::on_actionNewBase_triggered()
              "counterparty_id       INTEGER         REFERENCES counterparties (id),"
              "decryption_of_payment TEXT,"
              "amount_of_payment     DECIMAL (20, 2) DEFAULT (0),"
-             "this_receipt          BOOLEAN         DEFAULT (false),"
+             "this_receipt          BOOLEAN         DEFAULT (0),"
              "article               VARCHAR,"
              "note                  VARCHAR"
          ");";
@@ -423,7 +423,7 @@ void MainWindow::on_actionNewBase_triggered()
              "sum                  DECIMAL (20, 2),"
              "article_id           INTEGER         REFERENCES articles (id),"
              "contract_id          INTEGER         REFERENCES contracts (id),"
-             "expense_confirmation BOOLEAN         DEFAULT (false) "
+             "expense_confirmation BOOLEAN         DEFAULT (0) "
          ");";
          if (!a_query.exec(str))
              qDebug() << "таблица Расшифровок: " << a_query.lastError().text();
@@ -460,10 +460,10 @@ void MainWindow::on_actionNewBase_triggered()
              "due_date        DATE            DEFAULT [2000-01-01],"
              "counterparty_id INTEGER         REFERENCES counterparties (id),"
              "price           DECIMAL (20, 2) DEFAULT (0),"
-             "state_contract  BOOLEAN         DEFAULT (false),"
-             "completed       BOOLEAN         DEFAULT (false),"
-             "found           BOOLEAN         DEFAULT (false),"
-             "for_audit       BOOLEAN         DEFAULT (false), "
+             "state_contract  BOOLEAN         DEFAULT (0),"
+             "completed       BOOLEAN         DEFAULT (0),"
+             "found           BOOLEAN         DEFAULT (0),"
+             "for_audit       BOOLEAN         DEFAULT (0), "
              "note            VARCHAR"
          ");";
          if (!a_query.exec(str))
@@ -474,7 +474,7 @@ void MainWindow::on_actionNewBase_triggered()
              "organization       VARCHAR,"
              "date_begin         DATE,"
              "date_end           DATE,"
-             "rep_contract_found BOOLEAN DEFAULT (false),"
+             "rep_contract_found BOOLEAN DEFAULT (0),"
              "regexp_c           VARCHAR"
          ");";
          if (!a_query.exec(str))

@@ -139,9 +139,15 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="maximumSize">
                 <size>
-                 <width>500</width>
+                 <width>16777215</width>
                  <height>16777215</height>
                 </size>
                </property>
@@ -149,7 +155,7 @@
                 <string>Фильтр по контрагенту</string>
                </property>
                <property name="sizeAdjustPolicy">
-                <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+                <enum>QComboBox::AdjustToMinimumContentsLength</enum>
                </property>
               </widget>
              </item>
@@ -325,7 +331,7 @@
            </property>
            <property name="maximumSize">
             <size>
-             <width>500</width>
+             <width>16777215</width>
              <height>16777215</height>
             </size>
            </property>
@@ -333,7 +339,7 @@
             <string>Статья для добавления расшифровки</string>
            </property>
            <property name="sizeAdjustPolicy">
-            <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
            </property>
           </widget>
          </item>
@@ -426,7 +432,7 @@
             <string>Контракт для добавления в расшифровку</string>
            </property>
            <property name="sizeAdjustPolicy">
-            <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
            </property>
           </widget>
          </item>
@@ -731,10 +737,16 @@
          <item>
           <widget class="QComboBox" name="comboBox_counterparty">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
            </property>
            <property name="maximumSize">
             <size>
@@ -764,7 +776,7 @@
             <enum>QComboBox::InsertAfterCurrent</enum>
            </property>
            <property name="sizeAdjustPolicy">
-            <enum>QComboBox::AdjustToContents</enum>
+            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
            </property>
            <property name="minimumContentsLength">
             <number>0</number>

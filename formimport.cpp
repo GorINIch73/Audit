@@ -41,7 +41,7 @@ void FormImport::on_pushButton_getFile_clicked()
 
     // откты файл импорта
     // выбор файла
-    importName = QFileDialog::getOpenFileName(this,QString("Открыть файл"),QDir::currentPath(),tr("Типы файлов (*.tsv;*.csv;*.txt;);;Все файлы (*.*)"));
+    importName = QFileDialog::getOpenFileName(this,QString("Открыть файл"),QDir::currentPath(),tr("Импорт tsv csv (*.tsv *.csv *.txt;);;Все файлы (*.*)"));
     //importName=QString("d:/Qt/Project/base_a/import.txt"); // временно пропускаем выбор
     ui->lineEdit_file->setText(importName);
     qDebug() << "Импорт из: " << importName;
@@ -307,7 +307,7 @@ void FormImport::on_pushButton_ImportZ_clicked()
                }
                // если установлен признак поступления добавляем его
                if (ui->checkBox_receipt->isChecked()) {
-                    val_line.append(",'true'");
+                    val_line.append(",1");
                }
 
 
