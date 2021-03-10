@@ -385,6 +385,7 @@ void FormContract::on_pushButton_flt_clr_clicked()
     modelContracts->submit();
 
     ui->lineEdit_flt_all->setText("");
+    ui->checkBox_flt_audit->setChecked(false);
 
     modelContracts->setFilter("");
     modelContracts->select();
@@ -448,5 +449,33 @@ void FormContract::on_pushButton_Dubl_rep_clicked()
 {
     // запрос на создание списка дубликатов номеров
     emit signalFromQuery("SELECT contract_number, COUNT(*) FROM contracts GROUP BY contract_number HAVING COUNT(*) > 1");
+
+}
+
+void FormContract::on_checkBox_flt_audit_stateChanged(int arg1)
+{
+    // фильтр на контракты для аудита
+    modelContracts->submit();
+
+    if (ui->checkBox_flt_audit->isChecked()) {
+        qDebug() << "для проверки";
+        QString ff = QString("for_audit = true");
+        // QString ff = QString(" bank.id NOT IN (SELECT bank_id FROM bank_decryption) ");
+        modelContracts->setFilter(ff);
+        modelContracts->select();
+        ui->tableView_contracts->selectRow(0);
+
+        // при отсутствии результата не дается сигнал смены строки
+        seekTable(); // дергаем сменой строки принудительно на случай пустого результата
+        QCoreApplication::postEvent(this, new QStatusTipEvent(QString("Активен фильт по выбранным для проверки.")));
+
+    }
+    else {
+        modelContracts->setFilter("");
+        modelContracts->select();
+        ui->tableView_contracts->selectRow(0);
+        QCoreApplication::postEvent(this, new QStatusTipEvent(QString("")));
+
+    }
 
 }

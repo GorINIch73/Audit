@@ -152,6 +152,13 @@
           </widget>
          </item>
          <item>
+          <widget class="QCheckBox" name="checkBox_flt_audit">
+           <property name="text">
+            <string>только для проверки</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="pushButton_flt_clr">
            <property name="toolTip">
             <string>Сбросить фильтр</string>

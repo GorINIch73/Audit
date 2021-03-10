@@ -67,6 +67,8 @@ private slots:
 
     void on_pushButton_Dubl_rep_clicked();
 
+    void on_checkBox_flt_audit_stateChanged(int arg1);
+
 private:
     Ui::FormContract *ui;
 
