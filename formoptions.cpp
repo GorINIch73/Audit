@@ -295,7 +295,11 @@ void FormOptions::on_pushButton_ImportArticles_clicked()
 }
 void FormOptions::on_pushButton_regexp_def_clicked()
 {
-    ui->lineEdit_regex->setText("(кон|конт|контр|контракт|дог|догов|договор)(.|)\\s{0,}(N|)\\s{0,}(\\S{1,})\\s{0,}от\\s{0,}((0[1-9]|[12][0-9]|3[01])[-\\.](0[1-9]|1[012])[-\\.]((19|20)(\\d{2})|\\d{2}))\\D");
+//    ui->lineEdit_regex->setText("(кон|конт|контр|контракт|дог|догов|договор)(.|)\\s{0,}(N|)\\s{0,}(\\S{1,})\\s{0,}от\\s{0,}((0[1-9]|[12][0-9]|3[01])[-\\.](0[1-9]|1[012])[-\\.]((19|20)(\\d{2})|\\d{2}))\\D");
+    ui->lineEdit_regex->setText("(кон|конт|контр|контракт|дог|догов|договор)(.|)\s{0,}(N|)\s{0,}(\S{1,})(\s{0,}от\s{0,}|)\s{0,}((0[1-9]|[12][0-9]|3[01])[-\.](0[1-9]|1[012])[-\.]((19|20)(\d{2})|\d{2}))\D");
+// дата (?<=\D|^)(?<day>[0-3][1-9])(?<sep>[^\w\s])(?<month>1[0-2]|0[1-9])\k<sep>(?<year>\d{2}|\d{4})(?=\D|$)
+     ui -> lineEdit_regex -> setText ( "(?<name>контракт|контр|конт|кон|договор|догов|дог)([.]|)\\s{0,}([N№]|)\\s{0,}(?<number>\\S{1,})\\s{0,}(от|)\\s{0,}(?<=\\D|^)(?<day>[0-2][0-9]|[3][0-1])(?<sep>[^\\w\\s])(?<month>1[0-2]|0[1-9])\\k<sep>(?<year>\\d{4}|\\d{2})(?=\\D|$)" );
+
 }
 
 
@@ -360,12 +364,13 @@ void FormOptions::on_pushButton_add_contracts_clicked()
         QRegularExpressionMatch match = rx.match(query_bank.value(2).toString());
         if(match.hasMatch() ) {
             // первое вхождение
-            sNum = match.captured(4);
-            if(match.captured(9).isNull()) {
-                sDate = QDate::fromString(QString("%1.%2.20%3").arg(match.captured(6)).arg(match.captured(7)).arg(match.captured(8)),"dd.MM.yyyy").toString("yyyy-MM-dd"); //приведение даты к длинному формату
-            }
-            else
-                sDate = QDate::fromString(match.captured(5),"dd.MM.yyyy").toString("yyyy-MM-dd");
+            sNum = match . captured ( 4 );
+            if ( match . captured ( 9 ). length ()== 2 ) {
+                            sDate = QDate :: fromString ( QString ( "%1.%2.20%3" ). arg ( match . captured ( 6 )). arg ( match . captured ( 8 )). arg ( match . captured ( 9 )), "dd.MM.yyyy" ). toString ( "yyyy-MM-dd" ); //приведение даты к длинному формату
+              }
+              else
+                            sDate = QDate :: fromString ( QString ( "%1.%2.%3" ). arg ( match . captured ( 6 )). arg ( match . captured ( 8 )). arg ( match . captured ( 9 )), "dd.MM.yyyy" ). toString ( "yyyy-MM-dd" );
+            //                 sDate = QDate::fromString(match.captured(5),"dd.MM.yyyy").toString("yyyy-MM-dd");
 
             // сомнительное определение - часто просто пишут контракт думаю не нужно полагаться на это
             if(match.captured(1).left(1)=="к")
