@@ -146,6 +146,12 @@
          </item>
          <item>
           <widget class="QLineEdit" name="lineEdit_flt_all">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="toolTip">
             <string>Фильтр по номеру, примечанию</string>
            </property>
