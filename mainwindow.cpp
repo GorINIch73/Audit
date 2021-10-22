@@ -1009,7 +1009,7 @@ void MainWindow::on_actionRepContracsShort_triggered()
         out << "<tr>";
         // печать основных данных
         out <<  QString("<td></td>");
-        out <<  QString("<td  width=\"90%\"><small> %1 </small></td>").arg((!a_query.value(1).toString().isEmpty())? a_query.value(1).toString():QString("&nbsp;"));
+        out <<  QString("<td  width=\"70%\"><small> %1 </small></td>").arg((!a_query.value(1).toString().isEmpty())? a_query.value(1).toString():QString("&nbsp;"));
         out <<  QString("<td align=right>%1 </td>").arg((!a_query.value(2).toString().isEmpty())? QString("%L1").arg(a_query.value(2).toDouble(), -0, 'f', 2):QString("&nbsp;"));
         out <<  QString("<td align=right>%1 </td>").arg((!a_query.value(3).toString().isEmpty())? a_query.value(3).toString():QString("&nbsp;"));
 
