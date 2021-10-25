@@ -10,7 +10,7 @@
 #define SETTINGS_BASE_FILE1 "File1"
 #define SETTINGS_BASE_FILE2 "File2"
 #define SETTINGS_BASE_FILE3 "File3"
-#define VER_PROG "GorINIch`2021 ver0.10"
+#define VER_PROG "GorINIch`2021 ver0.11"
 
 
 #define FILE_EXT ".dbad"
@@ -80,6 +80,8 @@ private slots:
     void on_actionFile02_triggered();
 
     void on_actionFile03_triggered();
+
+    void on_actionRepContractsFor_triggered();
 
 private:
     Ui::MainWindow *ui;

@@ -231,6 +231,7 @@ void MainWindow::on_actionOpenBase_triggered()
             ui->actionRepContracts->setEnabled(true);
             ui->actionRepContracsShort->setEnabled(true);
             ui->actionRepContractsIsNote->setEnabled(true);
+            ui->actionRepContractsFor->setEnabled(true);
 
             // открываем новую базу
             OpenBase();
@@ -261,6 +262,7 @@ void MainWindow::on_actionCloseBase_triggered()
     ui->actionRepContracts->setEnabled(false);
     ui->actionRepContracsShort->setEnabled(false);
     ui->actionRepContractsIsNote->setEnabled(false);
+    ui->actionRepContractsFor->setEnabled(false);
 
 }
 
@@ -1210,6 +1212,160 @@ void MainWindow::on_actionRepContractsIsNote_triggered()
 
     // откровем созданный отчет
     QDesktopServices::openUrl(QUrl(QUrl::fromLocalFile("rep_Contracts_n.pdf")));
+
+}
+
+
+void MainWindow::on_actionRepContractsFor_triggered()
+{
+    // главный отчет по контрактам короткий по субкодам без деления на договора контрагты
+
+    // база открыта?
+    if(!database.isOpen()){
+          qDebug() << "База не открыта!";
+          QMessageBox::critical(this,"Error","База не открыта!");
+          return;
+    }
+
+    QSqlQuery a_query = QSqlQuery(database);
+
+    //читаем настнойки из базы
+    QString organization = "";
+    QString dateBegin = "";
+    QString dateEnd = "";
+    bool rep_contract_found = false;
+
+
+    if (!a_query.exec("SELECT organization, date_begin, date_end, rep_contract_found FROM options"))
+            qDebug() << "Ошибка чтения настроек: " << a_query.lastError().text();
+    else {
+        a_query.first();
+        organization = a_query.value(0).toString();
+        dateBegin = a_query.value(1).toString();
+        dateEnd = a_query.value(2).toString();
+        rep_contract_found=a_query.value(3).toBool();
+    }
+
+
+    // фильтр дат
+    QString flt="";
+    if ((!dateBegin.isEmpty() && !dateEnd.isEmpty()) || rep_contract_found) {
+        flt.append("WHERE ");
+
+        if (!dateBegin.isEmpty() && !dateEnd.isEmpty())
+            flt.append(QString("bank.payment_date >= '%1' AND bank.payment_date <= '%2'").arg(dateBegin).arg(dateEnd));
+        if (rep_contract_found)
+            flt.append(" AND contracts.found=true ");
+    }
+
+    qDebug() << "фильтр: " << flt;
+
+    // запрос
+    QString query = QString("SELECT articles.subcode, ROUND(SUM(sum),2), COUNT(DISTINCT contracts.contract_number) FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id=counterparties.id %1 GROUP BY articles.subcode;").arg(flt);
+    if (!a_query.exec(query)) {
+         qDebug() << "Ошибка запроса отчета: " << a_query.lastError().text();
+         return;
+    }
+//    qDebug() << flt;
+//    qDebug() << query;
+
+    // формирование и печать
+
+    QString stringStream;
+    QTextStream out(&stringStream);
+
+
+    // формирование отчета
+    out << "<html>\n" << "<head>\n" << "meta Content=\"Text/html;charsrt=Windows-1251\">\n" <<
+           QString("<title>%1</title>\n").arg("Report") <<
+
+           "<style>"
+           "table {"
+            "width: 100%; /* Ширина таблицы */"
+//            "border-collapse: collapse; /* Убираем двойные линии */"
+//            "border-bottom: 1px none #333; /* Линия снизу таблицы */"
+//            "border-bottom: none; /* Линия снизу таблицы */"
+//            "border-top: none; /* Линия сверху таблицы */"
+           "}"
+           "td { "
+            "text-align: left; /* Выравнивание по лево */"
+            "border-bottom: none;"
+           "}"
+           "td, th {"
+            "padding: 1px; /* Поля в ячейках */"
+           "}"
+            "th {"
+            "border-top: 1px dashed;"
+            "}"
+         "  </style>"
+
+           "</head>\n"
+           "<body bgcolor = #ffffff link=#5000A0>\n";
+
+
+    // маркеры смены группы
+    //QString val01= ""; // Госконтракт
+
+    // счетчик для количества
+    double sumA=0;
+    int countA=0;
+
+    // титульный
+    out << QString("<h2>ОТЧЕТ по контрактам по субкодам для акта без дазбивки: %1 </h2>").arg(organization);
+    out << QString("- за период: с %1 по %2 ").arg(dateBegin).arg(dateEnd);
+    if (rep_contract_found)
+        out << QString(", включены только найденные контракты.").arg(dateBegin).arg(dateEnd);
+
+
+    // данные
+    out <<  "<table>\n";
+    while (a_query.next()) {
+        // печать категорий
+        // госконтракт
+
+
+        out << "<tr>";
+        // печать основных данных
+        out <<  QString("<td></td>");
+        out <<  QString("<td  width=\"70%\"><small> %1 </small></td>").arg((!a_query.value(0).toString().isEmpty())? a_query.value(0).toString():QString("&nbsp;"));
+        out <<  QString("<td align=right>%1 </td>").arg((!a_query.value(1).toString().isEmpty())? QString("%L1").arg(a_query.value(1).toDouble(), -0, 'f', 2):QString("&nbsp;"));
+        out <<  QString("<td align=right>%1 </td>").arg((!a_query.value(2).toString().isEmpty())? a_query.value(2).toString():QString("&nbsp;"));
+
+        //добавляем текущее значение
+        countA=countA+a_query.value(2).toInt();
+        sumA=sumA+a_query.value(1).toDouble();
+
+        out << "</tr>\n";
+    }
+
+        // пропечатываем последний итог
+        out << "<tr>";
+        out <<  QString("<td></td>");
+        out <<  QString("<td align=right><b>ИТОГО по категории: </b></td>");
+        out <<  QString("<td align=right><b>%1</b></td>").arg(QString("%L1").arg(sumA,-0,'f',2));
+        out <<  QString("<td align=right><b>%1</b></td>").arg(countA);
+
+    out << "</table>\n";
+
+
+
+    out << "</body>\n" << "</html>\n";
+
+//    qDebug() << out.readAll();
+    // печать
+    QTextDocument document;
+    document.setHtml(stringStream);
+
+    QPrinter printer(QPrinter::PrinterResolution);
+    printer.setOutputFormat(QPrinter::PdfFormat);
+//    printer.setPaperSize(QPrinter::A4);
+    printer.setOutputFileName("rep_Contracts_s2.pdf");
+    printer.setPageMargins(QMarginsF(15, 15, 15, 15));
+
+    document.print(&printer);
+
+    // откровем созданный отчет
+    QDesktopServices::openUrl(QUrl(QUrl::fromLocalFile("rep_Contracts_s2.pdf")));
 
 }
 

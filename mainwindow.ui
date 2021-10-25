@@ -36,7 +36,7 @@
      <x>0</x>
      <y>0</y>
      <width>1245</width>
-     <height>21</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -78,6 +78,7 @@
      <string>Отчеты</string>
     </property>
     <addaction name="actionRep_bank"/>
+    <addaction name="actionRepContractsFor"/>
     <addaction name="actionRepContracsShort"/>
     <addaction name="actionRepContractsIsNote"/>
     <addaction name="actionRepContracts"/>
@@ -259,7 +260,7 @@
      <normaloff>:/pix/rep.png</normaloff>:/pix/rep.png</iconset>
    </property>
    <property name="text">
-    <string>Отчет по контрактам по субкодам</string>
+    <string>Отчет по контрактам старый</string>
    </property>
    <property name="toolTip">
     <string>Отчет по контрактам короткий по субкодам</string>
@@ -302,6 +303,18 @@
   <action name="actionFile03">
    <property name="text">
     <string/>
+   </property>
+  </action>
+  <action name="actionRepContractsFor">
+   <property name="icon">
+    <iconset resource="pix.qrc">
+     <normaloff>:/pix/rep.png</normaloff>:/pix/rep.png</iconset>
+   </property>
+   <property name="text">
+    <string>Отчет по контрактам новый</string>
+   </property>
+   <property name="toolTip">
+    <string>Контракты договора вместе для акта</string>
    </property>
   </action>
  </widget>
