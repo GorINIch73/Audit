@@ -104,17 +104,24 @@ void DialogNewContract::Decrypt(QString decryption)
 //        qDebug() << rx.cap(7);
 
         ui->lineEditNumber->setText(match.captured(4));
-        if(match.captured(9).isNull()) {
-            //QString ss = QString("%1.%2.20%3").arg(rx.cap(5)).arg(rx.cap(6)).arg(rx.cap(7));
-            ui->dateEditDate->setDate(QDate::fromString(QString("%1.%2.20%3").arg(match.captured(6)).arg(match.captured(7)).arg(match.captured(8)),"dd.MM.yyyy")); //приведение даты к длинному формату
-        }
-        else
-            ui->dateEditDate->setDate(QDate::fromString(match.captured(5),"dd.MM.yyyy"));
+//        if(match.captured(9).isNull()) {
+//            //QString ss = QString("%1.%2.20%3").arg(rx.cap(5)).arg(rx.cap(6)).arg(rx.cap(7));
+//            ui->dateEditDate->setDate(QDate::fromString(QString("%1.%2.20%3").arg(match.captured(6)).arg(match.captured(7)).arg(match.captured(8)),"dd.MM.yyyy")); //приведение даты к длинному формату
+//        }
+//        else
+//            ui->dateEditDate->setDate(QDate::fromString(match.captured(5),"dd.MM.yyyy"));
+
+
+        if ( match . captured ( 9 ). length ()== 2 ) {
+                        ui->dateEditDate->setDate( QDate :: fromString ( QString ( "%1.%2.20%3" ). arg ( match . captured ( 6 )). arg ( match . captured ( 8 )). arg ( match . captured ( 9 )), "dd.MM.yyyy" )); //приведение даты к длинному формату
+          }
+          else
+                        ui->dateEditDate->setDate( QDate :: fromString ( QString ( "%1.%2.%3" ). arg ( match . captured ( 6 )). arg ( match . captured ( 8 )). arg ( match . captured ( 9 )), "dd.MM.yyyy" ));
 
         ui->checkBoxState->setChecked(false);
         // сомнительное определение - часто просто пишут контракт думаю не нужно полагаться на это
-        if(match.captured(1).left(1)=="к")
-            ui->checkBoxState->setChecked(true);
+        //if(match.captured(1).left(1)=="к")
+         //   ui->checkBoxState->setChecked(true);
 
 
     }

@@ -373,8 +373,8 @@ void FormOptions::on_pushButton_add_contracts_clicked()
             //                 sDate = QDate::fromString(match.captured(5),"dd.MM.yyyy").toString("yyyy-MM-dd");
 
             // сомнительное определение - часто просто пишут контракт думаю не нужно полагаться на это
-            if(match.captured(1).left(1)=="к")
-                state = true;
+            //if(match.captured(1).left(1)=="к")
+            //    state = true;
 
             // если номер и дата не пустые!
             if(!sNum.isEmpty() && !sDate.isEmpty()) {
