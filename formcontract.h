@@ -69,6 +69,8 @@ private slots:
 
     void on_checkBox_flt_audit_stateChanged(int arg1);
 
+    void on_pushButton_pList_clicked();
+
 private:
     Ui::FormContract *ui;
 

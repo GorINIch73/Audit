@@ -69,9 +69,9 @@ void FormContract::seekTable()
 
     }
 
-        // настраиваем фильтр расшифровки в зависимости от выбранного платежа
+        // настраиваем фильтр расшифровки в зависимости от выбранного контракта
 //        QString ff = QString("SELECT sum, articles.article, bank.payment_date, bank.payment_number, expense_confirmation  FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id WHERE contract_id = \%1 order by bank.payment_date").arg(modelContracts->data(modelContracts->index(ui->tableView_contracts->currentIndex().row(), 0)).toString());
-        QString ff = QString("SELECT ROUND(sum,2), bank.payment_date, bank.payment_number, articles.article, bank.decryption_of_payment, expense_confirmation  FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id WHERE contract_id = \%1 order by bank.payment_date").arg(modelContracts->data(modelContracts->index(ui->tableView_contracts->currentIndex().row(), 0)).toString());
+        QString ff = QString("SELECT ROUND(sum,2), bank.payment_date, bank.payment_number, articles.article, bank.decryption_of_payment, expense_confirmation, bank.note  FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id WHERE contract_id = \%1 order by bank.payment_date").arg(modelContracts->data(modelContracts->index(ui->tableView_contracts->currentIndex().row(), 0)).toString());
         modelBank_decryption->setQuery(ff,base);
 
         // при изменение строки в таблвьюве устанавливаем маппер на соответствующую запись
@@ -231,6 +231,7 @@ void FormContract::SetupTable()
     modelBank_decryption->setHeaderData(3,Qt::Horizontal,"Статья");
     modelBank_decryption->setHeaderData(4,Qt::Horizontal,"Назначение платежа");
     modelBank_decryption->setHeaderData(5,Qt::Horizontal,"Подтверждение расхода");
+ //   modelBank_decryption->setHeaderData(6,Qt::Horizontal,"Примечание");
 
     ui->tableView_decryption->setModel(modelBank_decryption);
     ui->tableView_decryption->setEditTriggers(QAbstractItemView::NoEditTriggers);  //запрет редактирования
@@ -479,3 +480,13 @@ void FormContract::on_checkBox_flt_audit_stateChanged(int arg1)
     }
 
 }
+
+void FormContract::on_pushButton_pList_clicked()
+{
+    // Список ПП по выделенному договору
+    // номер договора
+    QString ff = QString("SELECT bank.payment_date, bank.payment_number, ROUND(sum,2), articles.article, counterparties.counterparty, bank.decryption_of_payment, bank.note, contracts.contract_number, contracts.contract_date, contracts.note  FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join contracts on bank_decryption.contract_id=contracts.id inner join counterparties on bank.counterparty_id=counterparties.id WHERE contract_id = \%1 order by bank.payment_date").arg(modelContracts->data(modelContracts->index(ui->tableView_contracts->currentIndex().row(), 0)).toString());
+
+    emit signalFromQuery(ff);
+}
+
