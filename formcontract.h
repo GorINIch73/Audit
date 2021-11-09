@@ -71,6 +71,11 @@ private slots:
 
     void on_pushButton_pList_clicked();
 
+    void on_pushButton__whith_note_clicked();
+
+
+    void on_checkBox__flt_note_stateChanged(int arg1);
+
 private:
     Ui::FormContract *ui;
 

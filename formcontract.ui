@@ -160,7 +160,14 @@
          <item>
           <widget class="QCheckBox" name="checkBox_flt_audit">
            <property name="text">
-            <string>только для проверки</string>
+            <string>Для проверки</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox__flt_note">
+           <property name="text">
+            <string>С примечанием</string>
            </property>
           </widget>
          </item>
@@ -247,6 +254,26 @@
      </item>
      <item>
       <layout class="QGridLayout" name="gridLayout">
+       <item row="2" column="2">
+        <widget class="QPushButton" name="pushButton_Dubl_rep">
+         <property name="toolTip">
+          <string>Дубликаты номеров</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="pix.qrc">
+           <normaloff>:/pix/queryC.png</normaloff>:/pix/queryC.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>24</width>
+           <height>24</height>
+          </size>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0">
         <widget class="QPushButton" name="pushButton_rep_for_audit">
          <property name="toolTip">
@@ -258,32 +285,6 @@
          <property name="icon">
           <iconset resource="pix.qrc">
            <normaloff>:/pix/queryS.png</normaloff>:/pix/queryS.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>24</width>
-           <height>24</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QPushButton" name="pushButton_rep_list">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="toolTip">
-          <string>Сформировать список контрактов</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="pix.qrc">
-           <normaloff>:/pix/query.png</normaloff>:/pix/query.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -314,16 +315,42 @@
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QPushButton" name="pushButton_Dubl_rep">
+        <widget class="QPushButton" name="pushButton__whith_note">
          <property name="toolTip">
-          <string>Дубликаты номеров</string>
+          <string>Список с примечанием подробный</string>
          </property>
          <property name="text">
           <string/>
          </property>
          <property name="icon">
           <iconset resource="pix.qrc">
-           <normaloff>:/pix/queryC.png</normaloff>:/pix/queryC.png</iconset>
+           <normaloff>:/pix/query.png</normaloff>:/pix/query.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>24</width>
+           <height>24</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="pushButton_rep_list">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>Сформировать список контрактов</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="pix.qrc">
+           <normaloff>:/pix/query.png</normaloff>:/pix/query.png</iconset>
          </property>
          <property name="iconSize">
           <size>

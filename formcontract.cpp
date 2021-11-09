@@ -490,3 +490,43 @@ void FormContract::on_pushButton_pList_clicked()
     emit signalFromQuery(ff);
 }
 
+
+void FormContract::on_pushButton__whith_note_clicked()
+{
+    // Список ПП по договорам с примечанием
+
+    QString ff = QString("SELECT contracts.contract_number, contracts.contract_date, counterparties.counterparty, contracts.note, articles.article, bank.payment_date, bank.payment_number, ROUND(sum,2), bank.decryption_of_payment, bank.note  FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join contracts on bank_decryption.contract_id=contracts.id inner join counterparties on bank.counterparty_id=counterparties.id WHERE NOT contracts.note ='' order by contracts.contract_number, contracts.contract_date, counterparties.counterparty, bank.payment_date");
+
+    emit signalFromQuery(ff);
+
+}
+
+
+
+void FormContract::on_checkBox__flt_note_stateChanged(int arg1)
+{
+    // фильтр на контракты с примечанием
+    modelContracts->submit();
+
+    if (ui->checkBox__flt_note->isChecked()) {
+        qDebug() << "с примечанием";
+        QString ff = QString("NOT contracts.note = ''");
+        modelContracts->setFilter(ff);
+        modelContracts->select();
+        ui->tableView_contracts->selectRow(0);
+
+        // при отсутствии результата не дается сигнал смены строки
+        seekTable(); // дергаем сменой строки принудительно на случай пустого результата
+        QCoreApplication::postEvent(this, new QStatusTipEvent(QString("Активен фильт для контрактов с примечанием.")));
+
+    }
+    else {
+        modelContracts->setFilter("");
+        modelContracts->select();
+        ui->tableView_contracts->selectRow(0);
+        QCoreApplication::postEvent(this, new QStatusTipEvent(QString("")));
+
+    }
+
+}
+
