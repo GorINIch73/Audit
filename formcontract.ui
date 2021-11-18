@@ -165,6 +165,13 @@
           </widget>
          </item>
          <item>
+          <widget class="QCheckBox" name="checkBox__flt_for_check">
+           <property name="text">
+            <string>Для контроля</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QCheckBox" name="checkBox__flt_note">
            <property name="text">
             <string>С примечанием</string>
@@ -317,7 +324,7 @@
        <item row="2" column="1">
         <widget class="QPushButton" name="pushButton__whith_note">
          <property name="toolTip">
-          <string>Список с примечанием подробный</string>
+          <string>Список по отобранным подробный</string>
          </property>
          <property name="text">
           <string/>
@@ -417,6 +424,13 @@
            </property>
            <property name="text">
             <string>Для проверки</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_for_check">
+           <property name="text">
+            <string>Контроль</string>
            </property>
           </widget>
          </item>

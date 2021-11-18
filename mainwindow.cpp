@@ -466,7 +466,8 @@ void MainWindow::on_actionNewBase_triggered()
              "completed       BOOLEAN         DEFAULT (0),"
              "found           BOOLEAN         DEFAULT (0),"
              "for_audit       BOOLEAN         DEFAULT (0), "
-             "note            VARCHAR"
+             "note            VARCHAR, "
+             "for_check       BOOLEAN         DEFAULT (0)"
          ");";
          if (!a_query.exec(str))
              qDebug() << "таблица Контрактов: " << a_query.lastError().text();

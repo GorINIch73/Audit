@@ -189,6 +189,8 @@ void FormContract::SetupTable()
     mapper->addMapping(ui->checkBox_found, modelContracts->fieldIndex("found"));
     mapper->addMapping(ui->checkBox_for_audit, modelContracts->fieldIndex("for_audit"));
     mapper->addMapping(ui->plainTextEdit_note, modelContracts->fieldIndex("note"));
+    mapper->addMapping(ui->checkBox_for_check, modelContracts->fieldIndex("for_check"));
+
     mapper->setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
 
 
@@ -493,9 +495,16 @@ void FormContract::on_pushButton_pList_clicked()
 
 void FormContract::on_pushButton__whith_note_clicked()
 {
-    // Список ПП по договорам с примечанием
+    // Список ПП по отобранным подробный
+    // определяем фильтр
+    QString flt= modelContracts->filter();
+    qDebug() << flt;
 
-    QString ff = QString("SELECT 'N ' || contracts.contract_number, contracts.contract_date, counterparties.counterparty, contracts.note, articles.article, bank.payment_date, bank.payment_number, ROUND(sum,2), bank.decryption_of_payment, bank.note  FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join contracts on bank_decryption.contract_id=contracts.id inner join counterparties on bank.counterparty_id=counterparties.id WHERE NOT contracts.note ='' order by contracts.contract_number, contracts.contract_date, counterparties.counterparty, bank.payment_date");
+    if (!flt.isEmpty())
+       flt = QString("WHERE %1").arg(flt);
+
+//    QString ff = QString("SELECT 'N ' || contracts.contract_number, contracts.contract_date, counterparties.counterparty, contracts.note, articles.article, bank.payment_date, bank.payment_number, ROUND(sum,2), bank.decryption_of_payment, bank.note  FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join contracts on bank_decryption.contract_id=contracts.id inner join counterparties on bank.counterparty_id=counterparties.id WHERE NOT contracts.note ='' %1 order by contracts.contract_number, contracts.contract_date, counterparties.counterparty, bank.payment_date").arg(flt);
+    QString ff = QString("SELECT 'N ' || contracts.contract_number, contracts.contract_date, counterparties.counterparty, contracts.note, articles.article, bank.payment_date, bank.payment_number, ROUND(sum,2), bank.decryption_of_payment, bank.note  FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join contracts on bank_decryption.contract_id=contracts.id inner join counterparties on bank.counterparty_id=counterparties.id %1 order by contracts.contract_number, contracts.contract_date, counterparties.counterparty, bank.payment_date").arg(flt);
 
     emit signalFromQuery(ff);
 
@@ -528,5 +537,32 @@ void FormContract::on_checkBox__flt_note_stateChanged(int arg1)
 
     }
 
+}
+
+
+void FormContract::on_checkBox__flt_for_check_stateChanged(int arg1)
+{
+    // фильтр на контракты на контроле
+    modelContracts->submit();
+
+    if (ui->checkBox__flt_for_check->isChecked()) {
+        qDebug() << "на контроле";
+        QString ff = QString("contracts.for_check = true");
+        modelContracts->setFilter(ff);
+        modelContracts->select();
+        ui->tableView_contracts->selectRow(0);
+
+        // при отсутствии результата не дается сигнал смены строки
+        seekTable(); // дергаем сменой строки принудительно на случай пустого результата
+        QCoreApplication::postEvent(this, new QStatusTipEvent(QString("Активен фильт для контрактов для контроля.")));
+
+    }
+    else {
+        modelContracts->setFilter("");
+        modelContracts->select();
+        ui->tableView_contracts->selectRow(0);
+        QCoreApplication::postEvent(this, new QStatusTipEvent(QString("")));
+
+    }
 }
 

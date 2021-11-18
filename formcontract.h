@@ -76,6 +76,8 @@ private slots:
 
     void on_checkBox__flt_note_stateChanged(int arg1);
 
+    void on_checkBox__flt_for_check_stateChanged(int arg1);
+
 private:
     Ui::FormContract *ui;
 
