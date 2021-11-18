@@ -121,74 +121,9 @@
           </widget>
          </item>
          <item>
-          <spacer name="horizontalSpacer">
+          <widget class="Line" name="line_7">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>Фильтр:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit_flt_all">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="toolTip">
-            <string>Фильтр по номеру, примечанию</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_flt_audit">
-           <property name="text">
-            <string>Для проверки</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox__flt_for_check">
-           <property name="text">
-            <string>Для контроля</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox__flt_note">
-           <property name="text">
-            <string>С примечанием</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_flt_clr">
-           <property name="toolTip">
-            <string>Сбросить фильтр</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="pix.qrc">
-             <normaloff>:/pix/clear.png</normaloff>:/pix/clear.png</iconset>
+            <enum>Qt::Vertical</enum>
            </property>
           </widget>
          </item>
@@ -250,7 +185,75 @@
          </item>
         </layout>
        </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Фильтр:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEdit_flt_all">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>Фильтр по номеру, примечанию</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_flt_audit">
+           <property name="toolTip">
+            <string>показать договора для проверки</string>
+           </property>
+           <property name="text">
+            <string>Для проверки</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox__flt_for_check">
+           <property name="toolTip">
+            <string>Показать договора для контроля</string>
+           </property>
+           <property name="text">
+            <string>Для контроля</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox__flt_note">
+           <property name="toolTip">
+            <string>Показать договора с примечанием</string>
+           </property>
+           <property name="text">
+            <string>С примечанием</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
       </layout>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_flt_clr">
+       <property name="toolTip">
+        <string>Сбросить фильтр</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="pix.qrc">
+         <normaloff>:/pix/clear.png</normaloff>:/pix/clear.png</iconset>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="Line" name="line_2">
@@ -429,13 +432,26 @@
          </item>
          <item>
           <widget class="QCheckBox" name="checkBox_for_check">
+           <property name="toolTip">
+            <string>Выбран для контроля</string>
+           </property>
            <property name="text">
             <string>Контроль</string>
            </property>
           </widget>
          </item>
          <item>
+          <widget class="Line" name="line_6">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QCheckBox" name="checkBox_found">
+           <property name="toolTip">
+            <string>Найден оригинал договора</string>
+           </property>
            <property name="text">
             <string>Найден</string>
            </property>
@@ -443,6 +459,9 @@
          </item>
          <item>
           <widget class="QCheckBox" name="checkBox_completed">
+           <property name="toolTip">
+            <string>Исполнен</string>
+           </property>
            <property name="text">
             <string>Исполнен</string>
            </property>
@@ -485,6 +504,9 @@
          </item>
          <item>
           <widget class="QCheckBox" name="checkBox_state_contract">
+           <property name="toolTip">
+            <string>Является Госконтрактом</string>
+           </property>
            <property name="text">
             <string>Госконтракт</string>
            </property>
