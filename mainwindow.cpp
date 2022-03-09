@@ -448,7 +448,8 @@ void MainWindow::on_actionNewBase_triggered()
              "id           INTEGER PRIMARY KEY AUTOINCREMENT"
                                   " UNIQUE,"
              "counterparty TEXT,"
-             "note         VARCHAR"
+             "note         VARCHAR,"
+             "nocontract	BOOLEAN DEFAULT 0"
          ");";
          if (!a_query.exec(str))
              qDebug() << "таблица Контрагентов: " << a_query.lastError().text();

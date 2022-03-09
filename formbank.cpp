@@ -767,7 +767,8 @@ void FormBank::on_checkBox_flt_noContr_stateChanged(int arg1)
     // фильтр на безконтрактных
     modelBank->submit();
     if (ui->checkBox_flt_noContr->isChecked()) {
-        QString ff = QString(" bank.id IN (SELECT bank_id FROM bank_decryption WHERE contract_id IS NULL) ");
+//        QString ff = QString(" bank.id IN (SELECT bank_id FROM bank_decryption WHERE contract_id IS NULL) ");
+        QString ff = QString(" bank.id IN (SELECT bank_id FROM bank_decryption left join bank on bank.id = bank_decryption.bank_id left join counterparties on bank.counterparty_id = counterparties.id WHERE not counterparties.nocontract AND contract_id IS NULL)");
         modelBank->setFilter(ff);
         modelBank->select();
         ui->tableView_bank->selectRow(0);

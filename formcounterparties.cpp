@@ -71,6 +71,7 @@ void FormCounterparties::SetupTable()
     mapper->addMapping(ui->lineEdit_id, modelCounterparties->fieldIndex("id"));
     mapper->addMapping(ui->plainTextEdit_counterparty, modelCounterparties->fieldIndex("counterparty"));
     mapper->addMapping(ui->lineEdit_note, modelCounterparties->fieldIndex("note"));
+    mapper->addMapping(ui->checkBox_noContracts, modelCounterparties->fieldIndex("nocontract"));
     mapper->setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
 
 
