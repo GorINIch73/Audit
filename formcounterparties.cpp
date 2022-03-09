@@ -96,6 +96,10 @@ void FormCounterparties::SetupTable()
 
 void FormCounterparties::Tune()
 {
+
+    mapper->submit();
+    modelCounterparties->submit();
+
     // смена контракта
     if (modelCounterparties->data(modelCounterparties->index(ui->tableView_counterparties->currentIndex().row(), 0)).toString().isEmpty()) {
         //если пустая запись
@@ -124,6 +128,9 @@ void FormCounterparties::on_pushButton_close_clicked()
 
 void FormCounterparties::on_lineEdit_flt_all_textChanged(const QString &arg1)
 {
+    mapper->submit();
+    modelCounterparties->submit();
+
     //фильтр c\статей
     if (!arg1.isEmpty()) {
         QString ff = QString("counterparties.counterparty Like '\%%1\%' OR counterparties.note Like '\%%1\%'").arg(arg1);
@@ -168,6 +175,9 @@ void FormCounterparties::on_pushButton_last_clicked()
 
 void FormCounterparties::on_pushButton_refr_clicked()
 {
+    mapper->submit();
+    modelCounterparties->submit();
+
     //восстановление курсора
     int row = ui->tableView_counterparties->currentIndex().row();
     //обновить по простому
@@ -218,6 +228,9 @@ void FormCounterparties::on_pushButton_del_clicked()
 
 void FormCounterparties::on_pushButton_flt_clr_clicked()
 {
+    mapper->submit();
+    modelCounterparties->submit();
+
     ui->lineEdit_flt_all->setText("");
 
     modelCounterparties->setFilter("");
