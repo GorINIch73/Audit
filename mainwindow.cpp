@@ -1313,7 +1313,7 @@ void MainWindow::on_actionRepContractsFor_triggered()
     int countA=0;
 
     // титульный
-    out << QString("<h2>ОТЧЕТ по контрактам по субкодам для акта без дазбивки: %1 </h2>").arg(organization);
+    out << QString("<h2>ОТЧЕТ по контрактам по субкодам для акта без разбивки: %1 </h2>").arg(organization);
     out << QString("- за период: с %1 по %2 ").arg(dateBegin).arg(dateEnd);
     if (rep_contract_found)
         out << QString(", включены только найденные контракты.").arg(dateBegin).arg(dateEnd);
