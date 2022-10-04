@@ -279,6 +279,7 @@ void FormImport::on_pushButton_ImportZ_clicked()
                            }
                            // если поле это дата преобразовать в варимый формат
                            if (box->currentText() == "payment_date") {
+                                   tt.replace("/","."); //меняем косфе на точки если вдруг английская локаль
                                    QDate date = QDate::fromString(tt,"dd.MM.yyyy");
                                    tt=date.toString("yyyy-MM-dd");
                                    //qDebug << date;
