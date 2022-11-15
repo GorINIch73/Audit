@@ -234,6 +234,16 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_noFind">
+           <property name="toolTip">
+            <string>Фильтр на ненайденные контракты выбранные для проверки</string>
+           </property>
+           <property name="text">
+            <string>Ненайденные</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
       </layout>

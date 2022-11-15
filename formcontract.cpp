@@ -579,3 +579,30 @@ void FormContract::on_checkBox__flt_for_check_stateChanged(int arg1)
     }
 }
 
+
+void FormContract::on_checkBox_noFind_stateChanged(int arg1)
+{
+    // фильтр на ненайденные контракты
+    modelContracts->submit();
+
+    if (ui->checkBox_noFind->isChecked()) {
+        qDebug() << "не найденные";
+        QString ff = QString("for_audit = true AND NOT contracts.found = true");
+        modelContracts->setFilter(ff);
+        modelContracts->select();
+        ui->tableView_contracts->selectRow(0);
+
+        // при отсутствии результата не дается сигнал смены строки
+        seekTable(); // дергаем сменой строки принудительно на случай пустого результата
+        QCoreApplication::postEvent(this, new QStatusTipEvent(QString("Активен фильт для ненайденных контрактов для проверки.")));
+
+    }
+    else {
+        modelContracts->setFilter("");
+        modelContracts->select();
+        ui->tableView_contracts->selectRow(0);
+        QCoreApplication::postEvent(this, new QStatusTipEvent(QString("")));
+
+    }
+}
+
