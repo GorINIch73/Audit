@@ -109,7 +109,8 @@ void FormContract::seekTable()
 
         if(sB ==0) {
             // устанавливаем цвет
-            palette.setColor(QPalette::Base, Qt::lightGray);
+            // palette.setColor(QPalette::Base, Qt::lightGray);
+            palette.setColor(QPalette::Base, Qt::color0);
             //palette.setColor(QPalette::Base, Qt::blue);
             ui->lineEdit_b_sum->setPalette(palette);
 
@@ -456,7 +457,7 @@ void FormContract::on_pushButton_rep_for_audit_clicked()
 {
     // запрос на создание списка для проверки
 //    emit signalFromQuery("SELECT counterparties.counterparty, contracts.contract_number, contracts.contract_date, contracts.state_contract, ROUND(SUM(sum),2), COUNT(DISTINCT bank.id), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id =counterparties.id WHERE contracts.for_audit GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article ORDER BY contracts.contract_date, contracts.contract_number");
-    emit signalFromQuery("SELECT counterparties.counterparty, 'N ' || contracts.contract_number, contracts.contract_date, contracts.state_contract, ROUND(SUM(sum),2), COUNT(DISTINCT bank.id), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id =counterparties.id WHERE contracts.for_audit GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article ORDER BY contracts.contract_date, contracts.contract_number");
+    emit signalFromQuery("SELECT counterparties.counterparty, 'N ' || contracts.contract_number, contracts.contract_date, contracts.for_check, ROUND(SUM(sum),2), COUNT(DISTINCT bank.id), articles.article, contracts.note  FROM bank_decryption inner join contracts on bank_decryption.contract_id=contracts.id inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on contracts.counterparty_id =counterparties.id WHERE contracts.for_audit GROUP BY counterparties.counterparty, contracts.contract_number, contracts.contract_date, articles.article ORDER BY contracts.contract_date, contracts.contract_number");
 
 }
 

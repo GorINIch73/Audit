@@ -287,7 +287,8 @@ void FormArticles::on_pushButton_lst_clicked()
 
     qDebug() << flt;
 
-    emit signalFromQuery(QString("SELECT articles.article, bank.payment_date, bank.payment_number, counterparties.counterparty, ROUND(bank.amount_of_payment,2) AS summa_bank, ROUND(sum,2) AS summa_description, bank.decryption_of_payment FROM bank_decryption inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank.counterparty_id=counterparties.id inner join articles on bank_decryption.article_id=articles.id  \%1 ORDER BY articles.article, bank.payment_date, counterparties.counterparty").arg(flt));
+    //emit signalFromQuery(QString("SELECT articles.article, bank.payment_date, bank.payment_number, counterparties.counterparty, ROUND(bank.amount_of_payment,2) AS summa_bank, ROUND(sum,2) AS summa_description, bank.decryption_of_payment FROM bank_decryption inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank.counterparty_id=counterparties.id inner join articles on bank_decryption.article_id=articles.id  \%1 ORDER BY articles.article, bank.payment_date, counterparties.counterparty").arg(flt));
+    emit signalFromQuery(QString("SELECT articles.article, bank.payment_date, bank.payment_number, counterparties.counterparty, ROUND(bank.amount_of_payment,2) AS summa_bank, ROUND(sum,2) AS summa_description, bank.decryption_of_payment, bank.note FROM bank_decryption inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank.counterparty_id=counterparties.id inner join articles on bank_decryption.article_id=articles.id  \%1 ORDER BY articles.article, bank.payment_date, counterparties.counterparty").arg(flt));
 }
 
 void FormArticles::on_pushButton_lst_all_clicked()
@@ -301,5 +302,5 @@ void FormArticles::on_pushButton_lst_all_clicked()
 
     qDebug() << flt;
 
-    emit signalFromQuery(QString("SELECT articles.article, bank.payment_date, bank.payment_number, counterparties.counterparty, ROUND(bank.amount_of_payment,2) AS summa_bank, ROUND(sum,2) AS summa_description, bank.decryption_of_payment FROM bank_decryption inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank.counterparty_id=counterparties.id inner join articles on bank_decryption.article_id=articles.id  \%1 ORDER BY articles.article, bank.payment_date, counterparties.counterparty").arg(flt));
+    emit signalFromQuery(QString("SELECT articles.article, bank.payment_date, bank.payment_number, counterparties.counterparty, ROUND(bank.amount_of_payment,2) AS summa_bank, ROUND(sum,2) AS summa_description, bank.decryption_of_payment, bank.note FROM bank_decryption inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank.counterparty_id=counterparties.id inner join articles on bank_decryption.article_id=articles.id  \%1 ORDER BY articles.article, bank.payment_date, counterparties.counterparty").arg(flt));
 }

@@ -818,7 +818,7 @@ void FormBank::on_pushButton_contracts_add_new_clicked()
         //ss.append(modelBank->data(modelBank->index(ui->tableView_bank->currentIndex().row(), modelBank->fieldIndex("counterparty_id"))).toString());
         ss.append(idc);
         ss.append("','");
-        ss.append(dialog->getState()?"true":"false");
+        ss.append(dialog->getState()?1:0); //"true":"false"
         ss.append("')");
 
 //        qDebug() << ss;

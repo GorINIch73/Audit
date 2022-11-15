@@ -41,6 +41,7 @@ void FormImport::on_pushButton_getFile_clicked()
 
     // откты файл импорта
     // выбор файла
+    //QString  newBase = QFileDialog::getSaveFileName(this,tr("Сохранить как"),databaseName,QString("Data base Fules (*%1);; All (*)").arg(FILE_EXT));
     importName = QFileDialog::getOpenFileName(this,QString("Открыть файл"),QDir::currentPath(),tr("Импорт tsv csv (*.tsv *.csv *.txt;);;Все файлы (*.*)"));
     //importName=QString("d:/Qt/Project/base_a/import.txt"); // временно пропускаем выбор
     ui->lineEdit_file->setText(importName);
