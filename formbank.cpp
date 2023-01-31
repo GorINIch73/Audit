@@ -446,45 +446,48 @@ void FormBank::on_lineEdit_flt_all_textChanged(const QString &arg1)
 
 
         QString ff="";
-        QString flt1, flt2;
+        QString flt="";
         if (ui->checkBox_MF->isChecked())
         {
             // разбираем по фразам  ----------------------------------------------------------------------------------------------------------------------------------------------
-            QStringList list = arg1.split(",", QString::SkipEmptyParts);
+//            QStringList list = arg1.split(",", QString::SkipEmptyParts);
+            QStringList list = arg1.split(",");
 
       //      qDebug() << "запрос" << list;
 
             for(int i = 0; i < list.size(); i++)
             {
       //          qDebug() << list[i];
-                flt1.append("(decryption_of_payment Like '\%");
-                flt1.append(list[i]);
-                flt1.append("\%' OR bank.note Like '\%");
-                flt1.append(list[i]);
-                flt1.append("\%' OR bank.amount_of_payment Like '\%");
-                flt1.append(list[i]);
-                flt1.append("\%' OR bank.payment_date Like '\%");
-                flt1.append(list[i]);
-                flt1.append("\%') ");
+                flt.append("(decryption_of_payment Like '\%");
+                flt.append(list[i]);
+                flt.append("\%' OR bank.note Like '\%");
+                flt.append(list[i]);
+                flt.append("\%' OR bank.amount_of_payment Like '\%");
+                flt.append(list[i]);
+                flt.append("\%' OR bank.payment_date Like '\%");
+                flt.append(list[i]);
+                flt.append("\%' OR bank.counterparty_id IN (SELECT id FROM counterparties WHERE counterparty Like '\%");
+                flt.append(list[i]);
+                flt.append("\%')) ");
 
-                flt1.append(" AND ");
-
-
-                flt2.append(" Like '\%");
-                flt2.append(list[i]);
-                flt2.append("\%' ");
-
-                flt2.append(" OR ");
-
+                flt.append(" AND ");
 
             }
-            flt1.chop(4);
-            flt2.chop(3);
+            flt.chop(4);
+
+
+            ff.append(" ");
+            ff.append(flt);
+        }
+        else
+        {
+            // обычное условие
+            ff = QString("(decryption_of_payment Like '\%%1\%' OR bank.note Like '\%%1\%' OR bank.amount_of_payment Like '\%%1\%' OR bank.payment_date Like '\%%1\%' OR bank.counterparty_id IN (SELECT id FROM counterparties WHERE counterparty Like '\%%1\%'))").arg(arg1);
 
         }
         // обычное условие
         //ff = QString("(decryption_of_payment %1 OR bank.note %1 OR bank.amount_of_payment %1 OR bank.payment_date %1 OR bank.counterparty_id IN (SELECT id FROM counterparties WHERE counterparty %1))").arg(flt);
-        ff = QString("(%1 OR bank.counterparty_id IN (SELECT id FROM counterparties WHERE counterparty %2))").arg(flt1).arg(flt2);
+        //ff = QString("(%1 OR bank.counterparty_id IN (SELECT id FROM counterparties WHERE counterparty %2))").arg(flt1).arg(flt2);
 //        ff = QString("(%1)").arg(flt1);
 
         //        QString ff = QString("(decryption_of_payment Like '\%%1\%' OR bank.note Like '\%%1\%' OR bank.amount_of_payment Like '\%%1\%' OR bank.payment_date Like '\%%1\%')").arg(arg1);

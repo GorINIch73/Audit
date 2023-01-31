@@ -241,9 +241,14 @@
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox_use_counterparties">
+          <widget class="QCheckBox" name="checkBox_MF">
+           <property name="font">
+            <font>
+             <strikeout>false</strikeout>
+            </font>
+           </property>
            <property name="toolTip">
-            <string>Использовать контрагента в общем фильтре</string>
+            <string>Использовать разделитель &lt;,&gt; в запросе</string>
            </property>
            <property name="text">
             <string/>
@@ -251,9 +256,12 @@
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox_MF">
+          <widget class="QCheckBox" name="checkBox_use_counterparties">
            <property name="toolTip">
-            <string>Использовать разделитель в запросе</string>
+            <string>Использовать контрагента в общем фильтре</string>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
            </property>
            <property name="text">
             <string/>
