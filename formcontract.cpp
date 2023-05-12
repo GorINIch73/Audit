@@ -139,7 +139,8 @@ void FormContract::on_lineEdit_flt_all_textChanged(const QString &arg1)
 
     //фильтр
     if (!arg1.isEmpty()) {
-        QString ff = QString("contracts.contract_number Like '\%%1\%' OR contracts.contract_date Like '\%%1\%' OR contracts.price Like '\%%1\%' OR contracts.note Like '\%%1\%' OR contracts.counterparty_id IN (SELECT id FROM counterparties WHERE counterparty LIKE '\%%1\%')").arg(arg1);
+//        QString ff = QString("contracts.contract_number Like '\%%1\%' OR contracts.contract_date Like '\%%1\%' OR contracts.price Like '\%%1\%' OR contracts.note Like '\%%1\%' OR contracts.counterparty_id IN (SELECT id FROM counterparties WHERE counterparty LIKE '\%%1\%')").arg(arg1);
+        QString ff = QString("contracts.contract_number Like '\%%1\%' OR contracts.contract_date Like '\%%1\%' OR contracts.price Like '\%%1\%' OR contracts.note Like '\%%1\%' OR contracts.counterparty_id IN (SELECT id FROM counterparties WHERE counterparty LIKE '\%%1\%') OR contracts.id IN (SELECT bank_decryption.contract_id FROM bank INNER JOIN bank_decryption on bank_decryption.bank_id=bank.id WHERE bank.decryption_of_payment LIKE '\%%1\%')").arg(arg1);
 
         modelContracts->setFilter(ff);
         modelContracts->select();

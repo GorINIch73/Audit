@@ -200,7 +200,7 @@
             </sizepolicy>
            </property>
            <property name="toolTip">
-            <string>Фильтр по номеру, примечанию</string>
+            <string>Фильтр по номеру, примечанию,назначению платежа</string>
            </property>
           </widget>
          </item>
