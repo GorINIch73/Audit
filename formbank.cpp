@@ -1073,3 +1073,29 @@ void FormBank::on_pushButton_noContr_clicked()
     emit signalFromQuery("SELECT articles.article, bank.payment_date, bank.payment_number, counterparties.counterparty, bank.decryption_of_payment, ROUND(bank.amount_of_payment,2) FROM bank left join counterparties on bank.counterparty_id = counterparties.id left join bank_decryption on bank.id = bank_decryption.bank_id left join articles on articles.id = bank_decryption.article_id WHERE (bank_decryption.contract_id IS NULL AND bank_decryption.bank_id IS NOT NULL)  ORDER BY articles.article, bank.payment_date, bank.payment_number");
 
 }
+
+void FormBank::on_FormBank_destroyed()
+{
+    // на всякий случай
+    mapper->submit();
+    modelBank->submit();
+}
+
+
+void FormBank::on_pushButton_rep_p_clicked()
+{
+    // запрос на список полный с учетом фильтра сортировка по КОСГУ, как для отчета тьлько весь список ПП
+
+    QString flt= "";
+
+    if (!modelBank->filter().isEmpty())
+        flt= QString(" WHERE \%1").arg(modelBank->filter());
+
+    qDebug() << flt;
+
+//    emit signalFromQuery(QString("SELECT articles.article, bank.payment_date, bank.payment_number, counterparties.counterparty, ROUND(bank.amount_of_payment,2) AS summa_bank, ROUND(sum,2) AS summa_description, bank.decryption_of_payment, bank.note FROM bank_decryption inner join bank on bank_decryption.bank_id=bank.id inner join counterparties on bank.counterparty_id=counterparties.id inner join articles on bank_decryption.article_id=articles.id  \%1 ORDER BY articles.article, bank.payment_date, counterparties.counterparty").arg(flt));
+
+
+     emit signalFromQuery(QString("SELECT strftime('%Y',bank.payment_date), bank.this_receipt, articles.article, articles.f14, bank.payment_date, bank.payment_number, bank.decryption_of_payment, ROUND(bank.amount_of_payment,2), ROUND(SUM(sum),2), COUNT(bank.payment_number) FROM bank_decryption inner join articles on bank_decryption.article_id=articles.id inner join bank on bank_decryption.bank_id=bank.id \%1 GROUP BY strftime('%Y',bank.payment_date), bank.id, bank.this_receipt, articles.article ORDER BY strftime('%Y',bank.payment_date), bank.this_receipt, articles.f14, articles.article;").arg(flt));
+}
+

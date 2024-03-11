@@ -100,6 +100,10 @@ private slots:
 
     void on_pushButton_noContr_clicked();
 
+    void on_FormBank_destroyed();
+
+    void on_pushButton_rep_p_clicked();
+
 private:
     Ui::FormBank *ui;
 

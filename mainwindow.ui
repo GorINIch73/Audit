@@ -26,6 +26,12 @@
       <property name="documentMode">
        <bool>true</bool>
       </property>
+      <property name="tabsClosable">
+       <bool>false</bool>
+      </property>
+      <property name="movable">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
    </layout>
@@ -36,7 +42,7 @@
      <x>0</x>
      <y>0</y>
      <width>1245</width>
-     <height>30</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
