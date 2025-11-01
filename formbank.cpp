@@ -577,7 +577,8 @@ void FormBank::on_lineEdit_flt_art_textChanged(const QString &arg1)
 
     if (!arg1.isEmpty()) {
 //        QString ff = QString("article Like '\%%1\%' OR bank.note Like '\%%1\%' OR bank.amount_of_payment Like '\%%1\%'").arg(arg1);
-        QString ff = QString("article ='%1\'").arg(arg1);
+//        QString ff = QString("article ='%1\'").arg(arg1);
+        QString ff = QString("article Like '\%%1\%'").arg(arg1);
         modelBank->setFilter(ff);
         modelBank->select();
         ui->tableView_bank->selectRow(0);

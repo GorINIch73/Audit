@@ -150,7 +150,7 @@
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>600</width>
+                 <width>550</width>
                  <height>600</height>
                 </size>
                </property>
@@ -281,12 +281,12 @@
            </property>
            <property name="maximumSize">
             <size>
-             <width>50</width>
+             <width>70</width>
              <height>16777215</height>
             </size>
            </property>
            <property name="toolTip">
-            <string>КОСГУ</string>
+            <string>тип БК</string>
            </property>
           </widget>
          </item>
@@ -352,7 +352,7 @@
            </property>
            <property name="maximumSize">
             <size>
-             <width>600</width>
+             <width>300</width>
              <height>100</height>
             </size>
            </property>
@@ -445,6 +445,12 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>300</width>
+             <height>600</height>
+            </size>
            </property>
            <property name="toolTip">
             <string>Контракт для добавления в расшифровку</string>
@@ -785,8 +791,8 @@
            </property>
            <property name="maximumSize">
             <size>
-             <width>16777215</width>
-             <height>16777215</height>
+             <width>2000</width>
+             <height>600</height>
             </size>
            </property>
            <property name="sizeIncrement">
@@ -917,7 +923,7 @@
          <item>
           <widget class="QLabel" name="label_12">
            <property name="text">
-            <string>КОСГУ:</string>
+            <string>Тип БК:</string>
            </property>
           </widget>
          </item>
